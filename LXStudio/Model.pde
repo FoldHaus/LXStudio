@@ -57,7 +57,7 @@ public static class GeodesicModel3D extends LXModel {
   };
 
 
-  public final static int[][] hub_connections = {
+  public final static int[][] hub_graph = {
     {16,13,14,15,12},
     {20,18,17,19,12},
     {24,23,22,25,21},
@@ -103,7 +103,11 @@ public static class GeodesicModel3D extends LXModel {
   };
 
   public GeodesicModel3D() {
+    // for (int i = 0; i < hubs.length; i++) {
+    //   super(new Fixture());
+    // }
     super(new Fixture());
+    
   }
   
   // 1. Iterate through hub vertices
@@ -114,11 +118,11 @@ public static class GeodesicModel3D extends LXModel {
   public static class Fixture extends LXAbstractFixture {
     Fixture() {
 
-      for (int hub = 0; hub < hubs.length; hub++) {
-      // int hub = 0;
-        // Spike strips
+      for (int i = 0; i < hubs.length; i++) {
         // Retrieve hub vector
-        LXVector h = hubs[hub].copy().mult(SCALE);
+        LXVector h = hubs[i].copy().mult(SCALE);
+
+        // Spike strips
         for (int pixel = 0; pixel < LED_PER_STRIP; pixel++) {
           // Vector to store LED coordinates
           LXVector led = new LXVector(0,0,0);
@@ -135,18 +139,23 @@ public static class GeodesicModel3D extends LXModel {
           ));
         }
 
-        int[] neighborIds = hub_connections[hub];
+        // Geodesic extrusion strips
+        int[] neighborIds = hub_graph[i];
         // Iterate through neighbors
-        for (int i = 0; i < neighborIds.length; i++) {
-          LXVector n = hubs[neighborIds[i]].copy().mult(SCALE);
+        for (int j = 0; j < neighborIds.length; j++) {
+          // Retreive vector of neighboring hub
+          LXVector n = hubs[neighborIds[j]].copy().mult(SCALE);
+          // Subtract central hub to get direction along extrusion
           n.add(h.copy().mult(-1.0));
+          // Convert direction to unit vector
           n.normalize();
+          // Iterate along the extrusion
           for (int pixel = 0; pixel < LED_PER_STRIP; pixel++) {
             // Vector to store LED coordinates
             LXVector led = new LXVector(0,0,0);
             // Translate to hub
             led.add(h);
-            // Translate along normal
+            // Translate along extrusion normal
             led.add(n.copy().mult(float(pixel)*LED_PITCH));
             addPoint(new LXPoint(
               led.x,
