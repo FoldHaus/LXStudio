@@ -106,8 +106,87 @@ public static class GeodesicModel3D extends LXModel {
     // for (int i = 0; i < hubs.length; i++) {
     //   super(new Fixture());
     // }
-    super(new Fixture());
+    //super(new Fixture());
+    super(new RadiaLumia());
+  }
+  
+  public static class RadiaLumia extends LXAbstractFixture {
+    RadiaLumia () {
+      LXAbstractFixture[] blooms = new LXAbstractFixture[GeodesicModel3D.hubs.length];
     
+      for (int i = 0; i < GeodesicModel3D.hubs.length; i++) {
+        blooms[i] = new GeodesicModel3D.Bloom (i);
+        addPoints (blooms[i]);
+      } 
+    }
+  }
+  
+  public static class Bloom extends LXAbstractFixture {
+    Bloom (int bloomIndex) {
+      LXVector bloomCenter = hubs[bloomIndex].copy().mult(SCALE);
+      
+      Spike spike = new Spike (bloomCenter);
+      Spokes spokes = new Spokes(bloomIndex, bloomCenter);
+      
+      addPoints (spike);
+      addPoints (spokes);
+    }
+  }
+  
+  public static class Spokes extends LXAbstractFixture {
+    Spokes(int hubIndex, LXVector hubCenter) {
+      // Geodesic extrusion strips
+        int[] neighborIds = hub_graph[hubIndex];
+        
+        // Iterate through neighbors
+        for (int j = 0; j < neighborIds.length; j++) {
+          // Retreive vector of neighboring hub
+          LXVector n = hubs[neighborIds[j]].copy().mult(SCALE);
+          // Subtract central hub to get direction along extrusion
+          n.add(hubCenter.copy().mult(-1.0));
+          // Convert direction to unit vector
+          n.normalize();
+          
+          // Iterate along the extrusion
+          for (int pixel = 0; pixel < LED_PER_STRIP; pixel++) {
+            // Vector to store LED coordinates
+            LXVector led = new LXVector(0,0,0);
+            // Translate to hub
+            led.add(hubCenter);
+            // Translate along extrusion normal
+            led.add(n.copy().mult(float(pixel)*LED_PITCH));
+            addPoint(new LXPoint(
+              led.x,
+              led.y,
+              led.z
+            ));
+          }
+        }
+    }
+  }
+  
+  public static class Spike extends LXAbstractFixture {
+    Spike (LXVector spikeCenter) {
+        // Spike strips
+        for (int pixel = 0; pixel < LED_PER_STRIP; pixel++) {
+          // Vector to store LED coordinates
+          LXVector led = new LXVector(0,0,0);
+          
+          // Translate to hub
+          led.add(spikeCenter);
+          
+          // Normal vector
+          LXVector n = spikeCenter.copy().normalize();
+          
+          // Translate along normal
+          led.add(n.mult(float(pixel)*LED_PITCH));
+          addPoint(new LXPoint(
+            led.x,
+            led.y,
+            led.z
+          ));
+        }
+    }
   }
   
   // 1. Iterate through hub vertices
