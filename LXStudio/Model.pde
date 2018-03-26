@@ -1,4 +1,7 @@
-LXModel buildModel() {
+import java.util.Collections;
+import java.util.List;
+
+GeodesicModel3D buildModel() {
   // A three-dimensional grid model
   // return new GridModel3D();
   return new GeodesicModel3D();
@@ -10,6 +13,8 @@ public static class GeodesicModel3D extends LXModel {
   public final static float LED_PITCH = 100./LED_PER_STRIP; // cm
   public final static float SCALE = 350.0;
   public final static float STRIP_LENGTH = 1.0;
+  
+  public final RadiaLumia radiaLumia;
 
   public final static LXVector hubs[] = {
     new LXVector(0.0000000, 0.5257311, 0.8506508),
@@ -108,12 +113,18 @@ public static class GeodesicModel3D extends LXModel {
     // }
     //super(new Fixture());
     super(new RadiaLumia());
+    
+    radiaLumia = (RadiaLumia) this.fixtures.get(0);
   }
   
   public static class RadiaLumia extends LXAbstractFixture {
-    RadiaLumia () {
-      LXAbstractFixture[] blooms = new LXAbstractFixture[GeodesicModel3D.hubs.length];
     
+    public final Bloom[] blooms;
+    
+    RadiaLumia () {
+      
+      blooms = new Bloom[GeodesicModel3D.hubs.length];
+      
       for (int i = 0; i < GeodesicModel3D.hubs.length; i++) {
         blooms[i] = new GeodesicModel3D.Bloom (i);
         addPoints (blooms[i]);
@@ -122,14 +133,44 @@ public static class GeodesicModel3D extends LXModel {
   }
   
   public static class Bloom extends LXAbstractFixture {
+    
+    public final Spike spike;
+    public final Spokes spokes;
+    
+    public final LXVector bloomCenter;
+    public final float maxSpikeDistance;
+    public final float maxSpokesDistance;
+    
     Bloom (int bloomIndex) {
-      LXVector bloomCenter = hubs[bloomIndex].copy().mult(SCALE);
+      bloomCenter = hubs[bloomIndex].copy().mult(SCALE);
       
-      Spike spike = new Spike (bloomCenter);
-      Spokes spokes = new Spokes(bloomIndex, bloomCenter);
+      spike = new Spike (bloomCenter);
+      spokes = new Spokes(bloomIndex, bloomCenter);
       
       addPoints (spike);
       addPoints (spokes);
+      
+      float tempMaxDist = 0f;
+      // Determine farthest distance along spike
+      for (LXPoint p : spike.getPoints()) {
+        LXVector pV = new LXVector (p.x, p.y, p.z);
+        float dist = pV.dist(bloomCenter);
+        if (tempMaxDist < dist){
+          tempMaxDist = dist;
+        }
+      }
+      maxSpikeDistance = tempMaxDist;
+      
+      tempMaxDist = 0f;
+      // Determine farthest distance along spokes
+      for (LXPoint p : spokes.getPoints()) {
+        LXVector pV = new LXVector (p.x, p.y, p.z);
+        float dist = pV.dist(bloomCenter);
+        if (tempMaxDist < dist){
+          tempMaxDist = dist;
+        }
+      }
+      maxSpokesDistance = tempMaxDist;
     }
   }
   

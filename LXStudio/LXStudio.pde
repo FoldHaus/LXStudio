@@ -24,10 +24,15 @@
 // Reference to top-level LX instance
 heronarts.lx.studio.LXStudio lx;
 
+GeodesicModel3D structureModel;
+
 void setup() {
   // Processing setup, constructs the window and the LX instance
   size(800, 720, P3D);
-  lx = new heronarts.lx.studio.LXStudio(this, buildModel(), MULTITHREADED);
+  
+  structureModel = buildModel ();
+  
+  lx = new heronarts.lx.studio.LXStudio(this, structureModel, MULTITHREADED);
   lx.ui.setResizable(RESIZABLE);
 }
 
