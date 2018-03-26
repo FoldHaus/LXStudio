@@ -25,6 +25,7 @@
 heronarts.lx.studio.LXStudio lx;
 
 GeodesicModel3D structureModel;
+UIRadiaLumia umbrellaModel;
 
 void setup() {
   // Processing setup, constructs the window and the LX instance
@@ -42,6 +43,7 @@ void initialize(heronarts.lx.studio.LXStudio lx, heronarts.lx.studio.LXStudio.UI
 
 void onUIReady(heronarts.lx.studio.LXStudio lx, heronarts.lx.studio.LXStudio.UI ui) {
   // Add custom UI components here
+  ui.preview.addComponent(new UISimulation());
 }
 
 void draw() {
