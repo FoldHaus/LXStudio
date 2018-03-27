@@ -55,6 +55,7 @@ public class UIPlane extends UI3dComponent {
 
 public static class UIRadiaLumia extends UI3dComponent {
   
+  // @TODO(peter): separate data (to go somewhere else) from the rendering. All this class should do is render the same cylinder over and over again, at different positions and open/closed states
   public UIUmbrella[] umbrellas;
   
   public UIRadiaLumia () {
@@ -79,6 +80,8 @@ public static class UIRadiaLumia extends UI3dComponent {
       pg.rotate (rotationAngle, rotationAxis.x, rotationAxis.y, rotationAxis.z);
       pg.translate (0, 1 * GeodesicModel3D.SCALE, 0);
       
+      // @TODO(peter): handle rotating umbrellas about their normal correctly
+      
       u.onDraw(ui, pg);
       
       pg.popMatrix();
@@ -90,6 +93,7 @@ public static class UIRadiaLumia extends UI3dComponent {
 
 public static class UIUmbrella extends UI3dComponent {
   
+  // @TODO(peter): this data can all go somewhere else, ideally, so that we can blend between effects, and actually pass it out to the motors
   public int BlossomIndex;
   public PVector Position;
   
@@ -124,6 +128,7 @@ public static class UIUmbrella extends UI3dComponent {
     this.detail = detail;
     this.len = yMax - yMin;
     
+    // @TODO(peter): Use actual measurements
     for (int i = 0; i < detail; ++i) {
       float angle = i * (TWO_PI / detail);
       this.base[i] = new PVector(baseRadius * cos(angle), yMin, baseRadius * sin(angle));
