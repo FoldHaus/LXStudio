@@ -41,22 +41,15 @@ public class UISimulation extends UI3dComponent {
 public class UIRadiaLumia extends UI3dComponent {
   
   // @TODO(peter): separate data (to go somewhere else) from the rendering. All this class should do is render the same cylinder over and over again, at different positions and open/closed states
-  public UIUmbrella hex_umbrella;
-  public UIUmbrella pent_umbrella;
+  public UIUmbrella umbrella;
   
   public UIRadiaLumia () {
-    hex_umbrella = new UIUmbrella (6);
-	pent_umbrella = new UIUmbrella(5);
+    umbrella = new UIUmbrella(3 * FEET, .5 * FEET, 8 * FEET, 6);
   }
   
   public void onDraw (UI ui, PGraphics pg) {
     
-	int numberDrawn = 0;
     for (GeodesicModel3D.Bloom b : structureModel.radiaLumia.blooms) {
-		numberDrawn += 1;
-		if (numberDrawn >= structureModel.radiaLumia.blooms.length)
-			continue;
-
       pg.pushMatrix();
       
       // Find angle between "up" and 
@@ -68,45 +61,15 @@ public class UIRadiaLumia extends UI3dComponent {
       final PVector rotationAxis = directionA.cross(directionB).normalize();
       
       pg.rotate (rotationAngle, rotationAxis.x, rotationAxis.y, rotationAxis.z);
-
-	  // BEGIN TEMP CODE TO TRY AND ROTATE AROUND THE SPIKE AXIS
-	  /*
-	  float angleBetweenNeighborAndRight = GetRotationAroundSpikeAxis(pg, b);
-
-   	  // rotate around up
-	  pg.popMatrix();
-	  pg.pushMatrix();
-
-	  pg.rotate (rotationAngle, rotationAxis.x, rotationAxis.y, rotationAxis.z);
-	  pg.rotate (angleBetweenNeighborAndRight, 0, 1, 0);
-	  */
-	  // END TEMP CODE
-
       pg.translate (0, 1 * GeodesicModel3D.SCALE, 0);
-
-	  int neighborCount = GeodesicModel3D.hub_graph[b.index].length;
-	  
-	  if (neighborCount == 5) {
-		  pent_umbrella.onDraw(ui, pg, (float)b.umbrella.GetPercentClosed());
-	  }else if (neighborCount == 6) {
-		  hex_umbrella.onDraw(ui, pg, (float)b.umbrella.GetPercentClosed());
-	  }
-
-      pg.popMatrix();
-	}
-  }
-
-  public float GetRotationAroundSpikeAxis (PGraphics pg, GeodesicModel3D.Bloom b) {
-   
-	  pg.popMatrix();
-	  pg.pushMatrix();
+      
       // @TODO(peter): handle rotating umbrellas about their normal correctly
-
+	  // Get the current matrix
 	  PMatrix curMatrix = pg.getMatrix();
 
 	  // Apply current matrix to right
 	  PVector right = new PVector(1, 0, 0);
-	  PVector localRight = new PVector (0, 0, 0);
+	  PVector localRight;
 	  curMatrix.mult(right, localRight);
 
 	  // angle between right and neighbor[0]
@@ -116,51 +79,19 @@ public class UIRadiaLumia extends UI3dComponent {
 	  PVector bloomLocation = LXToPVector(GeodesicModel3D.hubs[b.index]);
 
 	  PVector bloomToNeighbor = neighborZeroLocation.sub(bloomLocation);
-	  PVector bloomToNeighborProjOnBloomPlane = bloomToNeighbor.sub(bloomLocation.mult(bloomToNeighbor.dot(bloomLocation) / bloomLocation.magSq()));
+	  PVector bloomToNeighborProjOnBloomPlane = bloomToNeighbor.sub((bloomToNeighbor.dot(bloomLocation) / bloomLocation.magSq()) * bloomLocation);
 
-	  float angleBetweenNeighborAndRight = bloomToNeighborProjOnBloomPlane.dot(localRight);
+	  float angleBetweenNeighborAndRight = bloomToNieghborProjOnBloomPlane.dot(localRight);
 
-	  return angleBetweenNeighborAndRight;
+	  // rotate around up
+	  pg.rotate (angleBetweenNeighborAndRight, 0, 1, 0);
+	  
+      umbrella.onDraw(ui, pg, (float)b.umbrella.GetPercentClosed());
+      
+      pg.popMatrix();
+    }
   }
 }
-/* TESTING THIS CODE. IT DOESNT WORK YET 
-public void testUmbrellaTransformCode () {
-
-		PVector up = LXToPVector(b.bloomCenter);
-
-		int neighborZeroIndex = GeodesicModel3D.hub_graph[b.index][0];
-
-		PVector neighborZeroLocation = LXToPVector(GeodesicModel3D.hubs[neighborZeroIndex]);
-		PVector bloomLocation = LXToPVector(GeodesicModel3D.hubs[b.index]);
-
-		PVector right = neighborZeroLocation.sub(bloomLocation).normalize();
-		PVector forward = right.cross(up).normalize();
-		
-		PMatrix3D rotMatrix = new PMatrix3D(
-			right.x, right.y, right.z, 0,
-			forward.x, forward.y, forward.z, 0,
-			up.x, up.y, up.z, 0, 
-			0, 0, 0, 1
-			);
-
-		PMatrix3D rotMatrixB = new PMatrix3D(
-			right.x, right.y, right.z, 0,
-			up.x, up.y, up.z, 0,
-			forward.x, forward.y, forward.z, 0,
-			0, 0, 0, 1
-			);
-
-		pg.pushMatrix();
-		pg.applyMatrix(rotMatrix);
-		pg.translate (0, 1 * GeodesicModel3D.SCALE, 0);
-
-		umbrella.onDraw(ui, pg, (float)b.umbrella.GetPercentClosed());
-		
-		pg.popMatrix();
-		continue;
-
-}
-*/
 
 public static class UIUmbrella {
   
@@ -175,8 +106,16 @@ public static class UIUmbrella {
   private final int detail;
   public final float open_len;
   public final float closed_len;
-		  
-  public UIUmbrella(int detail) {
+							 
+  public UIUmbrella(float radius, float len, int detail) {
+    this(radius, radius, 0, len, detail);
+  }
+  
+  public UIUmbrella(float baseRadius, float topRadius, float len, int detail) {
+    this(baseRadius, topRadius, 0, len, detail);
+  }
+  
+  public UIUmbrella(float baseRadius, float topRadius, float yMin, float yMax, int detail) {
 	  this.closed_inner_spoke_positions = new PVector[detail];
 	  this.closed_outer_spoke_positions = new PVector[detail];
 

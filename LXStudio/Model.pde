@@ -11,7 +11,7 @@ public static class GeodesicModel3D extends LXModel {
   
   public final static float LED_PER_STRIP = 30.0;
   public final static float LED_PITCH = 100./LED_PER_STRIP; // cm
-  public final static float SCALE = 350.0;
+  public final static float SCALE = 14 * FEET;
   public final static float STRIP_LENGTH = 1.0;
   
   public final RadiaLumia radiaLumia;
@@ -134,18 +134,24 @@ public static class GeodesicModel3D extends LXModel {
   
   public static class Bloom extends LXAbstractFixture {
     
+	  public final int index;
+
     public final Spike spike;
     public final Spokes spokes;
+    public final Umbrella umbrella;
     
     public final LXVector bloomCenter;
     public final float maxSpikeDistance;
     public final float maxSpokesDistance;
     
     Bloom (int bloomIndex) {
+		index = bloomIndex;
+
       bloomCenter = hubs[bloomIndex].copy().mult(SCALE);
       
       spike = new Spike (bloomCenter);
       spokes = new Spokes(bloomIndex, bloomCenter);
+      umbrella = new Umbrella();
       
       addPoints (spike);
       addPoints (spokes);
@@ -230,62 +236,103 @@ public static class GeodesicModel3D extends LXModel {
     }
   }
   
-  // 1. Iterate through hub vertices
-  //    2. Draw outward spoke using hub vertex vector
-  //    3. Iterate through hub vertex neighbors
-  //      4. Draw outward to vertex neighbor
+  public static class Umbrella {
+    
+    private enum UmbrellaControlMode {
+		PERCENT_CLOSED,
+		OPEN_CLOSED_SWITCH,
+	};
 
-  public static class Fixture extends LXAbstractFixture {
-    Fixture() {
-
-      for (int i = 0; i < hubs.length; i++) {
-        // Retrieve hub vector
-        LXVector h = hubs[i].copy().mult(SCALE);
-
-        // Spike strips
-        for (int pixel = 0; pixel < LED_PER_STRIP; pixel++) {
-          // Vector to store LED coordinates
-          LXVector led = new LXVector(0,0,0);
-          // Translate to hub
-          led.add(h);
-          // Normal vector
-          LXVector n = h.copy().normalize();
-          // Translate along normal
-          led.add(n.mult(float(pixel)*LED_PITCH));
-          addPoint(new LXPoint(
-            led.x,
-            led.y,
-            led.z
-          ));
-        }
-
-        // Geodesic extrusion strips
-        int[] neighborIds = hub_graph[i];
-        // Iterate through neighbors
-        for (int j = 0; j < neighborIds.length; j++) {
-          // Retreive vector of neighboring hub
-          LXVector n = hubs[neighborIds[j]].copy().mult(SCALE);
-          // Subtract central hub to get direction along extrusion
-          n.add(h.copy().mult(-1.0));
-          // Convert direction to unit vector
-          n.normalize();
-          // Iterate along the extrusion
-          for (int pixel = 0; pixel < LED_PER_STRIP; pixel++) {
-            // Vector to store LED coordinates
-            LXVector led = new LXVector(0,0,0);
-            // Translate to hub
-            led.add(h);
-            // Translate along extrusion normal
-            led.add(n.copy().mult(float(pixel)*LED_PITCH));
-            addPoint(new LXPoint(
-              led.x,
-              led.y,
-              led.z
-            ));
-          }
-        }
+    private class WeightedPercentClosedRequest {
+      public double value;
+      public double weight;
+      
+      public WeightedPercentClosedRequest(double v, double w) {
+        this.value = v;
+        this.weight = w;
       }
+    }
 
+	private class WeightedOpenCloseRequest {
+		public bool requestOpen;
+		public double weight;
+
+		public WeightedOpenCloseRequest (bool requestedOpen, double weight) {
+			this.requestOpen = requestedOpen;
+			this.weight = weight;
+		}
+	}
+
+    public UmbrellaControlMode mode;
+
+    private double percentClosed;
+    
+	private List<WeightedPercentClosedRequest> percentageRequests;
+	
+    private List<WeightedOpenCloseRequest> openClosedRequests;
+    private bool lastOpenCloseRequest;
+
+    public Umbrella (UmbrellaControlMode mode)
+	  this.mode = mode;
+
+      percentClosed = 1;
+      requests = new ArrayList<WeightedPercentClosedRequest>();
+	  openClosedRequests = new ArrayList<WeightedOpenCloseRequest>();
+    }
+
+    public void RequestState (bool requestOpen, double weight) {
+		openClosedRequests.add (new WeightedOpenCloseRequest(requestOpen, weight));
+	}
+    
+    public void RequestPercentClosed (double value, double weight) {
+       percentageRequests.add(new WeightedPercentClosedRequest(value, Math.max(0, Math.min(weight, 1))));
+    }
+    
+    public double GetPercentClosed () {
+      return percentClosed;
+    }
+
+    public void ApplyOpenCloseRequests () {
+		if (openClosedRequests.size() == 0)
+			return;
+
+		bool currentValue = lastOpenCloseRequest;
+		double lastWeight = 0;
+
+		for (WeightedOpenClosedRequest r : openClosedRequests) {
+			if (r == null)
+				continue;
+
+			if (lastWeight < r.weight) {
+				currentValue = r.requestedOpen;
+				lastWeight = r.weight;
+			}
+		}
+
+		lastOpenCloseRequest = currentValue;
+	}
+    
+    public void ApplyPercentageRequests () {
+      if (percentageRequests.size() == 0)
+        return;
+        
+      double newValue = 0;
+      double totalWeight = 0;
+      
+      for (WeightedPercentClosedRequest r : percentageRequests) {
+        if (r == null)
+          continue; // @TODO(peter): why would this ever happen???
+          
+        newValue += r.value * r.weight;
+        totalWeight += r.weight;
+      }
+      
+      if (totalWeight > 0) {
+        newValue = newValue / totalWeight;
+         percentClosed = newValue;
+      }
+      
+      requests.clear();
     }
   }
 }

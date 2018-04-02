@@ -25,6 +25,7 @@
 heronarts.lx.studio.LXStudio lx;
 
 GeodesicModel3D structureModel;
+SingletonUmbrellaUpdater umbrellaUpdater;
 UIRadiaLumia umbrellaModel;
 
 void setup() {
@@ -39,6 +40,7 @@ void setup() {
 
 void initialize(heronarts.lx.studio.LXStudio lx, heronarts.lx.studio.LXStudio.UI ui) {
   // Add custom components or output drivers here
+  
 }
 
 void onUIReady(heronarts.lx.studio.LXStudio lx, heronarts.lx.studio.LXStudio.UI ui) {
