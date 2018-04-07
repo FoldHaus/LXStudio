@@ -1,16 +1,20 @@
 import java.util.Collections;
 import java.util.List;
 
+public final static float LED_PER_SPOKE = 30.0;
+public final static float LED_PER_SPIKE = 30.0;
+
+public final static float LED_SPOKE_PITCH = 100./LED_PER_SPOKE;
+public final static float LED_SPIKE_PITCH = 100./LED_PER_SPIKE;
+
 GeodesicModel3D buildModel() {
-  // A three-dimensional grid model
-  // return new GridModel3D();
-  return new GeodesicModel3D();
+	// A three-dimensional grid model
+	// return new GridModel3D();
+	return new GeodesicModel3D();
 }
 
 public static class GeodesicModel3D extends LXModel {
   
-  public final static float LED_PER_STRIP = 30.0;
-  public final static float LED_PITCH = 100./LED_PER_STRIP; // cm
   public final static float SCALE = 14 * FEET;
   public final static float STRIP_LENGTH = 1.0;
   
@@ -151,7 +155,7 @@ public static class GeodesicModel3D extends LXModel {
       
       spike = new Spike (bloomCenter);
       spokes = new Spokes(bloomIndex, bloomCenter);
-      umbrella = new Umbrella();
+      umbrella = new Umbrella(GeodesicModel3D.Umbrella.UmbrellaControlMode.PERCENT_CLOSED);
       
       addPoints (spike);
       addPoints (spokes);
@@ -179,7 +183,7 @@ public static class GeodesicModel3D extends LXModel {
       maxSpokesDistance = tempMaxDist;
     }
   }
-  
+
   public static class Spokes extends LXAbstractFixture {
     Spokes(int hubIndex, LXVector hubCenter) {
       // Geodesic extrusion strips
@@ -195,13 +199,13 @@ public static class GeodesicModel3D extends LXModel {
           n.normalize();
           
           // Iterate along the extrusion
-          for (int pixel = 0; pixel < LED_PER_STRIP; pixel++) {
+          for (int pixel = 0; pixel < LED_PER_SPOKE; pixel++) {
             // Vector to store LED coordinates
             LXVector led = new LXVector(0,0,0);
             // Translate to hub
             led.add(hubCenter);
             // Translate along extrusion normal
-            led.add(n.copy().mult(float(pixel)*LED_PITCH));
+            led.add(n.copy().mult(float(pixel)*LED_SPOKE_PITCH));
             addPoint(new LXPoint(
               led.x,
               led.y,
@@ -215,7 +219,7 @@ public static class GeodesicModel3D extends LXModel {
   public static class Spike extends LXAbstractFixture {
     Spike (LXVector spikeCenter) {
         // Spike strips
-        for (int pixel = 0; pixel < LED_PER_STRIP; pixel++) {
+        for (int pixel = 0; pixel < LED_PER_SPIKE; pixel++) {
           // Vector to store LED coordinates
           LXVector led = new LXVector(0,0,0);
           
@@ -226,7 +230,7 @@ public static class GeodesicModel3D extends LXModel {
           LXVector n = spikeCenter.copy().normalize();
           
           // Translate along normal
-          led.add(n.mult(float(pixel)*LED_PITCH));
+          led.add(n.mult(float(pixel)*LED_SPIKE_PITCH));
           addPoint(new LXPoint(
             led.x,
             led.y,
@@ -236,6 +240,25 @@ public static class GeodesicModel3D extends LXModel {
     }
   }
   
+  /*
+    Umbrella Class
+    This class stores a model of the assumed current state of a physical umbrella on the structure
+
+    It handles requests for the umbrella to reach states which are expressed in terms of percent closed
+    For Example:
+    - 1.0 = 100% Closed (looks like) <
+    - 0.0 = 0% Closed  (looks like) (
+    
+    It also handles the modeling the behaviour of the motors, so that the visualization, and any requests,
+    can be evaluated accurately and safely.
+
+    Modeling the Motors
+    Assumptions:
+    - There are things we don't know about how the motors will behave. So we should let effects assume the best, and handle those assumptions in the model
+    - The motor will have a defined speed
+    - The motor may have a defined easing function
+    - 
+   */
   public static class Umbrella {
     
     private enum UmbrellaControlMode {
@@ -253,36 +276,18 @@ public static class GeodesicModel3D extends LXModel {
       }
     }
 
-	private class WeightedOpenCloseRequest {
-		public bool requestOpen;
-		public double weight;
-
-		public WeightedOpenCloseRequest (bool requestedOpen, double weight) {
-			this.requestOpen = requestedOpen;
-			this.weight = weight;
-		}
-	}
-
     public UmbrellaControlMode mode;
 
     private double percentClosed;
     
-	private List<WeightedPercentClosedRequest> percentageRequests;
-	
-    private List<WeightedOpenCloseRequest> openClosedRequests;
-    private bool lastOpenCloseRequest;
+    private List<WeightedPercentClosedRequest> percentageRequests;
 
-    public Umbrella (UmbrellaControlMode mode)
-	  this.mode = mode;
+    public Umbrella (UmbrellaControlMode mode){
+      this.mode = mode;
 
       percentClosed = 1;
-      requests = new ArrayList<WeightedPercentClosedRequest>();
-	  openClosedRequests = new ArrayList<WeightedOpenCloseRequest>();
+      percentageRequests = new ArrayList<WeightedPercentClosedRequest>();
     }
-
-    public void RequestState (bool requestOpen, double weight) {
-		openClosedRequests.add (new WeightedOpenCloseRequest(requestOpen, weight));
-	}
     
     public void RequestPercentClosed (double value, double weight) {
        percentageRequests.add(new WeightedPercentClosedRequest(value, Math.max(0, Math.min(weight, 1))));
@@ -291,26 +296,6 @@ public static class GeodesicModel3D extends LXModel {
     public double GetPercentClosed () {
       return percentClosed;
     }
-
-    public void ApplyOpenCloseRequests () {
-		if (openClosedRequests.size() == 0)
-			return;
-
-		bool currentValue = lastOpenCloseRequest;
-		double lastWeight = 0;
-
-		for (WeightedOpenClosedRequest r : openClosedRequests) {
-			if (r == null)
-				continue;
-
-			if (lastWeight < r.weight) {
-				currentValue = r.requestedOpen;
-				lastWeight = r.weight;
-			}
-		}
-
-		lastOpenCloseRequest = currentValue;
-	}
     
     public void ApplyPercentageRequests () {
       if (percentageRequests.size() == 0)
@@ -321,7 +306,7 @@ public static class GeodesicModel3D extends LXModel {
       
       for (WeightedPercentClosedRequest r : percentageRequests) {
         if (r == null)
-          continue; // @TODO(peter): why would this ever happen???
+          continue; // TODO(peter): why would this ever happen???
           
         newValue += r.value * r.weight;
         totalWeight += r.weight;
@@ -332,7 +317,7 @@ public static class GeodesicModel3D extends LXModel {
          percentClosed = newValue;
       }
       
-      requests.clear();
+      percentageRequests.clear();
     }
   }
 }

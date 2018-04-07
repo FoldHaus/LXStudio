@@ -76,7 +76,7 @@ public class SingletonUmbrellaUpdater extends LXEffect {
   
   public void run (double deltaMs, double enabledAmount) {
     for (GeodesicModel3D.Bloom b : structureModel.radiaLumia.blooms) {
-      b.umbrella.ApplyRequests();
+      b.umbrella.ApplyPercentageRequests();
     }
   }
 }
