@@ -1,3 +1,9 @@
+// UmbrellaRendering.pde
+/*
+  This file contains the code which handles rendering the drawing of the Umbrella
+  simulation, based the Umbrella class in Model.pde
+*/
+
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.FloatBuffer;

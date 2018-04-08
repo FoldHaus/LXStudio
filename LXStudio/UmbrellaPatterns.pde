@@ -1,3 +1,8 @@
+// UmbrellaUniversalState
+/*
+  Sets all umbrellas to the same state, as defined by the CompoundParameter
+  openClosedState
+*/
 public class UmbrellaUniversalState extends BaseUmbrellaPattern {
 
   public final CompoundParameter openClosedState =
@@ -19,6 +24,12 @@ public class UmbrellaUniversalState extends BaseUmbrellaPattern {
   }
 }
 
+// UmbrellaVerticalWave
+/*
+  Visualizes a sin wave on the umbrellas.
+  Oscilation is defined by waveValue
+  Frequency is waveSize, period is waveSeed
+ */
 public class UmbrellaVerticalWave extends BaseUmbrellaPattern {
 
   private float lowestUmbrella;
@@ -69,7 +80,7 @@ public class UmbrellaVerticalWave extends BaseUmbrellaPattern {
       float h = b.bloomCenter.y;
       float pct = (h - lowestUmbrella) / umbrellaDelta;
 
-      float pctDist = constrain (1 - (abs(pct - waveValue) / waveWidth), 0, 1);
+      float pctDist = constrain ((abs(pct - waveValue) / waveWidth), 0, 1);
 
       SetUmbrellaPercentClosed(b.umbrella, pctDist);
     }

@@ -316,7 +316,7 @@ public static class GeodesicModel3D extends LXModel {
       ApplyPercentageRequests();
 
       if (mode == UmbrellaControlMode.OPEN_CLOSED_SWITCH) {
-        OpenClosedUpate(deltaMs);        
+        OpenClosedUpdate(deltaMs);        
       }else if (mode == UmbrellaControlMode.PERCENT_CLOSED) {
         percentClosed = mostRecent_TargetPercentClosedRequest;
       }
@@ -326,7 +326,7 @@ public static class GeodesicModel3D extends LXModel {
       if (percentageRequests.size() == 0)
         return;
         
-      lastFrame_TargetPercentageClosedRequest = mostRecent_TargetPercentClosedRequest;
+      lastFrame_TargetPercentClosedRequest = mostRecent_TargetPercentClosedRequest;
 
       double newValue = 0;
       double totalWeight = 0;

@@ -1,3 +1,22 @@
+// UmbrellaBasePattern
+/* This file contains the base classes from which you inherit to create a Pattern
+   which can control Umbrellas. 
+   
+   TO CREATE AN UMBRELLA PATTERN
+   - Simply extend BaseUmbrellaPattern
+   - Call SetUmbrellaPercentClosed(Umbrella, double) in your run function to update the position
+
+   Remarks:
+   Every BaseUmbrellaPattern relies on a post-processing effect which, after all Updates to the 
+   umbrella effects are made, each request is merged with the others. This happens in the
+   SingletonUmbrellaUpdater. This Effect is added to the main channel when any BaseUmbrellaPattern
+   is created. Each subsequent Pattern checks to see if it exists. If it does, it does nothing, otherwise
+   it is created. Because this is handled in the BaseUmbrellaPattern's constructor, Pattern authors
+   dont need to worry about it at all.
+ */
+
+// BaseUmbrellaPattern
+// The base class from which all Patterns which control umbrellas should inherit
 public abstract class BaseUmbrellaPattern extends LXPattern {
 
   private LXChannel channel;
@@ -67,6 +86,10 @@ public abstract class BaseUmbrellaPattern extends LXPattern {
   }
 }
 
+// SingletonUmbrellaUpdater
+// Added to the Main Channel by the first UmbrellaPattern created
+// At the end of every frame, goes through and calls UpdateUmbrellas for each
+// umbrella
 public class SingletonUmbrellaUpdater extends LXEffect {
   public SingletonUmbrellaUpdater (LX lx) {
    super(lx);
