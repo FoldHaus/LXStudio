@@ -1,6 +1,8 @@
 import java.util.Collections;
 import java.util.List;
 
+public final static float SPIKE_LENGTH = 10 * FEET;
+
 public final static float LED_PER_SPOKE = 30.0;
 public final static float LED_PER_SPIKE = 30.0;
 
@@ -155,7 +157,7 @@ public static class GeodesicModel3D extends LXModel {
       
       spike = new Spike (bloomCenter);
       spokes = new Spokes(bloomIndex, bloomCenter);
-      umbrella = new Umbrella(GeodesicModel3D.Umbrella.UmbrellaControlMode.PERCENT_CLOSED);
+      umbrella = new Umbrella(GeodesicModel3D.Umbrella.UmbrellaControlMode.OPEN_CLOSED_SWITCH);
       
       addPoints (spike);
       addPoints (spokes);
@@ -191,12 +193,16 @@ public static class GeodesicModel3D extends LXModel {
         
         // Iterate through neighbors
         for (int j = 0; j < neighborIds.length; j++) {
-          // Retreive vector of neighboring hub
+
+          // Get direction rom hub to neighbor
           LXVector n = hubs[neighborIds[j]].copy().mult(SCALE);
-          // Subtract central hub to get direction along extrusion
           n.add(hubCenter.copy().mult(-1.0));
+          
+          float led_pitch = (n.mag() / 2.f) / LED_PER_SPOKE;
+          
           // Convert direction to unit vector
           n.normalize();
+          
           
           // Iterate along the extrusion
           for (int pixel = 0; pixel < LED_PER_SPOKE; pixel++) {
@@ -205,7 +211,7 @@ public static class GeodesicModel3D extends LXModel {
             // Translate to hub
             led.add(hubCenter);
             // Translate along extrusion normal
-            led.add(n.copy().mult(float(pixel)*LED_SPOKE_PITCH));
+            led.add(n.copy().mult(float(pixel)*led_pitch));
             addPoint(new LXPoint(
               led.x,
               led.y,
@@ -228,7 +234,8 @@ public static class GeodesicModel3D extends LXModel {
           
           // Normal vector
           LXVector n = spikeCenter.copy().normalize();
-          
+          float spike_led_pitch = SPIKE_LENGTH / LED_PER_SPIKE;
+
           // Translate along normal
           led.add(n.mult(float(pixel)*LED_SPIKE_PITCH));
           addPoint(new LXPoint(
@@ -262,9 +269,9 @@ public static class GeodesicModel3D extends LXModel {
   public static class Umbrella {
     
     private enum UmbrellaControlMode {
-		PERCENT_CLOSED,
-		OPEN_CLOSED_SWITCH,
-	};
+      PERCENT_CLOSED,
+      OPEN_CLOSED_SWITCH,
+    };
 
     private class WeightedPercentClosedRequest {
       public double value;
@@ -277,8 +284,16 @@ public static class GeodesicModel3D extends LXModel {
     }
 
     public UmbrellaControlMode mode;
+    
+    //TODO(peter): separate state from constants
+    private double umbrellaFullOpenToClosedTime = 4000; // 4 Seconds
+    private double umbrellaMaxPercentChangedPerSecond = 1.0 / umbrellaFullOpenToClosedTime;
+
+    private double mostRecent_TargetPercentClosedRequest;
+    private double lastFrame_TargetPercentClosedRequest;
 
     private double percentClosed;
+    private double timeMovingInThisDirection;
     
     private List<WeightedPercentClosedRequest> percentageRequests;
 
@@ -297,10 +312,22 @@ public static class GeodesicModel3D extends LXModel {
       return percentClosed;
     }
     
+    public void UpdateUmbrella (double deltaMs) {
+      ApplyPercentageRequests();
+
+      if (mode == UmbrellaControlMode.OPEN_CLOSED_SWITCH) {
+        OpenClosedUpate(deltaMs);        
+      }else if (mode == UmbrellaControlMode.PERCENT_CLOSED) {
+        percentClosed = mostRecent_TargetPercentClosedRequest;
+      }
+    }
+    
     public void ApplyPercentageRequests () {
       if (percentageRequests.size() == 0)
         return;
         
+      lastFrame_TargetPercentageClosedRequest = mostRecent_TargetPercentClosedRequest;
+
       double newValue = 0;
       double totalWeight = 0;
       
@@ -314,10 +341,23 @@ public static class GeodesicModel3D extends LXModel {
       
       if (totalWeight > 0) {
         newValue = newValue / totalWeight;
-         percentClosed = newValue;
+        mostRecent_TargetPercentClosedRequest = newValue;        
       }
       
       percentageRequests.clear();
+    }
+
+    public void OpenClosedUpdate (double deltaMs) {
+
+      if (mostRecent_TargetPercentClosedRequest > .5) {
+        percentClosed -= umbrellaMaxPercentChangedPerSecond * deltaMs;
+      }else{
+        percentClosed += umbrellaMaxPercentChangedPerSecond * deltaMs;
+      }
+
+      // Because processing doesn't have 'constrain' for doubles. Grrr
+      if (percentClosed > 1.0) percentClosed = 1.0;
+      if (percentClosed < 0.0) percentClosed = 0.0;
     }
   }
 }
