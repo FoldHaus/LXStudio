@@ -1,0 +1,82 @@
+public abstract class BaseUmbrellaPattern extends LXPattern {
+
+  private LXChannel channel;
+  
+  private boolean isTransitioningIn;
+  private boolean isActive;
+
+  public BaseUmbrellaPattern (LX lx) {
+    super(lx);
+    channel = this.getChannel();
+    
+    if (umbrellaUpdater == null) {
+      lx.engine.masterChannel.addEffect(new SingletonUmbrellaUpdater(lx));
+    }
+    
+    isTransitioningIn = false;
+    isActive = false;
+  }
+  
+  @Override
+  public void onTransitionStart() {
+    isTransitioningIn = true;
+  }
+  
+  @Override
+  public void onTransitionEnd() {
+    isTransitioningIn = false;
+  }
+  
+  @Override
+  public void onActive () {
+    isActive = true;
+  }
+  
+  @Override
+  public void onInactive () {
+    isActive = false;
+  }
+  
+  public double getWeight (boolean printWeightProgress) {
+     double weight = channel.fader.getNormalized();
+     double progress = channel.getTransitionProgress();
+      
+     if (isTransitioningIn && !(progress > 0)) { 
+       weight = 0;
+     } else if (progress > 0) {
+       if (!isTransitioningIn && progress < .998) {
+         weight *= 1 - progress;
+       }else if (isTransitioningIn){
+         weight *= progress;
+       }
+     }
+      
+     if (printWeightProgress)
+       println (getIndex() + " : " + progress + " : " + weight);
+      
+     return weight;
+  }
+  
+  public void SetUmbrellaPercentClosed (GeodesicModel3D.Umbrella u, double pctClosed) {
+    if (channel == null)
+      channel = this.getChannel();
+
+    double weight = getWeight(false);
+
+    u.RequestPercentClosed(pctClosed, weight);
+  }
+}
+
+public class SingletonUmbrellaUpdater extends LXEffect {
+  public SingletonUmbrellaUpdater (LX lx) {
+   super(lx);
+   umbrellaUpdater = this;
+   this.enable();
+  }
+  
+  public void run (double deltaMs, double enabledAmount) {
+    for (GeodesicModel3D.Bloom b : structureModel.radiaLumia.blooms) {
+      b.umbrella.UpdateUmbrella(deltaMs);
+    }
+  }
+}
