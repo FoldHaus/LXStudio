@@ -66,7 +66,7 @@ public class BlossomOscillation extends RadiaLumiaPattern {
       
       // This operates exactly the same as the spike, except that we invert pctDst so that the light flows up the spokes, towards the center, 
       // then up the spike, smoothly.
-      for (LXPoint spokePoint : bloom.spokes.getPoints ()) {
+      for (LXPoint spokePoint : bloom.spokePoints) {
         float dst = new LXVector(spokePoint.x, spokePoint.y, spokePoint.z).dist(bloom.center);
         float pctDst = 1 - dst/bloom.maxSpikeDistance;
         float onMask = 0;

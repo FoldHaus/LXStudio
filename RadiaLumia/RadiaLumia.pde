@@ -34,31 +34,17 @@ void setup() {
   size(800, 720, P3D);
   config = new Config();
   model = new Model(config);
-  
   lx = new heronarts.lx.studio.LXStudio(this, model, MULTITHREADED);
   lx.ui.setResizable(RESIZABLE);
 }
 
 void initialize(heronarts.lx.studio.LXStudio lx, heronarts.lx.studio.LXStudio.UI ui) {
-  // Add custom components or output drivers here
-  try {
-    LXDatagramOutput output = new LXDatagramOutput(lx);
-    
-    // TODO: construct appropriate StreamingACNDatagram for each bloom
-    for (Bloom bloom : model.blooms) {
-      // Config data from JSON...
-      JSONObject bloomConfig = config.getBloom(bloom.index);
-    }
-    
-    
-    lx.engine.addOutput(output);
-  } catch (Exception x) {
-    throw new RuntimeException(x);
-  }
+  buildOutput(lx);
 }
 
 void onUIReady(heronarts.lx.studio.LXStudio lx, heronarts.lx.studio.LXStudio.UI ui) {
   // Add custom UI components here
+  // ui.preview.pointCloud.setModel(new LXModel(model.leds));
   ui.preview.addComponent(new UISimulation());
 }
 
@@ -75,6 +61,7 @@ final static float INCHES = 1;
 final static float IN = INCHES;
 final static float FEET = 12 * INCHES;
 final static float FT = FEET;
-final static float CM = 2.54 * IN;
+final static float CM = IN / 2.54;
 final static float MM = CM * .1;
-final static float M = CM * 00;
+final static float M = CM * 100;
+final static float METER = M;

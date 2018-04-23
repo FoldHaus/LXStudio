@@ -11,42 +11,28 @@
 // Universe 24 = DMX Motor Control
 
 
-
-void setupDatagrams() {
-	datagrams.add((StreamingACNDatagram) new StreamingACNDatagram(lx, channels14, (byte) 0x00).setAddress(ip).setPort(OPC_PORT));
-	// datagrams.add((StreamingACNDatagram) new StreamingACNDatagram(lx, channels14, (byte) 0x00).setAddress(ip).setPort(OPC_PORT));
+void buildOutput(LX lx) {
+  try {
+    LXDatagramOutput output = new LXDatagramOutput(lx);
+    
+    for (Bloom bloom : model.blooms) {
+      JSONObject bloomConfig = config.getBloom(bloom.index);
+      String ip = bloomConfig.getString("ip");
+      if (ip != null) {
+        int universe = 0;
+        for (Bloom.Spoke spoke : bloom.spokes) {
+          // TODO: handle splitting if these are more than 1-universe worth of pixels
+          output.addDatagram(new StreamingACNDatagram(universe, LXFixture.Utils.getIndices(bloom.spike)).setAddress(ip));
+          universe += 2;
+        }
+        output.addDatagram(new StreamingACNDatagram(13, LXFixture.Utils.getIndices(bloom.spike)).setAddress(ip));
+        
+        // TODO: add DMX umbrella control outputs
+      }
+    }
+    
+    lx.engine.addOutput(output);
+  } catch (Exception x) {
+    throw new RuntimeException(x);
+  }
 }
-
-
-// public static class RadialumiaDatagram extends StreamingACNDatagram {
-
-//   static {
-//     for (int b = 0; b < 256; ++b) {
-//       for (int in = 0; in < 256; ++in) {
-//         GAMMA_LUT[b][in] = (byte) (0xff & (int) Math.round(Math.pow(in * b / 65025.f, GAMMA) * 255.f));
-//       }
-//     }
-//   }
-    
-//   private final LXParameter brightness; 
-    
-//   public RadialumiaDatagram(LX lx, int[] indices, byte universe) {
-//     super(indices, channel);
-//     this.brightness = lx.engine.output.brightness;
-//   }
-  
-//   @Override
-//   protected LXDatagram copyPoints(int[] colors, int[] pointIndices, int offset) {
-//     final byte[] gamma = GAMMA_LUT[Math.round(255 * this.brightness.getValuef())];
-//     int i = offset;
-//     for (int index : pointIndices) {
-//       int c = (index >= 0) ? colors[index] : #000000;
-//       this.buffer[i    ] = gamma[0xff & (c >> 16)]; // R
-//       this.buffer[i + 1] = gamma[0xff & (c >> 8)]; // G
-//       this.buffer[i + 2] = gamma[0xff & c]; // B
-//       i += 3;
-//     }
-//     return this;
-//   }
-
-// }

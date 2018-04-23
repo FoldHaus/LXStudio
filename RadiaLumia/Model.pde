@@ -28,11 +28,20 @@ class Config {
 public static class Model extends LXModel {
   
   public final List<Bloom> blooms;
+  public final List<LXPoint> leds;
   
   public Model(Config config) {
     super(new Fixture(config));
     Fixture f = (Fixture) this.fixtures.get(0);
     this.blooms = Collections.unmodifiableList(f.blooms);
+    
+    List<LXPoint> leds = new ArrayList<LXPoint>();
+    for (Bloom bloom : this.blooms) {
+      for (LXPoint p : bloom.leds) {
+        leds.add(p);
+      }
+    }
+    this.leds = Collections.unmodifiableList(leds);
   }
   
   public static class Fixture extends LXAbstractFixture {
@@ -64,8 +73,10 @@ public static class Bloom extends LXModel {
   
   public final int index;
   
+  public final List<LXPoint> leds;
   public final Spike spike;
-  public final Spokes spokes;
+  public final List<Spoke> spokes;
+  public final List<LXPoint> spokePoints;
   public final Umbrella umbrella;
   
   private final List<Bloom> _neighbors = new ArrayList<Bloom>();
@@ -79,12 +90,30 @@ public static class Bloom extends LXModel {
     super(new Fixture(config, index));
     JSONObject bloomConfig = config.getBloom(index); 
     this.index = bloomConfig.getInt("id");
-    this.umbrella = new Umbrella(Umbrella.UmbrellaControlMode.OPEN_CLOSED_SWITCH);
+    
     
     Fixture f = (Fixture) this.fixtures.get(0);
     this.center = f.center;
     this.spike = f.spike;
     this.spokes = f.spokes;
+    this.umbrella = f.umbrella;
+    
+    List<LXPoint> leds = new ArrayList<LXPoint>();
+    for (LXPoint p : this.spike.points) {
+      leds.add(p);
+    }
+    
+    // Make unmodifiable list of all spoke points for easy access
+    List<LXPoint> spokePoints = new ArrayList<LXPoint>();
+    for (Spoke spoke : this.spokes) {
+      for (LXPoint p : spoke.points) {
+        spokePoints.add(p);
+        leds.add(p);
+      }
+    }
+    this.spokePoints = Collections.unmodifiableList(spokePoints);
+    
+    this.leds = Collections.unmodifiableList(leds);
         
     float tempMaxDist = 0f;
     // Determine farthest distance along spike
@@ -99,7 +128,7 @@ public static class Bloom extends LXModel {
     
     tempMaxDist = 0f;
     // Determine farthest distance along spokes
-    for (LXPoint p : spokes.getPoints()) {
+    for (LXPoint p : spokePoints) {
       LXVector pV = new LXVector(p.x, p.y, p.z);
       float dist = pV.dist(center);
       if (tempMaxDist < dist){
@@ -117,23 +146,33 @@ public static class Bloom extends LXModel {
   
     private final LXVector center;
     private final Spike spike;
-    private final Spokes spokes;
-  
+    private final List<Spoke> spokes = new ArrayList<Spoke>();
+    private final Umbrella umbrella;
+    
     Fixture(Config config, int index) {
       this.center = config.getBloomCenter(index); 
-      
+            
       this.spike = new Spike(this.center);
-      this.spokes = new Spokes(config, index);
       addPoints(this.spike);
-      addPoints(this.spokes);
+      
+      int numSpokes = config.getBloom(index).getJSONArray("neighbors").size(); 
+      for (int i = 0; i < numSpokes; ++i) {
+        Spoke spoke = new Spoke(config, index, i);
+        this.spokes.add(spoke);
+        addPoints(spoke);
+      }
+      
+      this.umbrella = new Umbrella(Umbrella.UmbrellaControlMode.OPEN_CLOSED_SWITCH);
+      addPoints(this.umbrella);
+
     }
   }
 
   public static class Spike extends LXModel {
     
-    public final static float LENGTH = 10 * FEET;
-    public final static int NUM_LEDS = 30;
-    public final static float LED_PITCH = 100. / NUM_LEDS;
+    public final static float LENGTH = 2 * METER;
+    public final static int NUM_LEDS = 150;
+    public final static float LED_PITCH = METER / 60.;
     
     public Spike(LXVector center) {
       super(new Fixture(center));
@@ -151,46 +190,42 @@ public static class Bloom extends LXModel {
     }
   }
   
-  public static class Spokes extends LXModel {
+  public static class Spoke extends LXModel {
     
-    public final static int NUM_LEDS = 30;
-    public final static float LED_PITCH = 100./ NUM_LEDS;
+    public final static float LED_PITCH = METER / 144.;
+    public final static int NUM_LEDS = 60;
     
-    public Spokes(Config config, int index) {
-      super(new Fixture(config, index));
+    public final int spokeIndex;
+    
+    public Spoke(Config config, int bloomIndex, int spokeIndex) {
+      super(new Fixture(config, bloomIndex, spokeIndex));
+      this.spokeIndex = spokeIndex;
     }
   
     private static class Fixture extends LXAbstractFixture {
-      public Fixture(Config config, int index) {
-        JSONObject bloomConfig = config.getBloom(index);
+      public Fixture(Config config, int bloomIndex, int spokeIndex) {
+        JSONObject bloomConfig = config.getBloom(bloomIndex);
         
-        // Geodesic extrusion strips
-        JSONArray neighbors = bloomConfig.getJSONArray("neighbors");
-        int numNeighbors = neighbors.size();
-        int[] neighborIds = new int[numNeighbors];
-        for (int i = 0; i < numNeighbors; ++i) {
-          neighborIds[i] = neighbors.getInt(i);
-        }
+        // Get neighbor center
+        int neighborIndex = bloomConfig.getJSONArray("neighbors").getInt(spokeIndex);
+        final LXVector neighborCenter = config.getBloomCenter(neighborIndex);
         
-        final LXVector center = config.getBloomCenter(index);
-        final LXVector centerNeg = center.copy().mult(-1.f); 
+        // This bloom center
+        final LXVector bloomCenter = config.getBloomCenter(bloomIndex);
+        final LXVector bloomCenterNeg = bloomCenter.copy().mult(-1.f); 
         
-        // Iterate through neighbors
-        for (int neighborId : neighborIds) {
-          // Get direction from hub to neighbor
-          LXVector delta = config.getBloomCenter(neighborId);
-          delta.add(centerNeg);
+        // Get direction from hub to neighbor
+        LXVector delta = neighborCenter.copy().add(bloomCenterNeg);
           
-          // Convert direction to unit vector and compute pitch
-          float pitchMagnitude = (delta.mag() / 2.f) / NUM_LEDS;
-          LXVector pitch = delta.normalize().mult(pitchMagnitude);          
-          LXVector led = center.copy();
-          
-          // Iterate along the extrusion
-          for (int pixel = 0; pixel < NUM_LEDS; pixel++) {
-            addPoint(new LXPoint(led));
-            led.add(pitch);
-          }
+        // Convert direction to unit vector and compute pitch
+        float pitchMagnitude = (delta.mag() / 2.f) / NUM_LEDS;
+        LXVector pitch = delta.normalize().mult(pitchMagnitude);          
+        LXVector led = bloomCenter.copy();
+        
+        // Iterate along the extrusion
+        for (int pixel = 0; pixel < NUM_LEDS; pixel++) {
+          addPoint(new LXPoint(led));
+          led.add(pitch);
         }
       }
     }
@@ -216,7 +251,10 @@ public static class Bloom extends LXModel {
     - The motor may have a defined easing function
     - 
     */
-  public static class Umbrella {
+  public static class Umbrella extends LXAbstractFixture {
+    
+    public final LXPoint open;
+    public final LXPoint velocity;
     
     private enum UmbrellaControlMode {
       PERCENT_CLOSED,
@@ -247,7 +285,10 @@ public static class Bloom extends LXModel {
     
     private List<WeightedPercentClosedRequest> percentageRequests;
   
-    public Umbrella (UmbrellaControlMode mode){
+    public Umbrella(UmbrellaControlMode mode){
+      addPoint(this.open = new LXPoint(0, 0, 0));
+      addPoint(this.velocity = new LXPoint(0, 0, 0));
+      
       this.mode = mode;
   
       percentClosed = 1;
