@@ -24,6 +24,7 @@
 // Reference to top-level LX instance
 heronarts.lx.studio.LXStudio lx;
 
+Config config;
 Model model;
 SingletonUmbrellaUpdater umbrellaUpdater;
 UIRadiaLumia umbrellaModel;
@@ -31,7 +32,8 @@ UIRadiaLumia umbrellaModel;
 void setup() {
   // Processing setup, constructs the window and the LX instance
   size(800, 720, P3D);
-  model = buildModel();
+  config = new Config();
+  model = new Model(config);
   
   lx = new heronarts.lx.studio.LXStudio(this, model, MULTITHREADED);
   lx.ui.setResizable(RESIZABLE);
@@ -39,7 +41,20 @@ void setup() {
 
 void initialize(heronarts.lx.studio.LXStudio lx, heronarts.lx.studio.LXStudio.UI ui) {
   // Add custom components or output drivers here
-  
+  try {
+    LXDatagramOutput output = new LXDatagramOutput(lx);
+    
+    // TODO: construct appropriate StreamingACNDatagram for each bloom
+    for (Bloom bloom : model.blooms) {
+      // Config data from JSON...
+      JSONObject bloomConfig = config.getBloom(bloom.index);
+    }
+    
+    
+    lx.engine.addOutput(output);
+  } catch (Exception x) {
+    throw new RuntimeException(x);
+  }
 }
 
 void onUIReady(heronarts.lx.studio.LXStudio lx, heronarts.lx.studio.LXStudio.UI ui) {

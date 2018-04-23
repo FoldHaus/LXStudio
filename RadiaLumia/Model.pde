@@ -24,11 +24,6 @@ class Config {
     return new LXVector(bloom.getFloat("x"), bloom.getFloat("y"), bloom.getFloat("z")).mult(SCALE);
   }
 }
-  
-
-Model buildModel() {
-	return new Model(new Config());
-}
 
 public static class Model extends LXModel {
   
