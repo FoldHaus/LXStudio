@@ -18,7 +18,7 @@ public class UmbrellaUniversalState extends BaseUmbrellaPattern {
   public void run (double deltaMs) {
     double newPercentClosed = 1 - this.openClosedState.getValue();
     
-    for (GeodesicModel3D.Bloom b : structureModel.radiaLumia.blooms) {
+    for (Bloom b : model.blooms) {
       SetUmbrellaPercentClosed(b.umbrella, newPercentClosed);
     }
   }
@@ -59,13 +59,13 @@ public class UmbrellaVerticalWave extends BaseUmbrellaPattern {
     lowestUmbrella = 0;
     highestUmbrella = 0;
     
-    for (GeodesicModel3D.Bloom b : structureModel.radiaLumia.blooms) {
+    for (Bloom b : model.blooms) {
 
-      if (b.bloomCenter.y < lowestUmbrella)
-        lowestUmbrella = b.bloomCenter.y;
+      if (b.center.y < lowestUmbrella)
+        lowestUmbrella = b.center.y;
 
-      if (b.bloomCenter.y > highestUmbrella)
-        highestUmbrella = b.bloomCenter.y;
+      if (b.center.y > highestUmbrella)
+        highestUmbrella = b.center.y;
     }
 
     umbrellaDelta = highestUmbrella - lowestUmbrella;
@@ -76,8 +76,8 @@ public class UmbrellaVerticalWave extends BaseUmbrellaPattern {
     float waveValue = (float)this.waveValue.getValue();
     float waveWidth = (float)this.waveSize.getValue();
 
-    for (GeodesicModel3D.Bloom b : structureModel.radiaLumia.blooms) {
-      float h = b.bloomCenter.y;
+    for (Bloom b : model.blooms) {
+      float h = b.center.y;
       float pct = (h - lowestUmbrella) / umbrellaDelta;
 
       float pctDist = constrain ((abs(pct - waveValue) / waveWidth), 0, 1);
