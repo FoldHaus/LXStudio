@@ -21,8 +21,8 @@ void buildOutput(LX lx) {
       if (ip != null) {
         int universe = 0;
         for (Bloom.Spoke spoke : bloom.spokes) {
-          // TODO: handle splitting if these are more than 1-universe worth of pixels
-          output.addDatagram(new StreamingACNDatagram(universe, LXFixture.Utils.getIndices(bloom.spike)).setAddress(ip));
+          output.addDatagram(new StreamingACNDatagram(universe, makeIndices(spoke, 170)).setAddress(ip));
+          output.addDatagram(new StreamingACNDatagram(universe + 1, makeIndices(spoke, 118)).setAddress(ip));
           universe += 2;
         }
         output.addDatagram(new StreamingACNDatagram(13, LXFixture.Utils.getIndices(bloom.spike)).setAddress(ip));
@@ -32,7 +32,17 @@ void buildOutput(LX lx) {
     }
     
     lx.engine.addOutput(output);
+    
   } catch (Exception x) {
     throw new RuntimeException(x);
   }
+}
+
+int[] makeIndices(LXFixture fixture, int num) {
+  List<LXPoint> points = fixture.getPoints();
+  int[] indices = new int[num];
+  for (int i = 0; i < indices.length; ++i) {
+    indices[i] = points.get(i % points.size()).index;
+  }
+  return indices;
 }
