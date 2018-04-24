@@ -15,19 +15,26 @@ void buildOutput(LX lx) {
   try {
     LXDatagramOutput output = new LXDatagramOutput(lx);
     
+    // Only debug first bloom output...
+    boolean BLOOM_DEBUG_ONE = true;
+    int mappedBloomCount = 0;
+    
     for (Bloom bloom : model.blooms) {
       JSONObject bloomConfig = config.getBloom(bloom.index);
       String ip = bloomConfig.getString("ip");
-      if (ip != null) {
-        int universe = 0;
+      if (ip == null) {
+        println("No IP address specified for Bloom #" + bloomConfig.getInt("id"));
+      } else if (!BLOOM_DEBUG_ONE || (mappedBloomCount < 1)) {
+        int universe = 1;
         for (Bloom.Spoke spoke : bloom.spokes) {
           output.addDatagram(new StreamingACNDatagram(universe, makeIndices(spoke, 170)).setAddress(ip));
           output.addDatagram(new StreamingACNDatagram(universe + 1, makeIndices(spoke, 118)).setAddress(ip));
           universe += 2;
         }
-        output.addDatagram(new StreamingACNDatagram(13, LXFixture.Utils.getIndices(bloom.spike)).setAddress(ip));
+        output.addDatagram(new StreamingACNDatagram(14, LXFixture.Utils.getIndices(bloom.spike)).setAddress(ip));
         
         // TODO: add DMX umbrella control outputs
+        ++mappedBloomCount;
       }
     }
     

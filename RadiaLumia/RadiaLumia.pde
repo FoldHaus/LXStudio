@@ -44,7 +44,7 @@ void initialize(heronarts.lx.studio.LXStudio lx, heronarts.lx.studio.LXStudio.UI
 
 void onUIReady(heronarts.lx.studio.LXStudio lx, heronarts.lx.studio.LXStudio.UI ui) {
   // Add custom UI components here
-  // ui.preview.pointCloud.setModel(new LXModel(model.leds));
+  ui.preview.pointCloud.setModel(new LXModel(model.leds));
   ui.preview.addComponent(new UISimulation());
 }
 
