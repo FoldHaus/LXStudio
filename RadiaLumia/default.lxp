@@ -1,6 +1,6 @@
 {
   "version": "0.1",
-  "timestamp": 1524528354894,
+  "timestamp": 1525645347927,
   "engine": {
     "id": 1,
     "class": "heronarts.lx.LXEngine",
@@ -43,9 +43,71 @@
         "class": "heronarts.lx.LXChannel",
         "modulationColor": -65439,
         "parameters": {
-          "label": "Colors",
+          "label": "Color-OA",
           "arm": false,
           "selected": true,
+          "enabled": true,
+          "cue": false,
+          "fader": 1.0,
+          "crossfadeGroup": 0,
+          "blendMode": 0,
+          "midiMonitor": false,
+          "midiChannel": 16,
+          "autoCycleEnabled": false,
+          "autoCycleMode": 0,
+          "autoCycleTimeSecs": 60.0,
+          "transitionEnabled": false,
+          "transitionTimeSecs": 5.0,
+          "transitionBlendMode": 0
+        },
+        "effects": [
+          {
+            "id": 84,
+            "class": "RadiaLumia$UmbrellaMask",
+            "modulationColor": -52736,
+            "parameters": {
+              "label": "UmbrellaMask",
+              "enabled": true,
+              "umbB": 0.0,
+              "oaB": 100.0
+            },
+            "modulation": {
+              "modulators": [],
+              "modulations": [],
+              "triggers": []
+            }
+          }
+        ],
+        "clips": [],
+        "patternIndex": 0,
+        "patterns": [
+          {
+            "id": 82,
+            "class": "heronarts.p3lx.pattern.SolidPattern",
+            "modulationColor": -16711899,
+            "parameters": {
+              "label": "Solid",
+              "color/brightness": 100.0,
+              "color/saturation": 100.0,
+              "color/hue": 194.05405607819557
+            },
+            "modulation": {
+              "modulators": [],
+              "modulations": [],
+              "triggers": []
+            },
+            "autoCycleEnabled": true
+          }
+        ]
+      },
+      {
+        "id": 45,
+        "class": "heronarts.lx.LXChannel",
+        "modulationColor": -35584,
+        "parameters": {
+          "label": "Umbrella",
+          "arm": false,
+          "selected": false,
           "enabled": true,
           "cue": false,
           "fader": 1.0,
@@ -65,15 +127,75 @@
         "patternIndex": 0,
         "patterns": [
           {
-            "id": 35,
+            "id": 46,
+            "class": "RadiaLumia$UmbrellaUniversalState",
+            "modulationColor": -4325121,
+            "parameters": {
+              "label": "UmbrellaUniversalState",
+              "open": 0.7499999832361937
+            },
+            "modulation": {
+              "modulators": [],
+              "modulations": [],
+              "triggers": []
+            },
+            "autoCycleEnabled": true
+          }
+        ]
+      },
+      {
+        "id": 90,
+        "class": "heronarts.lx.LXChannel",
+        "modulationColor": -39680,
+        "parameters": {
+          "label": "Color-UU",
+          "arm": false,
+          "selected": false,
+          "enabled": true,
+          "cue": false,
+          "fader": 1.0,
+          "crossfadeGroup": 0,
+          "blendMode": 0,
+          "midiMonitor": false,
+          "midiChannel": 16,
+          "autoCycleEnabled": false,
+          "autoCycleMode": 0,
+          "autoCycleTimeSecs": 60.0,
+          "transitionEnabled": false,
+          "transitionTimeSecs": 5.0,
+          "transitionBlendMode": 0
+        },
+        "effects": [
+          {
+            "id": 93,
+            "class": "RadiaLumia$UmbrellaMask",
+            "modulationColor": -4456704,
+            "parameters": {
+              "label": "UmbrellaMask",
+              "enabled": true,
+              "umbB": 100.0,
+              "oaB": 0.0
+            },
+            "modulation": {
+              "modulators": [],
+              "modulations": [],
+              "triggers": []
+            }
+          }
+        ],
+        "clips": [],
+        "patternIndex": 0,
+        "patterns": [
+          {
+            "id": 91,
             "class": "heronarts.lx.pattern.GradientPattern",
-            "modulationColor": -4980992,
+            "modulationColor": -64000,
             "parameters": {
               "label": "Gradient",
-              "gradient": 323.99999275803566,
-              "spreadX": 0.7199999876320362,
-              "spreadY": -3.725290298461914E-9,
-              "spreadZ": 0.6599999852478504,
+              "gradient": 0.0,
+              "spreadX": 0.0,
+              "spreadY": 0.0,
+              "spreadZ": 0.0,
               "spreadR": 0.0,
               "offsetX": 0.0,
               "offsetY": 0.0,
@@ -99,7 +221,24 @@
         "arm": false,
         "selected": false
       },
-      "effects": [],
+      "effects": [
+        {
+          "id": 48,
+          "class": "RadiaLumia$SingletonUmbrellaUpdater",
+          "modulationColor": -16711914,
+          "parameters": {
+            "label": "SingletonUmbrellaUpdater",
+            "enabled": true,
+            "umbB": 100.0,
+            "oaB": 53.000001050531864
+          },
+          "modulation": {
+            "modulators": [],
+            "modulations": [],
+            "triggers": []
+          }
+        }
+      ],
       "clips": []
     },
     "tempo": {
@@ -240,8 +379,8 @@
         "camera": {
           "active": false,
           "radius": 616.3864159351075,
-          "theta": 0.45000000000000007,
-          "phi": 0.33300000000000013,
+          "theta": 1.9620000000000004,
+          "phi": -0.21899999999999997,
           "x": 0.0,
           "y": 0.0,
           "z": 0.0
@@ -250,8 +389,8 @@
           {
             "active": false,
             "radius": 616.3864159351075,
-            "theta": 0.45000000000000007,
-            "phi": 0.33300000000000013,
+            "theta": 1.9620000000000004,
+            "phi": -0.21899999999999997,
             "x": 0.0,
             "y": 0.0,
             "z": 0.0

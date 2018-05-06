@@ -86,20 +86,3 @@ public abstract class BaseUmbrellaPattern extends LXModelPattern<Model> {
   }
 }
 
-// SingletonUmbrellaUpdater
-// Added to the Main Channel by the first UmbrellaPattern created
-// At the end of every frame, goes through and calls UpdateUmbrellas for each
-// umbrella
-public class SingletonUmbrellaUpdater extends LXModelEffect<Model> {
-  public SingletonUmbrellaUpdater (LX lx) {
-   super(lx);
-   umbrellaUpdater = this;
-   this.enable();
-  }
-  
-  public void run (double deltaMs, double enabledAmount) {
-    for (Bloom b : model.blooms) {
-      b.umbrella.UpdateUmbrella(deltaMs);
-    }
-  }
-}

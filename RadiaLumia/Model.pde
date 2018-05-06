@@ -45,7 +45,7 @@ public static class Model extends LXModel {
   }
   
   public static class Fixture extends LXAbstractFixture {
-    
+
     private final List<Bloom> blooms = new ArrayList<Bloom>();
     
     Fixture(Config config) {
