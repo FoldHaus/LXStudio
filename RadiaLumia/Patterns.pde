@@ -78,3 +78,52 @@ public class BlossomOscillation extends RadiaLumiaPattern {
     }
   }
 }
+
+public class BloomPulse extends RadiaLumiaPattern {
+
+  public final CompoundParameter oscillatorPeriod =
+    new CompoundParameter ("per", 0, 10000);
+
+  public final CompoundParameter pulseSize =
+    new CompoundParameter ("siz", 0, 1);
+  
+  public final CompoundParameter pulsePos = 
+    new CompoundParameter ("pos", 0, 1);
+
+
+  public BloomPulse (LX lx) {
+    super(lx);
+
+    addParameter(oscillatorPeriod);
+    addParameter(pulseSize);
+    addParameter(pulsePos);
+  }
+
+  public void run (double deltaMs) {
+    
+    float oscillatorValue = (float)pulsePos.getValue();
+    float pulseSizeValue = (float)pulseSize.getValue();
+   
+   
+    for (Bloom bloom : model.blooms) {
+      // Spike
+      for (LXPoint spike : bloom.spike.getPoints()) {
+        float percent = 1 - new LXVector(spike.x, spike.y, spike.z).dist(bloom.center) / bloom.maxSpikeDistance;
+        percent = percent + oscillatorValue;
+        
+        float bright = round(sin(percent / pulseSizeValue)) * 100;
+        
+        colors[spike.index] = LXColor.hsb(360, 100, (int)bright); //LXColor.multiply(colors[spike.index], LXColor.hsb(256, 256, bright));
+      }
+
+      for (LXPoint spoke : bloom.spokePoints) {
+        float percent = new LXVector(spoke.x, spoke.y, spoke.z).dist(bloom.center) / bloom.maxSpokesDistance;
+        percent = (percent * .5) + oscillatorValue;
+
+        float bright = round(sin(percent / pulseSizeValue)) * 100;
+        
+        colors[spoke.index] = LXColor.hsb(360, 0, bright);
+      }
+    }
+  }
+}
