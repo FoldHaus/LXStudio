@@ -45,10 +45,29 @@ public class RadiaEntranceEffect extends BaseUmbrellaPattern {
     Bloom bloomTwo = model.blooms.get(ENTRANCE_BLOOM_TWO);
     Bloom bloomThree = model.blooms.get(ENTRANCE_BLOOM_THREE);
     
+    // Light up blooms being pulled
+    double c12_intensity = bloomOneState.getValue();
+    double c23_intensity = bloomTwoState.getValue();
+    double c31_intensity = bloomThreeState.getValue();
+    
+    for (LXPoint p : ctrl_bloomOneTwo.leds) {
+      colors[p.index] = LXColor.hsb(200, 100, (float)(c12_intensity * 5));
+    }
+    
+    for (LXPoint p : ctrl_bloomTwoThree.leds) {
+      colors[p.index] = LXColor.hsb(200, 100, (float)(c23_intensity * 5));
+    }
+    
+    for (LXPoint p : ctrl_bloomThreeOne.leds) {
+      colors[p.index] = LXColor.hsb(200, 100, (float)(c31_intensity * 5));
+    }
+    
+    
+    
     // TODO(peter): do this in an array
-    double c12_radius = bloomOneState.getValue() * FEET;
-    double c23_radius = bloomTwoState.getValue() * FEET;
-    double c31_radius = bloomThreeState.getValue() * FEET;
+    double c12_radius = c12_intensity * FEET;
+    double c23_radius = c23_intensity * FEET;
+    double c31_radius = c31_intensity * FEET;
     
     // Inside Circle Mask
     double bloomOne_InCircleMask = 1 - max( // Am I in either c12, c23, or c31
@@ -73,5 +92,11 @@ public class RadiaEntranceEffect extends BaseUmbrellaPattern {
     SetUmbrellaPercentClosed(bloomOne.umbrella, bloomOne_InCircleMask);
     SetUmbrellaPercentClosed(bloomTwo.umbrella, bloomTwo_InCircleMask);
     SetUmbrellaPercentClosed(bloomThree.umbrella, bloomThree_InCircleMask);
+    
+    // Simulate Open-Closing of Control Blooms
+    SetUmbrellaPercentClosed(ctrl_bloomOneTwo.umbrella, 1 - (c12_intensity/20));
+    SetUmbrellaPercentClosed(ctrl_bloomTwoThree.umbrella, 1 - (c23_intensity/20));
+    SetUmbrellaPercentClosed(ctrl_bloomThreeOne.umbrella, 1 - (c31_intensity/20));
+    
   }
 }
