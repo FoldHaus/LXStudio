@@ -85,4 +85,3 @@ public abstract class BaseUmbrellaPattern extends LXModelPattern<Model> {
     u.RequestPercentClosed(pctClosed, weight);
   }
 }
-

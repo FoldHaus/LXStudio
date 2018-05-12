@@ -44,7 +44,8 @@ public class BlossomOscillation extends RadiaLumiaPattern {
     int bloomNumber = 0;
     
     for (Bloom bloom : model.blooms) {
-      
+    
+
       bloomNumber += 1;
       float hue = 360 * ((float)bloomNumber / (float)(model.blooms.size()));
       
