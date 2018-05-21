@@ -1,6 +1,6 @@
 {
   "version": "0.1",
-  "timestamp": 1526879535798,
+  "timestamp": 1526880812532,
   "engine": {
     "id": 1,
     "class": "heronarts.lx.LXEngine",
@@ -48,7 +48,7 @@
           "selected": false,
           "enabled": true,
           "cue": false,
-          "fader": 0.0,
+          "fader": 0.6285714320838451,
           "crossfadeGroup": 0,
           "blendMode": 0,
           "midiMonitor": false,
@@ -232,7 +232,7 @@
         "class": "heronarts.lx.LXChannel",
         "modulationColor": -16711839,
         "parameters": {
-          "label": "Channel-4",
+          "label": "Wind",
           "arm": false,
           "selected": true,
           "enabled": true,
@@ -274,7 +274,7 @@
             "modulationColor": -13827841,
             "parameters": {
               "label": "RadiaWindProtect",
-              "wind": 0.9899999778717756,
+              "wind": 0.2899999935179949,
               "speed": 5000.0
             },
             "modulation": {
@@ -453,9 +453,9 @@
         "centerPoint": false,
         "camera": {
           "active": false,
-          "radius": 616.3864159351075,
-          "theta": 1.9620000000000004,
-          "phi": -0.21899999999999997,
+          "radius": 471.8377903501391,
+          "theta": 2.043000000000001,
+          "phi": -0.17399999999999993,
           "x": 0.0,
           "y": 0.0,
           "z": 0.0
@@ -463,9 +463,9 @@
         "cue": [
           {
             "active": false,
-            "radius": 616.3864159351075,
-            "theta": 1.9620000000000004,
-            "phi": -0.21899999999999997,
+            "radius": 471.8377903501391,
+            "theta": 2.043000000000001,
+            "phi": -0.17399999999999993,
             "x": 0.0,
             "y": 0.0,
             "z": 0.0
