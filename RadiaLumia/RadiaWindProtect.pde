@@ -4,7 +4,8 @@
 // its shells in an elegant fashion whenever the wind picks up.
 //
 
-public class RadiaWindProtect extends UmbrellaPattern {
+@LXCategory("Umbrella")
+public class RadiaWindProtect extends UmbrellaEffect {
 	
 	private final static float CLOSE_THRESHOLD = 0.5; 	// more than this and we'll close
 
@@ -18,30 +19,29 @@ public class RadiaWindProtect extends UmbrellaPattern {
 
 	// how fast the entire sphere will close in seconds -- NATHALIE: currently unused
 	public final CompoundParameter patternSpeed = 
-	new CompoundParameter ("speed", 5000, 30000, 0).setDescription("How quickly in milliseconds the animation flows through the sphere");
+	  new CompoundParameter ("speed", 5000, 30000, 0).setDescription("How quickly in milliseconds the animation flows through the sphere");
 
 	// value determines the vertical cross section of shells being affected
-
 	public final SinLFO waveValue =
-    	new SinLFO(0, 1, patternSpeed);
+    new SinLFO(0, 1, patternSpeed);
 
 	public RadiaWindProtect(LX lx) {
-    	super(lx);
+  	super(lx);
     	    
 		addParameter(windState);
 		addParameter(patternSpeed);
 		startModulator(waveValue);
 	}
 
-  	public void run (double deltaMs) {
-  		float windState = (float)this.windState.getValue();
-  		
-  		// contract the shells if windy
-  		if (windState > CLOSE_THRESHOLD) {
-		  	for (Bloom b : model.blooms) {
-				  setUmbrella(b, 0);
-	    	}
+	public void run (double deltaMs, double amount) {
+		float windState = this.windState.getValuef();
+		
+		// contract the shells if windy
+		if (windState > CLOSE_THRESHOLD) {
+		  for (Bloom b : model.blooms) {
+				setUmbrella(b, 1);
 	    }
-	    // otherwise let the other animation channels do their thing
+	  }
+	  // otherwise let the other animation channels do their thing
 	}
 }
