@@ -26,7 +26,6 @@ heronarts.lx.studio.LXStudio lx;
 
 Config config;
 Model model;
-SingletonUmbrellaUpdater umbrellaUpdater;
 UIRadiaLumia umbrellaModel;
 
 void setup() {
@@ -38,8 +37,18 @@ void setup() {
   lx.ui.setResizable(RESIZABLE);
 }
 
-void initialize(heronarts.lx.studio.LXStudio lx, heronarts.lx.studio.LXStudio.UI ui) {
+void initialize(final heronarts.lx.studio.LXStudio lx, heronarts.lx.studio.LXStudio.UI ui) {
   buildOutput(lx);
+  
+  // Add a loop task to rate-limit and simulate umbrella position
+  lx.engine.addLoopTask(new LXLoopTask() {
+    public void loop(double deltaMs) {
+      int[] colors = lx.getColors();
+      for (Bloom bloom : model.blooms) {
+        bloom.umbrella.update(deltaMs, colors);
+      }
+    }
+  });
 }
 
 void onUIReady(heronarts.lx.studio.LXStudio lx, heronarts.lx.studio.LXStudio.UI ui) {

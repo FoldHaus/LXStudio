@@ -1,6 +1,6 @@
 {
   "version": "0.1",
-  "timestamp": 1525645347927,
+  "timestamp": 1528340399136,
   "engine": {
     "id": 1,
     "class": "heronarts.lx.LXEngine",
@@ -15,7 +15,7 @@
       "crossfader": 0.5,
       "crossfaderBlendMode": 0,
       "speed": 1.0,
-      "focusedChannel": 0,
+      "focusedChannel": 1,
       "cueA": false,
       "cueB": false,
       "multithreaded": true,
@@ -43,9 +43,9 @@
         "class": "heronarts.lx.LXChannel",
         "modulationColor": -65439,
         "parameters": {
-          "label": "Color-OA",
+          "label": "LEDs",
           "arm": false,
-          "selected": true,
+          "selected": false,
           "enabled": true,
           "cue": false,
           "fader": 1.0,
@@ -62,14 +62,12 @@
         },
         "effects": [
           {
-            "id": 84,
-            "class": "RadiaLumia$UmbrellaMask",
-            "modulationColor": -52736,
+            "id": 216,
+            "class": "RadiaLumia$UmbrellaMute",
+            "modulationColor": -14549248,
             "parameters": {
-              "label": "UmbrellaMask",
-              "enabled": true,
-              "umbB": 0.0,
-              "oaB": 100.0
+              "label": "UmbrellaMute",
+              "enabled": true
             },
             "modulation": {
               "modulators": [],
@@ -89,7 +87,7 @@
               "label": "Solid",
               "color/brightness": 100.0,
               "color/saturation": 100.0,
-              "color/hue": 194.05405607819557
+              "color/hue": 359.0
             },
             "modulation": {
               "modulators": [],
@@ -105,9 +103,9 @@
         "class": "heronarts.lx.LXChannel",
         "modulationColor": -35584,
         "parameters": {
-          "label": "Umbrella",
+          "label": "Umbrellas",
           "arm": false,
-          "selected": false,
+          "selected": true,
           "enabled": true,
           "cue": false,
           "fader": 1.0,
@@ -118,7 +116,7 @@
           "autoCycleEnabled": false,
           "autoCycleMode": 0,
           "autoCycleTimeSecs": 60.0,
-          "transitionEnabled": false,
+          "transitionEnabled": true,
           "transitionTimeSecs": 5.0,
           "transitionBlendMode": 0
         },
@@ -131,8 +129,8 @@
             "class": "RadiaLumia$UmbrellaUniversalState",
             "modulationColor": -4325121,
             "parameters": {
-              "label": "UmbrellaUniversalState",
-              "open": 0.7499999832361937
+              "label": "Open",
+              "position": 0.0
             },
             "modulation": {
               "modulators": [],
@@ -140,67 +138,30 @@
               "triggers": []
             },
             "autoCycleEnabled": true
-          }
-        ]
-      },
-      {
-        "id": 90,
-        "class": "heronarts.lx.LXChannel",
-        "modulationColor": -39680,
-        "parameters": {
-          "label": "Color-UU",
-          "arm": false,
-          "selected": false,
-          "enabled": true,
-          "cue": false,
-          "fader": 1.0,
-          "crossfadeGroup": 0,
-          "blendMode": 0,
-          "midiMonitor": false,
-          "midiChannel": 16,
-          "autoCycleEnabled": false,
-          "autoCycleMode": 0,
-          "autoCycleTimeSecs": 60.0,
-          "transitionEnabled": false,
-          "transitionTimeSecs": 5.0,
-          "transitionBlendMode": 0
-        },
-        "effects": [
+          },
           {
-            "id": 93,
-            "class": "RadiaLumia$UmbrellaMask",
-            "modulationColor": -4456704,
+            "id": 192,
+            "class": "RadiaLumia$UmbrellaUniversalState",
+            "modulationColor": -5636352,
             "parameters": {
-              "label": "UmbrellaMask",
-              "enabled": true,
-              "umbB": 100.0,
-              "oaB": 0.0
+              "label": "Closed",
+              "position": 1.0
             },
             "modulation": {
               "modulators": [],
               "modulations": [],
               "triggers": []
-            }
-          }
-        ],
-        "clips": [],
-        "patternIndex": 0,
-        "patterns": [
+            },
+            "autoCycleEnabled": true
+          },
           {
-            "id": 91,
-            "class": "heronarts.lx.pattern.GradientPattern",
-            "modulationColor": -64000,
+            "id": 189,
+            "class": "RadiaLumia$UmbrellaVerticalWave",
+            "modulationColor": -11600128,
             "parameters": {
-              "label": "Gradient",
-              "gradient": 0.0,
-              "spreadX": 0.0,
-              "spreadY": 0.0,
-              "spreadZ": 0.0,
-              "spreadR": 0.0,
-              "offsetX": 0.0,
-              "offsetY": 0.0,
-              "offsetZ": 0.0,
-              "mirror": true
+              "label": "UmbrellaVerticalWave",
+              "size": 0.2599999960511923,
+              "speed": 21250.00008381903
             },
             "modulation": {
               "modulators": [],
@@ -223,14 +184,14 @@
       },
       "effects": [
         {
-          "id": 48,
-          "class": "RadiaLumia$SingletonUmbrellaUpdater",
-          "modulationColor": -16711914,
+          "id": 213,
+          "class": "RadiaLumia$UmbrellaMask",
+          "modulationColor": -6357248,
           "parameters": {
-            "label": "SingletonUmbrellaUpdater",
+            "label": "UmbrellaMask",
             "enabled": true,
             "umbB": 100.0,
-            "oaB": 53.000001050531864
+            "oaB": 0.0
           },
           "modulation": {
             "modulators": [],
@@ -326,7 +287,7 @@
       "modulationColor": -2304,
       "parameters": {
         "label": "Output",
-        "enabled": true,
+        "enabled": false,
         "mode": 0,
         "fps": 0.0,
         "gamma": 0,
@@ -379,8 +340,8 @@
         "camera": {
           "active": false,
           "radius": 616.3864159351075,
-          "theta": 1.9620000000000004,
-          "phi": -0.21899999999999997,
+          "theta": 1.7520000000000002,
+          "phi": -0.27,
           "x": 0.0,
           "y": 0.0,
           "z": 0.0
@@ -389,8 +350,8 @@
           {
             "active": false,
             "radius": 616.3864159351075,
-            "theta": 1.9620000000000004,
-            "phi": -0.21899999999999997,
+            "theta": 1.7520000000000002,
+            "phi": -0.27,
             "x": 0.0,
             "y": 0.0,
             "z": 0.0

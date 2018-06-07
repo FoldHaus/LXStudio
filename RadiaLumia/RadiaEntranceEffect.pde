@@ -10,7 +10,7 @@ public static int CONTROL_BLOOM_THREE_ONE = 21;
 // TODO(???): Get this to be controlled by OSC
 // TODO(???): Add a delay after reachign full open, during which the OSC signal can be dropped and the entrance remains open
 // TODO(???): Add a global light/umbrella effect that can signal someone entering the structure
-public class RadiaEntranceEffect extends BaseUmbrellaPattern {
+public class RadiaEntranceEffect extends UmbrellaPattern {
 
   public final CompoundParameter bloomOneState =
     new CompoundParameter ("b1s", 0, 0, 20)
@@ -70,8 +70,8 @@ public class RadiaEntranceEffect extends BaseUmbrellaPattern {
         constrain((float)(c31_radius - bloomThree.center.dist(ctrl_bloomThreeOne.center)), 0, 1))); // Am I in c31_radius?
     
     // Generate Percent Closed
-    SetUmbrellaPercentClosed(bloomOne.umbrella, bloomOne_InCircleMask);
-    SetUmbrellaPercentClosed(bloomTwo.umbrella, bloomTwo_InCircleMask);
-    SetUmbrellaPercentClosed(bloomThree.umbrella, bloomThree_InCircleMask);
+    setUmbrella(bloomOne, bloomOne_InCircleMask);
+    setUmbrella(bloomTwo, bloomTwo_InCircleMask);
+    setUmbrella(bloomThree, bloomThree_InCircleMask);
   }
 }

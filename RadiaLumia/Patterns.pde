@@ -4,6 +4,17 @@ public abstract class RadiaLumiaPattern extends LXModelPattern<Model> {
   }
 }
 
+public abstract class UmbrellaPattern extends LXModelPattern<Model> {
+  public UmbrellaPattern(LX lx) {
+    super(lx);
+  }
+  
+  public void setUmbrella(Bloom bloom, double position) {
+    int positionByte = 0xff & (int) (255 * position);
+    this.colors[bloom.umbrella.position.index] = 0xff000000 | positionByte;
+  }
+}
+
 public class BlossomOscillation extends RadiaLumiaPattern {
 
   // half the distance away from the current position that is considered 'on'

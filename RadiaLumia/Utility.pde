@@ -11,9 +11,13 @@ float[] SPIKE_COVEREDRANGE_BOTTOM = {0, 0};
 
 public List<LXPoint> GetSpikePointsUnderUmbrella (Bloom b, boolean invert) {
   
-  float spike_coveredRange_bottomPosition = ((float)b.umbrella.GetPercentClosed() * SPIKE_COVEREDRANGE_BOTTOM[0]) + ((1f - (float)b.umbrella.GetPercentClosed()) * SPIKE_COVEREDRANGE_BOTTOM[1]);
-  float spike_coveredRange_topPosition = ((float)b.umbrella.GetPercentClosed() * SPIKE_COVEREDRANGE_TOP[0]) + ((1f - (float)b.umbrella.GetPercentClosed()) * SPIKE_COVEREDRANGE_TOP[1]);
+  float spike_coveredRange_bottomPosition = ((float)b.umbrella.simulatedPosition * SPIKE_COVEREDRANGE_BOTTOM[0]) + ((1f - (float)b.umbrella.simulatedPosition) * SPIKE_COVEREDRANGE_BOTTOM[1]);
+  float spike_coveredRange_topPosition = ((float)b.umbrella.simulatedPosition * SPIKE_COVEREDRANGE_TOP[0]) + ((1f - (float)b.umbrella.simulatedPosition) * SPIKE_COVEREDRANGE_TOP[1]);
   
+  // TODO: need to do this in a more efficient way, since this is called inside a tight loop
+  // on every animation frame, allocating a new dynamic list every time is going to be a bit
+  // costly. Since there are a fixed number of LEDs on the spike, we can pre-compute a
+  // look-up table/function from (double umbrellaPosition, int stripIndex) => mask
   List<LXPoint> retVal = new ArrayList<LXPoint>();
   for (LXPoint point : b.spike.getPoints()) {
     float point_distance = new LXVector(point.x, point.y, point.z).dist(b.center);
@@ -36,8 +40,9 @@ float[] SPOKE_COVEREDRANGE_BOTTOM = {0, 0};
 
 public List<LXPoint> GetSpokePointsUnderUmbrella (Bloom b, boolean invert) {
   
-  float spoke_coveredRange_bottomPosition = ((float)b.umbrella.GetPercentClosed() * SPOKE_COVEREDRANGE_BOTTOM[0]) + ((1f - (float)b.umbrella.GetPercentClosed()) * SPOKE_COVEREDRANGE_BOTTOM[1]);
-  float spoke_coveredRange_topPosition = ((float)b.umbrella.GetPercentClosed() * SPOKE_COVEREDRANGE_TOP[0]) + ((1f - (float)b.umbrella.GetPercentClosed()) * SPOKE_COVEREDRANGE_TOP[1]);
+  float spoke_coveredRange_bottomPosition = ((float)b.umbrella.simulatedPosition * SPOKE_COVEREDRANGE_BOTTOM[0]) + ((1f - (float)b.umbrella.simulatedPosition) * SPOKE_COVEREDRANGE_BOTTOM[1]);
+  float spoke_coveredRange_topPosition = ((float)b.umbrella.simulatedPosition * SPOKE_COVEREDRANGE_TOP[0]) + ((1f - (float)b.umbrella.simulatedPosition) * SPOKE_COVEREDRANGE_TOP[1]);
+  
   
   List<LXPoint> retVal = new ArrayList<LXPoint>();
   for (LXPoint point : b.spokePoints) {
