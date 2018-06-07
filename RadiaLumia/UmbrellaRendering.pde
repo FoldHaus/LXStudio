@@ -47,21 +47,22 @@ public class UISimulation extends UI3dComponent {
 public class UIRadiaLumia extends UI3dComponent {
   
   // @TODO(peter): separate data (to go somewhere else) from the rendering. All this class should do is render the same cylinder over and over again, at different positions and open/closed states
-  public UIUmbrella hex_umbrella;
-  public UIUmbrella pent_umbrella;
+  public final UIUmbrella hexUmbrella;
+  public final UIUmbrella pentUmbrella;
   
   public UIRadiaLumia () {
-    hex_umbrella = new UIUmbrella (6);
-	pent_umbrella = new UIUmbrella(5);
+    this.hexUmbrella = new UIUmbrella(6);
+	  this.pentUmbrella = new UIUmbrella(5);
   }
   
-  public void onDraw (UI ui, PGraphics pg) {
+  public void onDraw(UI ui, PGraphics pg) {
     
 	  int numberDrawn = 0;
     for (Bloom b : model.blooms) {
+      // TODO: what is this? seems to just be skipping the last bloom? why?
 		  numberDrawn += 1;
 		  if (numberDrawn >= model.blooms.size()) {
-			  continue;
+			  break;
       }
 
       pg.pushMatrix();
@@ -89,15 +90,16 @@ public class UIRadiaLumia extends UI3dComponent {
   	  */
   	  // END TEMP CODE
 
-      pg.translate (0, 1 * Config.SCALE, 0);
+      pg.translate(0, 1 * Config.SCALE, 0);
 
 	    int neighborCount = b.neighbors.size();
-	  
   	  if (neighborCount == 5) {
-  		  pent_umbrella.onDraw(ui, pg, (float)b.umbrella.GetPercentClosed());
+  		  this.pentUmbrella.onDraw(ui, pg, (float) b.umbrella.simulatedPosition);
   	  } else if (neighborCount == 6) {
-  		  hex_umbrella.onDraw(ui, pg, (float)b.umbrella.GetPercentClosed());
-  	  }
+  		  this.hexUmbrella.onDraw(ui, pg, (float) b.umbrella.simulatedPosition);
+  	  } else {
+        throw new RuntimeException("Invalid umbrella");
+      }
 
       pg.popMatrix();
 	  }
@@ -180,23 +182,23 @@ public static class UIUmbrella {
   private final PVector[] open_inner_spoke_positions;
   private final PVector[] open_outer_spoke_positions;
   
-  private final int detail;
+  private final int numSpokes;
   public final float open_len;
   public final float closed_len;
 		  
-  public UIUmbrella(int detail) {
-	  this.closed_inner_spoke_positions = new PVector[detail];
-	  this.closed_outer_spoke_positions = new PVector[detail];
+  public UIUmbrella(int numSpokes) {
+	  this.closed_inner_spoke_positions = new PVector[numSpokes];
+	  this.closed_outer_spoke_positions = new PVector[numSpokes];
 
-	  this.open_inner_spoke_positions = new PVector[detail];
-	  this.open_outer_spoke_positions = new PVector[detail];
+	  this.open_inner_spoke_positions = new PVector[numSpokes];
+	  this.open_outer_spoke_positions = new PVector[numSpokes];
     
-	  this.detail = detail;
+	  this.numSpokes = numSpokes;
 	  this.open_len = UMBRELLA_OPEN_HEIGHT;
 	  this.closed_len = UMBRELLA_CLOSED_HEIGHT;
 	      
-	  for (int i = 0; i < detail; ++i) {
-		  float angle = i * (TWO_PI / detail);
+	  for (int i = 0; i < numSpokes; ++i) {
+		  float angle = i * (TWO_PI / numSpokes);
 		  
 		  this.closed_inner_spoke_positions[i] = new PVector(UMBRELLA_CLOSED_INNER_RADIUS * cos(angle), -1 * UMBRELLA_CLOSED_INNER_DISTANCE_FROM_CENTER, UMBRELLA_CLOSED_INNER_RADIUS * sin(angle));
 		  this.open_inner_spoke_positions[i] = new PVector(UMBRELLA_OPEN_INNER_RADIUS * cos(angle), -1 * UMBRELLA_OPEN_INNER_DISTANCE_FROM_CENTER, UMBRELLA_OPEN_INNER_RADIUS * sin(angle));
@@ -206,21 +208,24 @@ public static class UIUmbrella {
 	  }
   }
   
-  public void onDraw(UI ui, PGraphics pg, float PercentClosed) {
+  public void onDraw(UI ui, PGraphics pg, float position) {
 	  // Drawing Setup
 	  pg.fill(0x99FFFFFF);
 	  pg.stroke(#444444);
 	  pg.beginShape(TRIANGLE_STRIP);
 
-	  // 
-	  for (int i = 0; i <= this.detail; ++i) {
-		  int ii = i % this.detail;
-		  pg.vertex(lerp(this.open_inner_spoke_positions[ii].x, this.closed_inner_spoke_positions[ii].x, PercentClosed), 
-					lerp(this.open_inner_spoke_positions[ii].y, this.closed_inner_spoke_positions[ii].y, PercentClosed), 
-					lerp(this.open_inner_spoke_positions[ii].z, this.closed_inner_spoke_positions[ii].z, PercentClosed));
-		  pg.vertex(lerp(this.open_outer_spoke_positions[ii].x, this.closed_outer_spoke_positions[ii].x, PercentClosed), 
-					lerp(this.open_outer_spoke_positions[ii].y, this.closed_outer_spoke_positions[ii].y, PercentClosed), 
-					lerp(this.open_outer_spoke_positions[ii].z, this.closed_outer_spoke_positions[ii].z, PercentClosed));
+	  for (int i = 0; i <= this.numSpokes; ++i) {
+		  int ii = i % this.numSpokes;
+		  pg.vertex(
+        lerp(this.open_inner_spoke_positions[ii].x, this.closed_inner_spoke_positions[ii].x, position), 
+				lerp(this.open_inner_spoke_positions[ii].y, this.closed_inner_spoke_positions[ii].y, position), 
+				lerp(this.open_inner_spoke_positions[ii].z, this.closed_inner_spoke_positions[ii].z, position)
+      );
+		  pg.vertex(
+        lerp(this.open_outer_spoke_positions[ii].x, this.closed_outer_spoke_positions[ii].x, position), 
+				lerp(this.open_outer_spoke_positions[ii].y, this.closed_outer_spoke_positions[ii].y, position), 
+				lerp(this.open_outer_spoke_positions[ii].z, this.closed_outer_spoke_positions[ii].z, position)
+      );
 	  }
 	  pg.endShape(CLOSE);
   }

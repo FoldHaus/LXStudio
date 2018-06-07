@@ -20,7 +20,7 @@ void buildOutput(LX lx) {
     int mappedBloomCount = 0;
     
     for (Bloom bloom : model.blooms) {
-      JSONObject bloomConfig = config.getBloom(bloom.index);
+      JSONObject bloomConfig = config.getBloom(bloom.id);
       String ip = bloomConfig.getString("ip");
       if (ip == null) {
         println("No IP address specified for Bloom #" + bloomConfig.getInt("id"));

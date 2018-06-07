@@ -1,25 +1,21 @@
-// UmbrellaUniversalState
-/*
-  Sets all umbrellas to the same state, as defined by the CompoundParameter
-  openClosedState
-*/
-public class UmbrellaUniversalState extends BaseUmbrellaPattern {
+// Sets all umbrellas to a universal position
+@LXCategory("Umbrella")
+public class UmbrellaUniversalState extends UmbrellaPattern {
 
-  public final CompoundParameter openClosedState =
-    new CompoundParameter ("open", 0, 0, 1)
-    .setDescription ("How open are the umbrellas");
+  // Position of the umbrellas
+  public final CompoundParameter position =
+    new CompoundParameter("Position", 0)
+    .setDescription("How extended are the umbrellas");
 
-  public UmbrellaUniversalState (LX lx) {
+  public UmbrellaUniversalState(LX lx) {
     super(lx);
-
-    addParameter (this.openClosedState);
+    addParameter("position", this.position);
   }
 
   public void run (double deltaMs) {
-    double newPercentClosed = 1 - this.openClosedState.getValue();
-    
+    double position = this.position.getValue();
     for (Bloom b : model.blooms) {
-      SetUmbrellaPercentClosed(b.umbrella, newPercentClosed);
+      setUmbrella(b, position);
     }
   }
 }
@@ -30,7 +26,8 @@ public class UmbrellaUniversalState extends BaseUmbrellaPattern {
   Oscilation is defined by waveValue
   Frequency is waveSize, period is waveSeed
  */
-public class UmbrellaVerticalWave extends BaseUmbrellaPattern {
+@LXCategory("Umbrella")
+public class UmbrellaVerticalWave extends UmbrellaPattern {
 
   private float lowestUmbrella;
   private float highestUmbrella;
@@ -82,7 +79,7 @@ public class UmbrellaVerticalWave extends BaseUmbrellaPattern {
 
       float pctDist = constrain ((abs(pct - waveValue) / waveWidth), 0, 1);
 
-      SetUmbrellaPercentClosed(b.umbrella, pctDist);
+      setUmbrella(b, pctDist);
     }
   }
 }
