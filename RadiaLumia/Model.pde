@@ -15,12 +15,12 @@ class Config {
     return this.j.getJSONArray("blooms");
   }
   
-  JSONObject getBloom(int index) {
-    return getBlooms().getJSONObject(index);
+  JSONObject getBloom(int id) {
+    return getBlooms().getJSONObject(id);
   }
   
-  LXVector getBloomCenter(int index) {
-    JSONObject bloom = getBloom(index);
+  LXVector getBloomCenter(int id) {
+    JSONObject bloom = getBloom(id);
     return new LXVector(bloom.getFloat("x"), bloom.getFloat("y"), bloom.getFloat("z")).mult(SCALE);
   }
 }
@@ -59,7 +59,7 @@ public static class Model extends LXModel {
       }
       // Set up neighbor pointers
       for (Bloom bloom : this.blooms) {
-        JSONArray bloomNeighbors = config.getBloom(bloom.index).getJSONArray("neighbors");
+        JSONArray bloomNeighbors = config.getBloom(bloom.id).getJSONArray("neighbors");
         int numNeighbors = bloomNeighbors.size();
         for (int i = 0; i < numNeighbors; ++i) {
           bloom.registerNeighbor(this.blooms.get(bloomNeighbors.getInt(i)));
@@ -71,7 +71,7 @@ public static class Model extends LXModel {
   
 public static class Bloom extends LXModel {
   
-  public final int index;
+  public final int id;
   
   public final List<LXPoint> leds;
   public final Spike spike;
@@ -86,10 +86,10 @@ public static class Bloom extends LXModel {
   public final float maxSpikeDistance;
   public final float maxSpokesDistance;
 
-  public Bloom(Config config, int index) {
-    super(new Fixture(config, index));
-    JSONObject bloomConfig = config.getBloom(index); 
-    this.index = bloomConfig.getInt("id");
+  public Bloom(Config config, int id) {
+    super(new Fixture(config, id));
+    JSONObject bloomConfig = config.getBloom(id);
+    this.id = bloomConfig.getInt("id");
     
     
     Fixture f = (Fixture) this.fixtures.get(0);
