@@ -15,12 +15,12 @@ class Config {
     return this.j.getJSONArray("blooms");
   }
   
-  JSONObject getBloom(int index) {
-    return getBlooms().getJSONObject(index);
+  JSONObject getBloom(int id) {
+    return getBlooms().getJSONObject(id);
   }
   
-  LXVector getBloomCenter(int index) {
-    JSONObject bloom = getBloom(index);
+  LXVector getBloomCenter(int id) {
+    JSONObject bloom = getBloom(id);
     return new LXVector(bloom.getFloat("x"), bloom.getFloat("y"), bloom.getFloat("z")).mult(SCALE);
   }
 }
@@ -59,7 +59,7 @@ public static class Model extends LXModel {
       }
       // Set up neighbor pointers
       for (Bloom bloom : this.blooms) {
-        JSONArray bloomNeighbors = config.getBloom(bloom.index).getJSONArray("neighbors");
+        JSONArray bloomNeighbors = config.getBloom(bloom.id).getJSONArray("neighbors");
         int numNeighbors = bloomNeighbors.size();
         for (int i = 0; i < numNeighbors; ++i) {
           bloom.registerNeighbor(this.blooms.get(bloomNeighbors.getInt(i)));
@@ -71,7 +71,7 @@ public static class Model extends LXModel {
   
 public static class Bloom extends LXModel {
   
-  public final int index;
+  public final int id;
   
   public final List<LXPoint> leds;
   public final Spike spike;
@@ -86,10 +86,10 @@ public static class Bloom extends LXModel {
   public final float maxSpikeDistance;
   public final float maxSpokesDistance;
 
-  public Bloom(Config config, int index) {
-    super(new Fixture(config, index));
-    JSONObject bloomConfig = config.getBloom(index); 
-    this.index = bloomConfig.getInt("id");
+  public Bloom(Config config, int id) {
+    super(new Fixture(config, id));
+    JSONObject bloomConfig = config.getBloom(id);
+    this.id = bloomConfig.getInt("id");
     
     
     Fixture f = (Fixture) this.fixtures.get(0);
@@ -162,9 +162,8 @@ public static class Bloom extends LXModel {
         addPoints(spoke);
       }
       
-      this.umbrella = new Umbrella(Umbrella.UmbrellaControlMode.OPEN_CLOSED_SWITCH);
+      this.umbrella = new Umbrella();
       addPoints(this.umbrella);
-
     }
   }
 
@@ -253,100 +252,31 @@ public static class Bloom extends LXModel {
     */
   public static class Umbrella extends LXAbstractFixture {
     
-    public final LXPoint open;
-    public final LXPoint velocity;
+    // Dummy point that holds the requested position of the Umbrella in the last byte
+    // so 0xff000000 is 0% closed and 0xff0000ff is 100% closed 
+    public final LXPoint position;    
     
-    private enum UmbrellaControlMode {
-      PERCENT_CLOSED,
-      OPEN_CLOSED_SWITCH,
-    };
-  
-    private class WeightedPercentClosedRequest {
-      public double value;
-      public double weight;
+    // An updated once-per-frame simulation of where we believe the motor to be based
+    // upon its speed limitations
+    public double simulatedPosition = 0.;
       
-      public WeightedPercentClosedRequest(double v, double w) {
-        this.value = v;
-        this.weight = w;
-      }
-    }
-  
-    public UmbrellaControlMode mode;
-    
-    //TODO(peter): separate state from constants
-    private double umbrellaFullOpenToClosedTime = 4000; // 4 Seconds
-    private double umbrellaMaxPercentChangedPerSecond = 1.0 / umbrellaFullOpenToClosedTime;
-  
-    private double mostRecent_TargetPercentClosedRequest;
-    private double lastFrame_TargetPercentClosedRequest;
-  
-    private double percentClosed;
-    private double timeMovingInThisDirection;
-    
-    private List<WeightedPercentClosedRequest> percentageRequests;
-  
-    public Umbrella(UmbrellaControlMode mode){
-      addPoint(this.open = new LXPoint(0, 0, 0));
-      addPoint(this.velocity = new LXPoint(0, 0, 0));
+    private static final double FULL_OPEN_TO_CLOSE_TIME = 4000; // 4 Seconds
+    private static final double UMBRELLA_MAX_VELOCITY = 1.0 / FULL_OPEN_TO_CLOSE_TIME;
       
-      this.mode = mode;
-  
-      percentClosed = 1;
-      percentageRequests = new ArrayList<WeightedPercentClosedRequest>();
+    public Umbrella() {
+      addPoint(this.position = new LXPoint(0, 0, 0));      
     }
     
-    public void RequestPercentClosed (double value, double weight) {
-       percentageRequests.add(new WeightedPercentClosedRequest(value, Math.max(0, Math.min(weight, 1))));
-    }
-    
-    public double GetPercentClosed () {
-      return percentClosed;
-    }
-    
-    public void UpdateUmbrella (double deltaMs) {
-      ApplyPercentageRequests();
-  
-      if (mode == UmbrellaControlMode.OPEN_CLOSED_SWITCH) {
-        OpenClosedUpdate(deltaMs);        
-      } else if (mode == UmbrellaControlMode.PERCENT_CLOSED) {
-        percentClosed = mostRecent_TargetPercentClosedRequest;
-      }
-    }
-    
-    public void ApplyPercentageRequests () {
-      if (percentageRequests.size() == 0)
-        return;
-        
-      lastFrame_TargetPercentClosedRequest = mostRecent_TargetPercentClosedRequest;
-  
-      double newValue = 0;
-      double totalWeight = 0;
-      
-      for (WeightedPercentClosedRequest r : percentageRequests) {
-        if (r == null)
-          continue; // TODO(peter): why would this ever happen???
-          
-        newValue += r.value * r.weight;
-        totalWeight += r.weight;
-      }
-      
-      if (totalWeight > 0) {
-        newValue = newValue / totalWeight;
-        mostRecent_TargetPercentClosedRequest = newValue;        
-      }
-      
-      percentageRequests.clear();
-    }
-  
-    public void OpenClosedUpdate (double deltaMs) {
-  
-      if (mostRecent_TargetPercentClosedRequest > .5) {
-        percentClosed -= umbrellaMaxPercentChangedPerSecond * deltaMs;
+    public void update(double deltaMs, int[] colors) {
+      // TODO: should we model the motor's acceleration or response?
+      double requestedPosition = (0xff & colors[this.position.index]) / 255.;
+      double dist = requestedPosition - this.simulatedPosition;
+      double maxMovement = UMBRELLA_MAX_VELOCITY * deltaMs;
+      if (Math.abs(dist) > maxMovement) {
+        this.simulatedPosition += maxMovement * (dist > 0 ? 1 : -1);
       } else {
-        percentClosed += umbrellaMaxPercentChangedPerSecond * deltaMs;
+        this.simulatedPosition = requestedPosition;
       }
-  
-      percentClosed = LXUtils.constrain(percentClosed, 0.0, 1.0);
     }
   }
 }
