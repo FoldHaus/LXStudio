@@ -26,11 +26,13 @@ void buildOutput(LX lx) {
         println("No IP address specified for Bloom #" + bloomConfig.getInt("id"));
       } else if (!BLOOM_DEBUG_ONE || (mappedBloomCount < 1)) {
         int universe = 1;
+        
         for (Bloom.Spoke spoke : bloom.spokes) {
           output.addDatagram(new StreamingACNDatagram(universe, makeIndices(spoke, 170)).setAddress(ip));
           output.addDatagram(new StreamingACNDatagram(universe + 1, makeIndices(spoke, 118)).setAddress(ip));
           universe += 2;
         }
+        
         output.addDatagram(new StreamingACNDatagram(14, LXFixture.Utils.getIndices(bloom.spike)).setAddress(ip));
         
         // TODO: add DMX umbrella control outputs

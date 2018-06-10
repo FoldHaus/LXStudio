@@ -1,6 +1,6 @@
 {
   "version": "0.1",
-  "timestamp": 1528435846789,
+  "timestamp": 1528670896003,
   "engine": {
     "id": 1,
     "class": "heronarts.lx.LXEngine",
@@ -62,7 +62,7 @@
         },
         "effects": [],
         "clips": [],
-        "patternIndex": 0,
+        "patternIndex": 2,
         "patterns": [
           {
             "id": 179,
@@ -70,10 +70,10 @@
             "modulationColor": -65463,
             "parameters": {
               "label": "RadialSinWave",
-              "per": 0.08500000089406967,
+              "per": 0.10000000055879354,
               "off": 0.5,
-              "wid": 0.08999999798834324,
-              "spc": 0.6899999920278788
+              "wid": 0.12999999709427357,
+              "spc": 0.999999986961484
             },
             "modulation": {
               "modulators": [
@@ -90,7 +90,7 @@
                     "tempoMultiplier": 5,
                     "tempoLock": true,
                     "clockMode": 0,
-                    "periodFast": 23444.038264044982,
+                    "periodFast": 32882.48118675034,
                     "periodSlow": 10000.0,
                     "wave": 3,
                     "skew": 0.0,
@@ -98,7 +98,7 @@
                     "phase": 0.0,
                     "exp": 0.0
                   },
-                  "basis": 0.06664344936206824
+                  "basis": 0.5440018199209683
                 }
               ],
               "modulations": [
@@ -121,6 +121,84 @@
                   }
                 }
               ],
+              "triggers": []
+            },
+            "autoCycleEnabled": true
+          },
+          {
+            "id": 191,
+            "class": "RadiaLumia$RevolvingDiscs",
+            "modulationColor": -65485,
+            "parameters": {
+              "label": "RevolvingDiscs",
+              "rot": 0.0,
+              "off": 1.5560001076906937,
+              "num": 1,
+              "wid": 1.1499999929219484
+            },
+            "modulation": {
+              "modulators": [
+                {
+                  "id": 202,
+                  "class": "heronarts.lx.modulator.VariableLFO",
+                  "modulationColor": -55040,
+                  "parameters": {
+                    "label": "LFO",
+                    "running": true,
+                    "trigger": false,
+                    "loop": true,
+                    "tempoSync": false,
+                    "tempoMultiplier": 5,
+                    "tempoLock": true,
+                    "clockMode": 0,
+                    "periodFast": 8957.280831799011,
+                    "periodSlow": 10000.0,
+                    "wave": 3,
+                    "skew": 0.0,
+                    "shape": 0.0,
+                    "phase": 0.0,
+                    "exp": 0.0
+                  },
+                  "basis": 0.40083792546233926
+                }
+              ],
+              "modulations": [
+                {
+                  "source": {
+                    "id": 202
+                  },
+                  "target": {
+                    "componentId": 191,
+                    "parameterPath": "rot"
+                  },
+                  "id": 203,
+                  "class": "heronarts.lx.parameter.LXCompoundModulation",
+                  "modulationColor": -65438,
+                  "parameters": {
+                    "label": "",
+                    "enabled": true,
+                    "Polarity": 0,
+                    "Range": 1.0
+                  }
+                }
+              ],
+              "triggers": []
+            },
+            "autoCycleEnabled": true
+          },
+          {
+            "id": 216,
+            "class": "heronarts.p3lx.pattern.SolidPattern",
+            "modulationColor": -13697280,
+            "parameters": {
+              "label": "Solid",
+              "color/brightness": 100.0,
+              "color/saturation": 100.0,
+              "color/hue": 0.0
+            },
+            "modulation": {
+              "modulators": [],
+              "modulations": [],
               "triggers": []
             },
             "autoCycleEnabled": true
@@ -277,9 +355,9 @@
         "centerPoint": false,
         "camera": {
           "active": false,
-          "radius": 398.65447998046875,
-          "theta": 0.0,
-          "phi": 0.0,
+          "radius": 484.88270443253566,
+          "theta": -1.7759999999999978,
+          "phi": 1.047716673851015,
           "x": 0.0,
           "y": 0.0,
           "z": 0.0
@@ -287,9 +365,9 @@
         "cue": [
           {
             "active": false,
-            "radius": 120.0,
-            "theta": 0.0,
-            "phi": 0.0,
+            "radius": 484.88270443253566,
+            "theta": -1.7759999999999978,
+            "phi": 1.047716673851015,
             "x": 0.0,
             "y": 0.0,
             "z": 0.0

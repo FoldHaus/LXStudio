@@ -1,4 +1,4 @@
-import java.util.Collections;
+  import java.util.Collections;
 import java.util.List;
 
 class Config {
@@ -222,9 +222,9 @@ public static class Bloom extends LXModel {
   
   public static class Spoke extends LXModel {
     
-    public final static float LED_PITCH = METER / 60.;
-    public final static int LONG_NUM_LEDS = 123;
-    public final static int SHORT_NUM_LEDS = 102;
+    public final static float LED_PITCH = METER / 144.;
+    public final static int LONG_NUM_LEDS = 60; // 123;
+    public final static int SHORT_NUM_LEDS = 60; //102;
     
     public final int spokeIndex;
     public final boolean isShort;
@@ -267,16 +267,16 @@ public static class Bloom extends LXModel {
         LXVector delta = neighborCenter.copy().add(bloomCenterNeg);
         
         // Vector perpendicular to the strut. Used to offset the in and out points
-        LXVector perpendicularOffset = delta.copy().cross(bloomCenter).normalize().mult(1 * INCHES);
+        LXVector perpendicularOffset = delta.cross(bloomCenter);
         LXVector negPerpendicularOffset = perpendicularOffset.copy().mult(-1);
 
         // Convert direction to unit vector and compute pitch
         float pitchMagnitude = (delta.mag() / 2.f) / numLeds;
-        
+                
         LXVector pitch = delta.normalize().mult(pitchMagnitude);          
         
-        LXVector led_in = bloomCenter.copy().add(negPerpendicularOffset);
-        LXVector led_out = bloomCenter.copy().add(perpendicularOffset);
+        LXVector led_in = bloomCenter.copy();//.add(negPerpendicularOffset);
+        LXVector led_out = bloomCenter.copy();//.add(perpendicularOffset);
         
         // Iterate along the extrusion
         for (int pixel = 0; pixel < numLeds; pixel++) {
