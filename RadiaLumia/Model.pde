@@ -152,7 +152,7 @@ public static class Bloom extends LXModel {
     Fixture(Config config, int index) {
       this.center = config.getBloomCenter(index); 
             
-      this.spike = new Spike(this.center);
+      this.spike = new Spike(config, index, this.center);
       addPoints(this.spike);
       
       int numSpokes = config.getBloom(index).getJSONArray("neighbors").size(); 
@@ -201,20 +201,72 @@ public static class Bloom extends LXModel {
   public static class Spike extends LXModel {
     
     public final static float LENGTH = 2 * METER;
-    public final static int NUM_LEDS = 150;
+    public final static int NUM_LEDS = 346;
     public final static float LED_PITCH = METER / 60.;
     
-    public Spike(LXVector center) {
-      super(new Fixture(center));
+    // See Fixture.stripA and Fixture.stripB for documentation
+    public final List<LXPoint> stripA;
+    public final List<LXPoint> stripB;
+
+    public Spike(Config config, int bloomIndex, LXVector center) {
+      super(new Fixture(config, bloomIndex, center));
+      Fixture f = (Fixture)this.fixtures.get(0);
+      stripA = f.stripA;
+      stripB = f.stripB;
     }
     
     private static class Fixture extends LXAbstractFixture {
-      public Fixture(LXVector spikeCenter) {
-        LXVector led = spikeCenter.copy();
+
+      public final List<LXPoint> stripA;
+      public final List<LXPoint> stripB;
+
+      public Fixture(Config config, int bloomIndex, LXVector spikeCenter) {
+        // Calculate Vector perpendicular to spike
+        int firstNeighborIndex = config.getBloom(bloomIndex).getJSONArray("neighbors").getInt(0);
+        LXVector firstNeighborCenter = config.getBloomCenter(firstNeighborIndex);
+        LXVector perpendicularToSpike_a = firstNeighborCenter.copy().cross(spikeCenter).normalize().mult(1 * INCHES);
+        
+        int secondNeighborIndex = config.getBloom(bloomIndex).getJSONArray("neighbors").getInt(1);
+        LXVector secondNeighborCenter = config.getBloomCenter(secondNeighborIndex);
+        LXVector perpendicularToSpike_b = secondNeighborCenter.copy().cross(spikeCenter).normalize().mult(1 * INCHES);
+
+        LXVector led_a = spikeCenter.copy().add(perpendicularToSpike_a);
+        LXVector led_b = spikeCenter.copy().add(perpendicularToSpike_b);
+        
         LXVector pitch = spikeCenter.copy().normalize().mult(LED_PITCH);
-        for (int pixel = 0; pixel < NUM_LEDS; pixel++) {
-          addPoint(new LXPoint(led));
-          led.add(pitch);
+        
+        stripA = new ArrayList<LXPoint>();
+        stripB = new ArrayList<LXPoint>();
+        
+        // LEDs going Out
+        for (int pixel = 0; pixel < NUM_LEDS / 2; pixel++) {
+          addPoint(new LXPoint(led_a));
+          stripA.add(this.points.get(this.points.size() - 1));
+          
+          addPoint(new LXPoint(led_b));
+          stripB.add(this.points.get(this.points.size() - 1));
+                     
+          led_a.add(pitch);
+          led_b.add(pitch);
+        }
+        
+        pitch = pitch.mult(-1);
+        perpendicularToSpike_a = perpendicularToSpike_a.mult(-2);
+        perpendicularToSpike_b = perpendicularToSpike_b.mult(-2);
+        
+        led_a.add(perpendicularToSpike_a);
+        led_b.add(perpendicularToSpike_b);
+        
+        // LEDs coming in
+        for (int pixel = 0; pixel < NUM_LEDS / 2; pixel++) {
+          addPoint(new LXPoint(led_a));
+          stripA.add(this.points.get(this.points.size() - 1));
+          
+          addPoint(new LXPoint(led_b));
+          stripB.add(this.points.get(this.points.size() - 1));
+          
+          led_a.add(pitch);
+          led_b.add(pitch);
         }
       }
     }
@@ -229,10 +281,18 @@ public static class Bloom extends LXModel {
     public final int spokeIndex;
     public final boolean isShort;
     
+    // See Fixture.inPoints an Fixture.outPoints for documentation
+    public final List<LXPoint> inPoints;
+    public final List<LXPoint> outPoints;
+    
     public Spoke(Config _config, int _bloomIndex, int _spokeIndex, boolean _isShort) {
       super(new Fixture(_config, _bloomIndex, _spokeIndex, _isShort));
       this.spokeIndex = _spokeIndex;
       this.isShort = _isShort;
+      
+      Fixture f = (Fixture)this.fixtures.get(0);
+      this.inPoints = f.inPoints;
+      this.outPoints = f.outPoints;
     }
   
     private static class Fixture extends LXAbstractFixture {
@@ -244,9 +304,9 @@ public static class Bloom extends LXModel {
       // late so that patterns can be written with the visual logic taking presedence.
       
       // inPoints: The lights which, physically, receive data from the neighbor hub
-      List<LXPoint> inPoints;
+      final List<LXPoint> inPoints = new ArrayList<LXPoint>();
       // outPoints: the lights which, physically, receive data from this hub
-      List<LXPoint> outPoints;
+      final List<LXPoint> outPoints = new ArrayList<LXPoint>();
 
       public Fixture(Config config, int bloomIndex, int spokeIndex, boolean _isShort) {
         JSONObject bloomConfig = config.getBloom(bloomIndex);
@@ -281,7 +341,10 @@ public static class Bloom extends LXModel {
         // Iterate along the extrusion
         for (int pixel = 0; pixel < numLeds; pixel++) {
           addPoint(new LXPoint(led_in));
+          inPoints.add(this.points.get(this.points.size() - 1));
+          
           addPoint(new LXPoint(led_out));
+          outPoints.add(this.points.get(this.points.size() - 1));
           
           led_out.add(pitch);
           led_in.add(pitch);
