@@ -1,0 +1,32 @@
+public class TestLedStrips extends RadiaLumiaPattern {
+    
+  public BlossomOscillation(LX lx) {
+    super(lx);
+  }
+  
+  public void run(double deltaMs) {
+        
+    LXColor spikeAColor = LXColor.rgb(255, 0, 0);
+    LXColor spikeBColor = LXColor.rgb(255, 128, 0);
+    
+    LXColor spokeOutColor = LXColor.rgb(0, 255, 0);
+    LXColor spokeInColor = LXColor.rgb(0, 0, 255);
+    
+    for (Bloom bloom : model.blooms) {
+      for (LXPoint spikeAPoint : bloom.spike.stripA) {
+        colors[spokeAPoint.index] = spikeAColor;
+      }
+      for (LXPoint spikeBPoint : bloom.spike.stripB) {
+        colors[spokeBPoint.index] = spikeBColor;
+      }
+      for (Spoke spoke : bloom.spokes) {
+        for (LXPoint inPoint : spoke.inPoints) {
+          colors[inPoint.index] = spokeInColor;
+        }
+        for (LXPoint outPoint : spoke.outPoints) {
+          colors[outPoint.index] = spokeOutColor;
+        }
+      }
+    }
+  }
+}
