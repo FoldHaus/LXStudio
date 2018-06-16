@@ -280,7 +280,8 @@ public static class Bloom extends LXModel {
     
     public final int spokeIndex;
     public final boolean isShort;
-    
+    public final int pointsAtBloomIndex;
+
     // See Fixture.inPoints an Fixture.outPoints for documentation
     public final List<LXPoint> inPoints;
     public final List<LXPoint> outPoints;
@@ -293,6 +294,8 @@ public static class Bloom extends LXModel {
       Fixture f = (Fixture)this.fixtures.get(0);
       this.inPoints = f.inPoints;
       this.outPoints = f.outPoints;
+
+      this.pointsAtBloomIndex = _config.getBloom(_bloomIndex).getJSONArray("neighbors").getInt(_spokeIndex);
     }
   
     private static class Fixture extends LXAbstractFixture {

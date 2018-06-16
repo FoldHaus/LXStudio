@@ -1,6 +1,6 @@
 {
   "version": "0.1",
-  "timestamp": 1528670896003,
+  "timestamp": 1529187577480,
   "engine": {
     "id": 1,
     "class": "heronarts.lx.LXEngine",
@@ -62,7 +62,7 @@
         },
         "effects": [],
         "clips": [],
-        "patternIndex": 2,
+        "patternIndex": 3,
         "patterns": [
           {
             "id": 179,
@@ -70,7 +70,7 @@
             "modulationColor": -65463,
             "parameters": {
               "label": "RadialSinWave",
-              "per": 0.10000000055879354,
+              "per": 0.10500000324100256,
               "off": 0.5,
               "wid": 0.12999999709427357,
               "spc": 0.999999986961484
@@ -98,7 +98,7 @@
                     "phase": 0.0,
                     "exp": 0.0
                   },
-                  "basis": 0.5440018199209683
+                  "basis": 0.6659242763419886
                 }
               ],
               "modulations": [
@@ -199,6 +199,80 @@
             "modulation": {
               "modulators": [],
               "modulations": [],
+              "triggers": []
+            },
+            "autoCycleEnabled": true
+          },
+          {
+            "id": 231,
+            "class": "RadiaLumia$TestLedStrips",
+            "modulationColor": -16711917,
+            "parameters": {
+              "label": "TestLedStrips"
+            },
+            "modulation": {
+              "modulators": [],
+              "modulations": [],
+              "triggers": []
+            },
+            "autoCycleEnabled": true
+          },
+          {
+            "id": 248,
+            "class": "RadiaLumia$BloomPulse",
+            "modulationColor": -65460,
+            "parameters": {
+              "label": "BloomPulse",
+              "per": 1799.9999597668648,
+              "siz": 0.1699999962002039,
+              "pos": 0.5
+            },
+            "modulation": {
+              "modulators": [
+                {
+                  "id": 267,
+                  "class": "heronarts.lx.modulator.VariableLFO",
+                  "modulationColor": -65309,
+                  "parameters": {
+                    "label": "LFO",
+                    "running": true,
+                    "trigger": false,
+                    "loop": true,
+                    "tempoSync": false,
+                    "tempoMultiplier": 5,
+                    "tempoLock": true,
+                    "clockMode": 0,
+                    "periodFast": 1000.0,
+                    "periodSlow": 10000.0,
+                    "wave": 3,
+                    "skew": 0.0,
+                    "shape": 0.0,
+                    "phase": 0.0,
+                    "exp": 0.0
+                  },
+                  "basis": 0.5030000000003819
+                }
+              ],
+              "modulations": [
+                {
+                  "source": {
+                    "id": 267
+                  },
+                  "target": {
+                    "componentId": 248,
+                    "parameterPath": "pos"
+                  },
+                  "id": 268,
+                  "class": "heronarts.lx.parameter.LXCompoundModulation",
+                  "modulationColor": -16711734,
+                  "parameters": {
+                    "label": "",
+                    "enabled": true,
+                    "Polarity": 1,
+                    "Range": 0.5
+                  }
+                }
+              ],
               "triggers": []
             },
             "autoCycleEnabled": true
