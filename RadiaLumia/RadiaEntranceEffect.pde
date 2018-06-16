@@ -10,7 +10,7 @@ public static int CONTROL_BLOOM_THREE_ONE = 21;
 // TODO(???): Get this to be controlled by OSC
 // TODO(???): Add a delay after reachign full open, during which the OSC signal can be dropped and the entrance remains open
 // TODO(???): Add a global light/umbrella effect that can signal someone entering the structure
-public class RadiaEntranceEffect extends UmbrellaPattern {
+public class RadiaEntranceEffect extends RadiaLumiaPattern {
 
   public final CompoundParameter bloomOneState =
     new CompoundParameter ("b1s", 0, 0, 20)
