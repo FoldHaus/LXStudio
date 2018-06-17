@@ -1,6 +1,6 @@
 // Sets all umbrellas to a universal position
 @LXCategory("Umbrella")
-public class UmbrellaUniversalState extends UmbrellaPattern {
+public class UmbrellaUniversalState extends RadiaLumiaPattern {
 
   // Position of the umbrellas
   public final CompoundParameter position =
@@ -27,7 +27,7 @@ public class UmbrellaUniversalState extends UmbrellaPattern {
   Frequency is waveSize, period is waveSeed
  */
 @LXCategory("Umbrella")
-public class UmbrellaVerticalWave extends UmbrellaPattern {
+public class UmbrellaVerticalWave extends RadiaLumiaPattern {
 
   private float lowestUmbrella;
   private float highestUmbrella;

@@ -2,13 +2,7 @@ public abstract class RadiaLumiaPattern extends LXModelPattern<Model> {
   public RadiaLumiaPattern(LX lx) {
     super(lx);
   }
-}
 
-public abstract class UmbrellaPattern extends RadiaLumiaPattern {
-  public UmbrellaPattern(LX lx) {
-    super(lx);
-  }
-  
   public void setUmbrella(Bloom bloom, double position) {
     int positionByte = 0xff & (int) (255 * position);
     this.colors[bloom.umbrella.position.index] = 0xff000000 | positionByte;
