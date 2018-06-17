@@ -1,6 +1,6 @@
 {
   "version": "0.1",
-  "timestamp": 1528341414035,
+  "timestamp": 1529194117656,
   "engine": {
     "id": 1,
     "class": "heronarts.lx.LXEngine",
@@ -46,7 +46,7 @@
           "label": "LEDs",
           "arm": false,
           "selected": false,
-          "enabled": true,
+          "enabled": false,
           "cue": false,
           "fader": 1.0,
           "crossfadeGroup": 0,
@@ -106,7 +106,7 @@
           "label": "Umbrellas",
           "arm": false,
           "selected": false,
-          "enabled": true,
+          "enabled": false,
           "cue": false,
           "fader": 1.0,
           "crossfadeGroup": 0,
@@ -166,6 +166,95 @@
             "modulation": {
               "modulators": [],
               "modulations": [],
+              "triggers": []
+            },
+            "autoCycleEnabled": true
+          }
+        ]
+      },
+      {
+        "id": 270,
+        "class": "heronarts.lx.LXChannel",
+        "modulationColor": -16711849,
+        "parameters": {
+          "label": "Channel-3",
+          "arm": false,
+          "selected": false,
+          "enabled": true,
+          "cue": false,
+          "fader": 1.0,
+          "crossfadeGroup": 0,
+          "blendMode": 0,
+          "midiMonitor": false,
+          "midiChannel": 16,
+          "autoCycleEnabled": false,
+          "autoCycleMode": 0,
+          "autoCycleTimeSecs": 60.0,
+          "transitionEnabled": false,
+          "transitionTimeSecs": 5.0,
+          "transitionBlendMode": 0
+        },
+        "effects": [],
+        "clips": [],
+        "patternIndex": 0,
+        "patterns": [
+          {
+            "id": 268,
+            "class": "RadiaLumia$Ripple",
+            "modulationColor": -3014912,
+            "parameters": {
+              "label": "Ripple",
+              "per": 9.309999794699253,
+              "epi": 15,
+              "amp": 1.0,
+              "off": 0.0
+            },
+            "modulation": {
+              "modulators": [
+                {
+                  "id": 304,
+                  "class": "heronarts.lx.modulator.VariableLFO",
+                  "modulationColor": -12058880,
+                  "parameters": {
+                    "label": "LFO",
+                    "running": true,
+                    "trigger": false,
+                    "loop": true,
+                    "tempoSync": false,
+                    "tempoMultiplier": 5,
+                    "tempoLock": true,
+                    "clockMode": 0,
+                    "periodFast": 524.3016891575865,
+                    "periodSlow": 10000.0,
+                    "wave": 4,
+                    "skew": 0.0,
+                    "shape": 0.0,
+                    "phase": 0.0,
+                    "exp": 0.0
+                  },
+                  "basis": 0.7813734822898819
+                }
+              ],
+              "modulations": [
+                {
+                  "source": {
+                    "id": 304
+                  },
+                  "target": {
+                    "componentId": 268,
+                    "parameterPath": "off"
+                  },
+                  "id": 305,
+                  "class": "heronarts.lx.parameter.LXCompoundModulation",
+                  "modulationColor": -9568512,
+                  "parameters": {
+                    "label": "",
+                    "enabled": true,
+                    "Polarity": 0,
+                    "Range": 1.0
+                  }
+                }
+              ],
               "triggers": []
             },
             "autoCycleEnabled": true
@@ -355,9 +444,9 @@
         "centerPoint": false,
         "camera": {
           "active": false,
-          "radius": 616.3864159351075,
-          "theta": 1.7520000000000002,
-          "phi": -0.27,
+          "radius": 359.9494947906313,
+          "theta": 9.045000000000016,
+          "phi": 0.9187166738510133,
           "x": 0.0,
           "y": 0.0,
           "z": 0.0
@@ -365,9 +454,9 @@
         "cue": [
           {
             "active": false,
-            "radius": 616.3864159351075,
-            "theta": 1.7520000000000002,
-            "phi": -0.27,
+            "radius": 359.9494947906313,
+            "theta": 9.045000000000016,
+            "phi": 0.9187166738510133,
             "x": 0.0,
             "y": 0.0,
             "z": 0.0
