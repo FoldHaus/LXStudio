@@ -1,6 +1,8 @@
 @LXCategory("Umbrella")
 public class UmbrellaMask extends UmbrellaEffect {
-
+  
+  //  public static UmbrellaMask _singleton;
+  
   public final CompoundParameter underUmbrella_Brightness = 
     new CompoundParameter ("umbB", 100, 0, 100)
     .setDescription("The brightness of the lights covered by the umbrella");

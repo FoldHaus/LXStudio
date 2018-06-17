@@ -42,6 +42,9 @@ public static class Model extends LXModel {
       }
     }
     this.leds = Collections.unmodifiableList(leds);
+    println("Leds: " + this.leds.size());
+    println("Lenght of led strips: " + (leds.size() / 60));
+      
   }
   
   public static class Fixture extends LXAbstractFixture {

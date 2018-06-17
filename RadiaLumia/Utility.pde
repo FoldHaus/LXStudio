@@ -6,6 +6,22 @@ public LXVector PToLXVector (PVector pv) {
 	return new LXVector (pv.x, pv.y, pv.z);
 }
 
+// OGL Functions
+
+public double min(double a, double b) {
+  return a < b ? a : b;
+}
+
+public double max(double a, double b) {
+  return a < b ? b : a;
+}
+
+public double clamp(double x, double range_min, double range_max) {
+  return min(range_max, max(range_min, x));
+}
+
+// Convenience
+
 float[] SPIKE_COVEREDRANGE_TOP = {.5, .2};
 float[] SPIKE_COVEREDRANGE_BOTTOM = {0, 0};
 
