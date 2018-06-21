@@ -9,6 +9,57 @@ public abstract class RadiaLumiaPattern extends LXModelPattern<Model> {
   }
 }
 
+public class Static extends RadiaLumiaPattern {
+  public final CompoundParameter brightness = 
+    new CompoundParameter ("Brightness", .1, 0,1)
+    .setDescription("Set global brightness");
+    
+  public final CompoundParameter numPoints =  
+    new CompoundParameter ("Points", 1, 0, 1000)
+    .setDescription("Set number of sparkle points");
+    
+  public final DiscreteParameter maxDistance = 
+    new DiscreteParameter ("Width", 1, 0, 100)
+    .setDescription("Set distance of exapansion");
+    
+    public Static(LX lx) {
+      super(lx);
+      addParameter(this.brightness); 
+      addParameter(this.numPoints);
+      addParameter(this.maxDistance);
+    }
+    
+    public void run(double deltaMs) {
+      int curMaxValue = maxDistance.getValuei();
+      double curBrightness = brightness.getValue();
+ 
+      
+      for (Bloom b : model.blooms) { //loops through all blooms
+      
+        for (int p = 0; p < numPoints.getValue(); p++) {
+          
+         int rI = (int)random((float)b.points.length);  
+         
+         int min = rI-curMaxValue; 
+         if (min < 0) {
+          min = 0; 
+         }
+         
+         int max = rI+curMaxValue;
+         if (max >= b.points.length) {
+          max =  b.points.length-1;
+         }
+         
+         for (int i=min; i<max; i++){
+             double distance; 
+             distance = abs(i-rI)/(float)curMaxValue;
+             colors[b.points[i].index] = LXColor.hsb(0,0,(int)(curBrightness*255*distance));     
+         }
+        }
+    }
+    }
+}
+
 public class BlossomOscillation extends RadiaLumiaPattern {
 
   // half the distance away from the current position that is considered 'on'
