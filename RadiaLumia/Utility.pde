@@ -6,6 +6,9 @@ public LXVector PToLXVector (PVector pv) {
 	return new LXVector (pv.x, pv.y, pv.z);
 }
 
+public LXVector LXPointToVector(LXPoint p) {
+  return new LXVector(p.x, p.y, p.z);
+}
 // OGL Functions
 
 public double min(double a, double b) {
