@@ -43,7 +43,7 @@ public static class Model extends LXModel {
     }
     this.leds = Collections.unmodifiableList(leds);
     println("Leds: " + this.leds.size());
-    println("Lenght of led strips: " + (leds.size() / 60));
+    println("Length of led strips: " + (leds.size() / 60));
       
   }
   
@@ -210,19 +210,22 @@ public static class Bloom extends LXModel {
     // See Fixture.stripA and Fixture.stripB for documentation
     public final List<LXPoint> stripA;
     public final List<LXPoint> stripB;
-
+    public final LXPoint pinSpot;
+    
     public Spike(Config config, int bloomIndex, LXVector center) {
       super(new Fixture(config, bloomIndex, center));
       Fixture f = (Fixture)this.fixtures.get(0);
       stripA = f.stripA;
       stripB = f.stripB;
+      pinSpot = f.pinSpot;
     }
     
     private static class Fixture extends LXAbstractFixture {
 
       public final List<LXPoint> stripA;
       public final List<LXPoint> stripB;
-
+      public final LXPoint pinSpot;
+      
       public Fixture(Config config, int bloomIndex, LXVector spikeCenter) {
         // Calculate Vector perpendicular to spike
         int firstNeighborIndex = config.getBloom(bloomIndex).getJSONArray("neighbors").getInt(0);
@@ -252,6 +255,10 @@ public static class Bloom extends LXModel {
           led_a.add(pitch);
           led_b.add(pitch);
         }
+        
+        LXVector pinspotPos = led_a.copy().add(led_b).mult(.5);
+        pinspotPos = pinspotPos.add(pitch);
+        addPoint(this.pinSpot = new LXPoint(pinspotPos));
         
         pitch = pitch.mult(-1);
         perpendicularToSpike_a = perpendicularToSpike_a.mult(-2);
