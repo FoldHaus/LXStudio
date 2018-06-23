@@ -1,17 +1,31 @@
 @LXCategory("Test")
 public class TestLedStrips extends RadiaLumiaPattern {
     
+  public final DiscreteParameter spokeBrightness =
+    new DiscreteParameter("spi", 100, 0, 100);
+  
+  public final DiscreteParameter spikeBrightness =
+    new DiscreteParameter("spo", 100, 0, 100);
+  
+  public final DiscreteParameter pinSpotBrightness =
+    new DiscreteParameter("pin", 100, 0, 100);
+  
   public TestLedStrips(LX lx) {
     super(lx);
+    addParameter(spokeBrightness);
+    addParameter(spikeBrightness);
+    addParameter(pinSpotBrightness);
   }
   
   public void run(double deltaMs) {
         
-    int spikeAColor = LXColor.rgb(255, 0, 0);
-    int spikeBColor = LXColor.rgb(255, 128, 0);
+    int spikeAColor = LXColor.BLACK; //LXColor.hsb(0, 100, spikeBrightness.getValuei());
+    int spikeBColor = LXColor.BLACK; //.rgb(64, 100, spikeBrightness.getValuei());
     
-    int spokeOutColor = LXColor.rgb(0, 255, 0);
-    int spokeInColor = LXColor.rgb(0, 0, 255);
+    int spokeOutColor = LXColor.BLACK;//.rgb(128, 100, spokeBrightness.getValuei());
+    int spokeInColor = LXColor.BLACK;//.rgb(192, 100, spokeBrightness.getValuei());
+    
+    int pinSpotColor = LXColor.hsb(0, 100, 100);
     
     for (Bloom bloom : model.blooms) {
       for (LXPoint spikeAPoint : bloom.spike.stripA) {
@@ -28,6 +42,9 @@ public class TestLedStrips extends RadiaLumiaPattern {
           colors[outPoint.index] = spokeOutColor;
         }
       }
+      
+      colors[bloom.spike.pinSpot.index] = pinSpotColor;
+
     }
   }
 }

@@ -1,6 +1,6 @@
 {
   "version": "0.1",
-  "timestamp": 1518220268955,
+  "timestamp": 1529788382903,
   "engine": {
     "id": 1,
     "class": "heronarts.lx.LXEngine",
@@ -15,7 +15,7 @@
       "crossfader": 0.5,
       "crossfaderBlendMode": 0,
       "speed": 1.0,
-      "focusedChannel": 1,
+      "focusedChannel": 0,
       "cueA": false,
       "cueB": false,
       "multithreaded": true,
@@ -34,8 +34,7 @@
         "color/saturation": 100.0,
         "color/hue": 0.0,
         "period": 120000.0,
-        "range": 0.0,
-        "gradient": 142.22222059965134
+        "range": 0.0
       }
     },
     "channels": [
@@ -46,7 +45,7 @@
         "parameters": {
           "label": "Background",
           "arm": false,
-          "selected": false,
+          "selected": true,
           "enabled": true,
           "cue": false,
           "fader": 0.41428572591394186,
@@ -91,7 +90,7 @@
         "parameters": {
           "label": "Meter",
           "arm": false,
-          "selected": true,
+          "selected": false,
           "enabled": true,
           "cue": false,
           "fader": 1.0,
@@ -108,7 +107,7 @@
         "parameters": {
           "label": "Pattern",
           "arm": false,
-          "selected": true,
+          "selected": false,
           "enabled": true,
           "cue": false,
           "fader": 1.0,
@@ -133,11 +132,11 @@
             "modulationColor": -65480,
             "parameters": {
               "label": "GraphicEqualizer",
-              "axis": 0,
               "gain": 1.0,
               "center": 0.450000012293458,
               "fade": 0.24999999441206455,
-              "sharp": 0.9
+              "sharp": 0.9,
+              "plane": 0
             },
             "modulation": {
               "modulators": [],
@@ -156,7 +155,7 @@
         "parameters": {
           "label": "Color",
           "arm": false,
-          "selected": true,
+          "selected": false,
           "enabled": true,
           "cue": false,
           "fader": 1.0,
@@ -181,6 +180,7 @@
             "modulationColor": -65391,
             "parameters": {
               "label": "Gradient",
+              "gradient": 0.0,
               "spreadX": 0.5599999912083149,
               "spreadY": 0.19999999552965164,
               "spreadZ": 0.0,
@@ -247,27 +247,27 @@
           "label": "Meter",
           "running": true,
           "trigger": false,
-          "gain": 11.52000081539154,
+          "gain": 40.32000017166138,
           "range": 48.0,
           "attack": 23.999999687075615,
-          "release": 276.91565678698703,
-          "slope": 4.5,
-          "Band-1": 0.2491906593110529,
-          "Band-2": 0.39508751185678426,
-          "Band-3": 0.48490826374836116,
-          "Band-4": 0.5690000351959703,
-          "Band-5": 0.5967002622264863,
-          "Band-6": 0.57434740751856,
-          "Band-7": 0.4189839467164743,
-          "Band-8": 0.31882690164890726,
-          "Band-9": 0.26143737379122634,
-          "Band-10": 0.555802296650795,
-          "Band-11": 0.6773966294741058,
-          "Band-12": 0.5082469949893962,
-          "Band-13": 0.5870989228149295,
-          "Band-14": 0.5005351205920396,
-          "Band-15": 0.4276094143242304,
-          "Band-16": 0.14393410403854823
+          "release": 256.26654678667103,
+          "slope": 4.499999860301614,
+          "Band-1": 0.0,
+          "Band-2": 0.12057075681923923,
+          "Band-3": 0.21807987293179243,
+          "Band-4": 0.3172850278543562,
+          "Band-5": 0.2786930680603338,
+          "Band-6": 0.22326271191345748,
+          "Band-7": 0.26184091486237504,
+          "Band-8": 0.2841563509040611,
+          "Band-9": 0.2753704696821414,
+          "Band-10": 0.2552815777083448,
+          "Band-11": 0.2911499441943214,
+          "Band-12": 0.3727695859267205,
+          "Band-13": 0.3833486925538635,
+          "Band-14": 0.27835174399202156,
+          "Band-15": 0.0,
+          "Band-16": 0.0
         }
       },
       "input": {
@@ -329,7 +329,7 @@
             "phase": 0.0,
             "exp": 0.0
           },
-          "basis": 0.23276533315735506
+          "basis": 0.09485324524537592
         },
         {
           "id": 134,
@@ -345,7 +345,7 @@
             "tempoLock": true,
             "period": 4564.182049948659
           },
-          "basis": 0.06686841083407769,
+          "basis": 0.6862548246005554,
           "stages": [
             {
               "basis": 0.0,
@@ -390,7 +390,8 @@
     "midi": {
       "inputs": [],
       "surfaces": [],
-      "mapping": []
+      "mapping": [],
+      "keyboard": false
     }
   },
   "externals": {
@@ -414,7 +415,7 @@
         "centerPoint": false,
         "camera": {
           "active": false,
-          "radius": 36.38993348172582,
+          "radius": 426.8279139582955,
           "theta": -0.6630000000000005,
           "phi": 0.04500000000000007,
           "x": 9.5,
@@ -424,7 +425,7 @@
         "cue": [
           {
             "active": false,
-            "radius": 36.38993348172582,
+            "radius": 426.8279139582955,
             "theta": -0.6630000000000005,
             "phi": 0.04500000000000007,
             "x": 9.5,

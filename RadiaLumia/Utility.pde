@@ -9,8 +9,17 @@ public LXVector PToLXVector (PVector pv) {
 public LXVector LXPointToVector(LXPoint p) {
   return new LXVector(p.x, p.y, p.z);
 }
-// OGL Functions
 
+public boolean stringIn (String val, String[] array) {
+  for (String s : array) {
+    if (s == val) {
+      return true;
+    }
+  }
+  return false;
+}
+
+// OGL Functions
 public double min(double a, double b) {
   return a < b ? a : b;
 }
