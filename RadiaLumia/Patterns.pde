@@ -4,8 +4,8 @@ public abstract class RadiaLumiaPattern extends LXModelPattern<Model> {
   }
 
   public void setUmbrella(Bloom bloom, double position) {
-    int positionByte = 0xff & (int) (255 * position);
-    this.colors[bloom.umbrella.position.index] = 0xff000000 | positionByte;
+    final int positionSteps = RadiaNodeSpecialDatagram.MOTOR_DATA_MASK & (int) (Bloom.Umbrella.MaxSteps * position);
+    this.colors[bloom.umbrella.position.index] = 0xff000000 | positionSteps;
   }
 }
 
