@@ -150,7 +150,7 @@ void buildBloomOutput (LX lx, LXDatagramOutput output, Config config, JSONObject
     println("Long Output: " + universe);
     
     // Set up DMX output
-    output.addDatagram(new RadiaNodeSpecialDatagram(bloom).setAddress(ip));
+    output.addDatagram(new RadiaNodeSpecialDatagram(start_universe + DMX_UNIVERSE_OFFSET, bloom).setAddress(ip));
     
     println ("Universe end: " + universe);
     
