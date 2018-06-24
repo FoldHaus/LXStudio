@@ -407,7 +407,8 @@ public static class Bloom extends LXModel {
     // An updated once-per-frame simulation of where we believe the motor to be based
     // upon its speed limitations
     public double simulatedPosition = 0.;
-      
+
+    public static final int MaxSteps = 1234; // TODO: real number
     private static final double FULL_OPEN_TO_CLOSE_TIME = 4000; // 4 Seconds
     private static final double UMBRELLA_MAX_VELOCITY = 1.0 / FULL_OPEN_TO_CLOSE_TIME;
       

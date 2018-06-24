@@ -14,6 +14,7 @@ public class RadiaNodeSpecialDatagram extends StreamingACNDatagram {
 
   protected final static int MOTOR_DATA_POSITION = 0;
   protected final static int MOTOR_DATA_LENGTH = 3;
+  public final static int MOTOR_DATA_MASK = (1 << (MOTOR_DATA_LENGTH * 8)) - 1;
 
   protected final static int PINSPOT_DATA_POSITION = MOTOR_DATA_POSITION + MOTOR_DATA_LENGTH;
   protected final static int PINSPOT_DATA_LENGTH = 2;
