@@ -25,6 +25,7 @@ public class RadiaNodeSpecialDatagram extends StreamingACNDatagram {
 
   public RadiaNodeSpecialDatagram(int universe, Bloom bloom) {
     super(universe, PACKET_SIZE);
+    println("Node Special Universe: " + universe);
     motorPositionIndex = bloom.umbrella.position.index;
 
     pinspotIndex = bloom.spike.pinSpot.index;
