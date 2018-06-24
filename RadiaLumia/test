@@ -1,6 +1,6 @@
 {
   "version": "0.1",
-  "timestamp": 1529795568300,
+  "timestamp": 1529800764993,
   "engine": {
     "id": 1,
     "class": "heronarts.lx.LXEngine",
@@ -15,7 +15,7 @@
       "crossfader": 0.5,
       "crossfaderBlendMode": 0,
       "speed": 1.0,
-      "focusedChannel": 0,
+      "focusedChannel": 5,
       "cueA": false,
       "cueB": false,
       "multithreaded": true,
@@ -45,7 +45,7 @@
         "parameters": {
           "label": "Channel-1",
           "arm": false,
-          "selected": true,
+          "selected": false,
           "enabled": true,
           "cue": false,
           "fader": 1.0,
@@ -318,7 +318,7 @@
                     "phase": 0.0,
                     "exp": 0.0
                   },
-                  "basis": 0.5921380585802584
+                  "basis": 0.21448734777323786
                 }
               ],
               "modulations": [
@@ -422,7 +422,7 @@
                     "phase": 0.0,
                     "exp": 0.0
                   },
-                  "basis": 0.2927953420578416
+                  "basis": 0.191914915765079
                 }
               ],
               "modulations": [
@@ -587,7 +587,7 @@
                     "phase": 0.0,
                     "exp": 0.0
                   },
-                  "basis": 0.6289386136157913
+                  "basis": 0.648400313710795
                 }
               ],
               "modulations": [
@@ -699,7 +699,7 @@
       "parameters": {
         "label": "Master",
         "arm": false,
-        "selected": false
+        "selected": true
       },
       "effects": [
         {
@@ -710,7 +710,7 @@
             "label": "UmbrellaMask",
             "enabled": true,
             "umbB": 100.0,
-            "oaB": 37.00000084936619
+            "oaB": 100.0
           },
           "modulation": {
             "modulators": [],
@@ -810,7 +810,7 @@
         "mode": 0,
         "fps": 0.0,
         "gamma": 0,
-        "brightness": 0.05
+        "brightness": 1.0
       }
     },
     "components": {},

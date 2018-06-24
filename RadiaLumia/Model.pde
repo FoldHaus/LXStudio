@@ -9,6 +9,7 @@ class Config {
   
   Config() {
     this.j = loadJSONObject("data/radialumia.json");
+
   }
   
   JSONArray getBlooms() {
@@ -29,6 +30,7 @@ public static class Model extends LXModel {
   
   public final List<Bloom> blooms;
   public final List<LXPoint> leds;
+  public final Heart heart;
   
   public Model(Config config) {
     super(new Fixture(config));
@@ -41,6 +43,12 @@ public static class Model extends LXModel {
         leds.add(p);
       }
     }
+
+    this.heart = f.heart;
+    for (LXPoint p : heart.points) {
+      leds.add(p);
+    }
+    
     this.leds = Collections.unmodifiableList(leds);
     println("Leds: " + this.leds.size());
     println("Length of led strips: " + (leds.size() / 60));
@@ -50,6 +58,7 @@ public static class Model extends LXModel {
   public static class Fixture extends LXAbstractFixture {
 
     private final List<Bloom> blooms = new ArrayList<Bloom>();
+    private final Heart heart;
     
     Fixture(Config config) {
       JSONArray bloomsConfig = config.getBlooms();
@@ -68,6 +77,9 @@ public static class Model extends LXModel {
           bloom.registerNeighbor(this.blooms.get(bloomNeighbors.getInt(i)));
         }
       }
+      
+      heart = new Heart(this.blooms);
+      addPoints(heart);
     }
   }
 }
@@ -216,6 +228,7 @@ public static class Bloom extends LXModel {
     
     public Spike(Config config, int bloomIndex, LXVector center) {
       super(new Fixture(config, bloomIndex, center));
+
       Fixture f = (Fixture)this.fixtures.get(0);
       stripA = f.stripA;
       stripB = f.stripB;
@@ -269,8 +282,9 @@ public static class Bloom extends LXModel {
         }
         
         LXVector pinspotPos = led_a.copy().add(led_b).mult(.5);
-        pinspotPos = pinspotPos.add(pitch);
-        addPoint(this.pinSpot = new LXPoint(pinspotPos));
+        pinspotPos = pinspotPos.add(pitch.copy().mult(3));
+        addPoint(new LXPoint(pinspotPos));
+        this.pinSpot = this.points.get(this.points.size() - 1);
         
         pitch = pitch.mult(-1);
         perpendicularToSpike_a = perpendicularToSpike_a.mult(-2);
@@ -424,6 +438,56 @@ public static class Bloom extends LXModel {
         this.simulatedPosition += maxMovement * (dist > 0 ? 1 : -1);
       } else {
         this.simulatedPosition = requestedPosition;
+      }
+    }
+  }
+}
+
+public static class Heart extends LXModel {
+ 
+  
+  public Heart (List<Bloom> _blooms) {
+    super(new Fixture(_blooms));
+  }
+  
+  public static class Fixture extends LXAbstractFixture {
+    
+    public List<Spine> spines = new ArrayList<Spine>();
+    
+    public Fixture(List<Bloom> _blooms) {
+      for (Bloom bloom : _blooms) {
+        if (bloom.neighbors.size() == 5) {
+          spines.add(new Spine(bloom));
+        }
+      }
+      
+      for (Spine s : spines) {
+        addPoints(s);
+      }
+    }
+    
+  }
+
+  public static class Spine extends LXModel {
+    
+    public final static int LEDS_PER_SPINE = 123;
+    public final static float LED_PITCH = METER / 120;
+    
+    public Spine(Bloom bloom) {
+      super(new Fixture(bloom));
+      
+    }
+    
+    public static class Fixture extends LXAbstractFixture {
+      
+      public Fixture(Bloom bloom) {
+        LXVector ledPos = new LXVector(0, 0, 0);
+        LXVector pitch = bloom.center.copy().normalize().mult(LED_PITCH);
+        
+        for (int i = 0; i < LEDS_PER_SPINE; i++) {
+          addPoint(new LXPoint(ledPos));
+          ledPos.add(pitch);
+        }
       }
     }
   }

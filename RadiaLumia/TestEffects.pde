@@ -9,31 +9,41 @@ public class TestLedStrips extends RadiaLumiaPattern {
   
   public final DiscreteParameter pinSpotBrightness =
     new DiscreteParameter("pin", 100, 0, 100);
+
+  public final DiscreteParameter heartBrightness =
+    new DiscreteParameter("hrt", 100, 0, 100);
   
   public TestLedStrips(LX lx) {
     super(lx);
     addParameter(spokeBrightness);
     addParameter(spikeBrightness);
     addParameter(pinSpotBrightness);
+    addParameter(heartBrightness);
   }
   
   public void run(double deltaMs) {
         
-    int spikeAColor = LXColor.BLACK; //LXColor.hsb(0, 100, spikeBrightness.getValuei());
-    int spikeBColor = LXColor.BLACK; //.rgb(64, 100, spikeBrightness.getValuei());
+    int spikeAColor = LXColor.hsb(0, 100, spikeBrightness.getValuei());
+    int spikeBColor = LXColor.hsb(64, 100, spikeBrightness.getValuei());
     
-    int spokeOutColor = LXColor.BLACK;//.rgb(128, 100, spokeBrightness.getValuei());
-    int spokeInColor = LXColor.BLACK;//.rgb(192, 100, spokeBrightness.getValuei());
+    int spokeOutColor = LXColor.hsb(128, 100, spokeBrightness.getValuei());
+    int spokeInColor = LXColor.hsb(192, 100, spokeBrightness.getValuei());
     
-    int pinSpotColor = LXColor.hsb(0, 100, 100);
+    int pinSpotColor = LXColor.hsb(256, 100, pinSpotBrightness.getValue());
+    
+    int heartColor = LXColor.hsb(320, 100, heartBrightness.getValue());
+    
+    boolean bloom_debug = true;
     
     for (Bloom bloom : model.blooms) {
+      
       for (LXPoint spikeAPoint : bloom.spike.stripA) {
         colors[spikeAPoint.index] = spikeAColor;
       }
       for (LXPoint spikeBPoint : bloom.spike.stripB) {
         colors[spikeBPoint.index] = spikeBColor;
       }
+      
       for (Bloom.Spoke spoke : bloom.spokes) {
         for (LXPoint inPoint : spoke.inPoints) {
           colors[inPoint.index] = spokeInColor;
@@ -44,7 +54,17 @@ public class TestLedStrips extends RadiaLumiaPattern {
       }
       
       colors[bloom.spike.pinSpot.index] = pinSpotColor;
-
+      
+      if (!bloom_debug) {
+        println("Pinspot Index:", bloom.spike.pinSpot.index);
+        println("Pinspot Color:", colors[bloom.spike.pinSpot.index]);
+        println("Pinspot Pos:", bloom.spike.pinSpot.x, bloom.spike.pinSpot.y, bloom.spike.pinSpot.z);
+        bloom_debug = true;
+      }
+    }
+    
+    for (LXPoint p : model.heart.points) {
+      colors[p.index] = heartColor;
     }
   }
 }

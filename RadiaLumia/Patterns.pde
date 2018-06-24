@@ -150,6 +150,9 @@ public class Sparkle extends RadiaLumiaPattern {
         }
       }
       
+      if (closest_feature_index == -1)
+        continue;
+      
       double feature_decay = feature_points.get(closest_feature_index).currLifetime / feature_points.get(closest_feature_index).maxLifetime;
       feature_decay = 6.28  * (1.0 - feature_decay);
       feature_decay = .5 + (.5 * sin((float)feature_decay));

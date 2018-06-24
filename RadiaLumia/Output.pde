@@ -26,7 +26,6 @@ void buildOutput(LX lx) {
       };
     
     int mappedBloomCount = 0;
-    int universe = 0;
     
     for (Bloom bloom : model.blooms) {
 
@@ -105,48 +104,48 @@ void buildBloomOutput (LX lx, LXDatagramOutput output, Config config, JSONObject
   try {
     // Short   
     int[] indices = makeSpokeIndices(bloom, shortSpokes.get(0), universe, 102);
-    output.addDatagram(new StreamingACNDatagram(++universe, indices).setAddress(ip));
+    output.addDatagram(new StreamingACNDatagram(universe++, indices).setAddress(ip));
     println("Short Output: " + universe);
     
     // Spike
-    output.addDatagram(new StreamingACNDatagram(++universe, makeIndices(bloom.spike.stripA, 170, 0)).setAddress(ip));
+    output.addDatagram(new StreamingACNDatagram(universe++, makeIndices(bloom.spike.stripA, 170, 0)).setAddress(ip));
     println("Spike Output: " + universe);
-    output.addDatagram(new StreamingACNDatagram(++universe, makeIndices(bloom.spike.stripA, 170, 170)).setAddress(ip));
+    output.addDatagram(new StreamingACNDatagram(universe++, makeIndices(bloom.spike.stripA, 170, 170)).setAddress(ip));
     println("Spike Output: " + universe);
-    output.addDatagram(new StreamingACNDatagram(++universe, makeIndices(bloom.spike.stripA, 6, 340)).setAddress(ip));
+    output.addDatagram(new StreamingACNDatagram(universe++, makeIndices(bloom.spike.stripA, 6, 340)).setAddress(ip));
     println("Spike Output: " + universe);
   
     // Long 
     indices = makeSpokeIndices(bloom, longSpokes.get(0), universe, 123);
-    output.addDatagram(new StreamingACNDatagram(++universe, indices).setAddress(ip));
+    output.addDatagram(new StreamingACNDatagram(universe++, indices).setAddress(ip));
     println("Long Output: " + universe);
     
     // Long
     indices = makeSpokeIndices(bloom, longSpokes.get(1), universe, 123);
-    output.addDatagram(new StreamingACNDatagram(++universe, indices).setAddress(ip));
+    output.addDatagram(new StreamingACNDatagram(universe++, indices).setAddress(ip));
     println("Long Output: " + universe);
 
     // Short
     indices = makeSpokeIndices(bloom, shortSpokes.get(0), universe, 102);
-    output.addDatagram(new StreamingACNDatagram(++universe, indices).setAddress(ip));
+    output.addDatagram(new StreamingACNDatagram(universe++, indices).setAddress(ip));
     println("Short Output: " + universe);
     
     // Spike
-    output.addDatagram(new StreamingACNDatagram(++universe, makeIndices(bloom.spike.stripB, 170, 0)).setAddress(ip));
+    output.addDatagram(new StreamingACNDatagram(universe++, makeIndices(bloom.spike.stripB, 170, 0)).setAddress(ip));
     println("Spike Output: " + universe);
-    output.addDatagram(new StreamingACNDatagram(++universe, makeIndices(bloom.spike.stripB, 170, 170)).setAddress(ip));
+    output.addDatagram(new StreamingACNDatagram(universe++, makeIndices(bloom.spike.stripB, 170, 170)).setAddress(ip));
     println("Spike Output: " + universe);
-    output.addDatagram(new StreamingACNDatagram(++universe, makeIndices(bloom.spike.stripB, 6, 340)).setAddress(ip));
+    output.addDatagram(new StreamingACNDatagram(universe++, makeIndices(bloom.spike.stripB, 6, 340)).setAddress(ip));
     println("Spike Output: " + universe);
     
     // Long 
     indices = makeSpokeIndices(bloom, longSpokes.get(2), universe, 123);
-    output.addDatagram(new StreamingACNDatagram(++universe, indices).setAddress(ip));
+    output.addDatagram(new StreamingACNDatagram(universe++, indices).setAddress(ip));
     println("Long Output: " + universe);
     
     // Long
     indices = makeSpokeIndices(bloom, longSpokes.get(3), universe, 123);
-    output.addDatagram(new StreamingACNDatagram(++universe, indices).setAddress(ip));
+    output.addDatagram(new StreamingACNDatagram(universe++, indices).setAddress(ip));
     println("Long Output: " + universe);
     
     // Set up DMX output

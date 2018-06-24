@@ -83,3 +83,34 @@ public class UmbrellaVerticalWave extends RadiaLumiaPattern {
     }
   }
 }
+
+@LXCategory("Umbrella")
+public class NoahsPattern extends RadiaLumiaPattern {
+
+  // Position of the umbrellas
+  public final CompoundParameter half_A =
+    new CompoundParameter("A", 0)
+    .setDescription("How extended are the umbrellas");
+
+  public final CompoundParameter half_B = 
+    new CompoundParameter("B", 0);
+  
+  public NoahsPattern(LX lx) {
+    super(lx);
+    addParameter(this.half_A);
+    addParameter(this.half_B);
+  }
+
+  public void run (double deltaMs) {
+    double position_A = this.half_A.getValue();
+    double position_B = this.half_B.getValue();
+    
+    for (Bloom b : model.blooms) {
+      if (b.center.x < 0) {
+        setUmbrella(b, position_A);
+      }else{
+        setUmbrella(b, position_B);
+      }
+    }
+  }
+}
