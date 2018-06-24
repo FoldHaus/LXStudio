@@ -6,9 +6,11 @@ public class RadiaNodeSpecialDatagram extends StreamingACNDatagram {
    * Constant universe that all pixlites are configured to forward to DMX512 auxillry output
    */
   protected final static int UNIVERSE = 24;
-  
+
   // Until this gets exposed by StreamingACNDatagram
   private final static int DMX_DATA_POSITION = 126;
+  private final static int SEQUENCE_NUMBER_POSITION = 111;
+  private byte sequenceNumber = 0;
 
   protected final static int MOTOR_DATA_POSITION = 0;
   protected final static int MOTOR_DATA_LENGTH = 3;
@@ -35,8 +37,9 @@ public class RadiaNodeSpecialDatagram extends StreamingACNDatagram {
 
   @Override
   public void onSend(int[] colors) {
-    // Use parent version of function to set sequence number
-    super.onSend(colors);
+    // Do this manually for now since `super.onSend(colors)` doesn't work for some reason
+    this.buffer[SEQUENCE_NUMBER_POSITION] = ++this.sequenceNumber;
+
     writeLENumberToBuffer(colors[motorPositionIndex], MOTOR_DATA_POSITION, MOTOR_DATA_LENGTH);
     writeLENumberToBuffer(colors[pinspotIndex], PINSPOT_DATA_POSITION, PINSPOT_DATA_LENGTH);
     writePayloadCRC();
