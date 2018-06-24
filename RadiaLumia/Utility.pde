@@ -6,8 +6,20 @@ public LXVector PToLXVector (PVector pv) {
 	return new LXVector (pv.x, pv.y, pv.z);
 }
 
-// OGL Functions
+public LXVector LXPointToVector(LXPoint p) {
+  return new LXVector(p.x, p.y, p.z);
+}
 
+public boolean stringIn (String val, String[] array) {
+  for (String s : array) {
+    if (s.equals(val)) {
+      return true;
+    }
+  }
+  return false;
+}
+
+// OGL Functions
 public double min(double a, double b) {
   return a < b ? a : b;
 }
@@ -35,7 +47,7 @@ public List<LXPoint> GetSpikePointsUnderUmbrella (Bloom b, boolean invert) {
   // costly. Since there are a fixed number of LEDs on the spike, we can pre-compute a
   // look-up table/function from (double umbrellaPosition, int stripIndex) => mask
   List<LXPoint> retVal = new ArrayList<LXPoint>();
-  for (LXPoint point : b.spike.getPoints()) {
+  for (LXPoint point : b.spike.leds) {
     float point_distance = new LXVector(point.x, point.y, point.z).dist(b.center);
     float point_percentTotalDistance = (point_distance / b.maxSpikeDistance);
     

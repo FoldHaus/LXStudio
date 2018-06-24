@@ -1,6 +1,6 @@
 {
   "version": "0.1",
-  "timestamp": 1529207160771,
+  "timestamp": 1529795568300,
   "engine": {
     "id": 1,
     "class": "heronarts.lx.LXEngine",
@@ -210,7 +210,10 @@
             "class": "RadiaLumia$TestLedStrips",
             "modulationColor": -16711917,
             "parameters": {
-              "label": "TestLedStrips"
+              "label": "TestLedStrips",
+              "spi": 0,
+              "spo": 0,
+              "pin": 0
             },
             "modulation": {
               "modulators": [],
@@ -315,7 +318,7 @@
                     "phase": 0.0,
                     "exp": 0.0
                   },
-                  "basis": 0.5584953992587209
+                  "basis": 0.5921380585802584
                 }
               ],
               "modulations": [
@@ -419,7 +422,7 @@
                     "phase": 0.0,
                     "exp": 0.0
                   },
-                  "basis": 0.1360761269092183
+                  "basis": 0.2927953420578416
                 }
               ],
               "modulations": [
@@ -584,7 +587,7 @@
                     "phase": 0.0,
                     "exp": 0.0
                   },
-                  "basis": 0.006160953980658412
+                  "basis": 0.6289386136157913
                 }
               ],
               "modulations": [
