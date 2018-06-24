@@ -102,7 +102,7 @@ public static class Bloom extends LXModel {
     this.umbrella = f.umbrella;
     
     List<LXPoint> leds = new ArrayList<LXPoint>();
-    for (LXPoint p : this.spike.points) {
+    for (LXPoint p : this.spike.leds) {
       leds.add(p);
     }
     
@@ -211,6 +211,8 @@ public static class Bloom extends LXModel {
     public final List<LXPoint> stripA;
     public final List<LXPoint> stripB;
     public final LXPoint pinSpot;
+
+    public final List<LXPoint> leds;
     
     public Spike(Config config, int bloomIndex, LXVector center) {
       super(new Fixture(config, bloomIndex, center));
@@ -218,6 +220,16 @@ public static class Bloom extends LXModel {
       stripA = f.stripA;
       stripB = f.stripB;
       pinSpot = f.pinSpot;
+      
+      List<LXPoint> leds = new ArrayList<LXPoint>();
+      for (LXPoint p : stripA) {
+        leds.add(p);
+      }
+      for (LXPoint p : stripB) {
+        leds.add(p);
+      }
+      
+      this.leds = Collections.unmodifiableList(leds);
     }
     
     private static class Fixture extends LXAbstractFixture {

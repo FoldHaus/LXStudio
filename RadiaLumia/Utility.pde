@@ -12,7 +12,7 @@ public LXVector LXPointToVector(LXPoint p) {
 
 public boolean stringIn (String val, String[] array) {
   for (String s : array) {
-    if (s == val) {
+    if (s.equals(val)) {
       return true;
     }
   }
@@ -47,7 +47,7 @@ public List<LXPoint> GetSpikePointsUnderUmbrella (Bloom b, boolean invert) {
   // costly. Since there are a fixed number of LEDs on the spike, we can pre-compute a
   // look-up table/function from (double umbrellaPosition, int stripIndex) => mask
   List<LXPoint> retVal = new ArrayList<LXPoint>();
-  for (LXPoint point : b.spike.getPoints()) {
+  for (LXPoint point : b.spike.leds) {
     float point_distance = new LXVector(point.x, point.y, point.z).dist(b.center);
     float point_percentTotalDistance = (point_distance / b.maxSpikeDistance);
     
