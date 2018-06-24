@@ -1,12 +1,6 @@
 
 
 public class RadiaNodeSpecialDatagram extends StreamingACNDatagram {
-
-  /**
-   * Constant universe that all pixlites are configured to forward to DMX512 auxillry output
-   */
-  protected final static int UNIVERSE = 24;
-
   // Until this gets exposed by StreamingACNDatagram
   private final static int DMX_DATA_POSITION = 126;
   private final static int SEQUENCE_NUMBER_POSITION = 111;
@@ -29,8 +23,8 @@ public class RadiaNodeSpecialDatagram extends StreamingACNDatagram {
 
   protected int pinspotIndex;
 
-  public RadiaNodeSpecialDatagram(Bloom bloom) {
-    super(UNIVERSE, PACKET_SIZE);
+  public RadiaNodeSpecialDatagram(int universe, Bloom bloom) {
+    super(universe, PACKET_SIZE);
     motorPositionIndex = bloom.umbrella.position.index;
 
     pinspotIndex = bloom.spike.pinSpot.index;
