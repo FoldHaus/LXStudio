@@ -82,9 +82,9 @@ public class UmbrellaMask extends UmbrellaEffect {
         int r = LXColor.red(colors[b.spike.pinSpot.index]);
         int g = LXColor.green(colors[b.spike.pinSpot.index]);
         int bl = LXColor.blue(colors[b.spike.pinSpot.index]);
-        println("Pinspot Index:", b.spike.pinSpot.index);
-        println("Pinspot Color:", r, g, bl);
-        println("Pinspot Pos:", b.spike.pinSpot.x, b.spike.pinSpot.y, b.spike.pinSpot.z);
+//        println("Pinspot Index:", b.spike.pinSpot.index);
+ //       println("Pinspot Color:", r, g, bl);
+   //     println("Pinspot Pos:", b.spike.pinSpot.x, b.spike.pinSpot.y, b.spike.pinSpot.z);
         bloom_debug = true;
       }
 
