@@ -406,22 +406,26 @@ public static class Bloom extends LXModel {
     can be evaluated accurately and safely.
   
     Modeling the Motors
-    Assumptions:
-    - There are things we don't know about how the motors will behave. So we should let effects assume the best, and handle those assumptions in the model
-    - The motor will have a defined speed
-    - The motor may have a defined easing function
-    - 
+    The motor has a defined max:
+    - number of steps
+    - velocity in steps/s
+    - acceleration in steps/s/s
+    These values can be extracted from the [NodeBox Firmware](https://github.com/FoldHaus/RadiaLumia-NodeBox-Firmware/blob/master/src/main.cpp)
     */
   public static class Umbrella extends LXAbstractFixture {
     
     // Dummy point that holds the requested position of the Umbrella in the last byte
-    // so 0xff000000 is 0% closed and 0xff0000ff is 100% closed 
+    // so 0xff000000 is 0% expanded and 0xffxxxxxx is 100% closed
     public final LXPoint position;    
     
     // An updated once-per-frame simulation of where we believe the motor to be based
     // upon its speed limitations
     public double simulatedPosition = 0.;
-      
+
+    public static final int MaxSteps = 1234; // TODO: real number
+    public static final int MaxStepsVel = 10000; // TODO: these match the code as it is, but that will change
+    public static final int MaxStepsAcc = 50000; // TODO: these match the code as it is, but that will change
+
     private static final double FULL_OPEN_TO_CLOSE_TIME = 4000; // 4 Seconds
     private static final double UMBRELLA_MAX_VELOCITY = 1.0 / FULL_OPEN_TO_CLOSE_TIME;
       

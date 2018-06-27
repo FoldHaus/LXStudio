@@ -149,11 +149,7 @@ void buildBloomOutput (LX lx, LXDatagramOutput output, Config config, JSONObject
     println("Long Output: " + universe);
     
     // Set up DMX output
-    // TODO(peter): set up how this is indexed off of the starting universe.
-    universe = start_universe + DMX_UNIVERSE_OFFSET;
-    indices = new int[1];
-    indices[0] = bloom.umbrella.position.index;
-    output.addDatagram(new StreamingACNDatagram(universe, indices).setAddress(ip));
+    output.addDatagram(new RadiaNodeSpecialDatagram(start_universe + DMX_UNIVERSE_OFFSET, bloom).setAddress(ip));
     
     println ("Universe end: " + universe);
     
