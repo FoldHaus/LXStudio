@@ -112,4 +112,66 @@ public class RevolvingDiscs extends RadiaLumiaPattern {
 
   }
 }
+
+@LXCategory("Commercial as Fuck")
+public class PacMan extends RadiaLumiaPattern {
   
+  public final CompoundParameter mouth_angle =
+    new CompoundParameter("ang", 0, 0, 6.28);
+    
+  public final CompoundParameter spike_radius =
+    new CompoundParameter("rad", 0, 0, 100000);
+    
+  public final ColorParameter pacman_color =
+    new ColorParameter("col");
+   
+  public final CompoundParameter pill_offset =
+    new CompoundParameter("pil", 0, 0, 1);
+  
+  public PacMan (LX lx)
+  {
+    super(lx); 
+    addParameter(mouth_angle);
+    addParameter(pacman_color);
+    addParameter(spike_radius);
+    addParameter(pill_offset);
+  }
+  
+  public void run(double deltaMs)
+  {
+    float root_angle = (float)mouth_angle.getValue();
+    float top_angle = root_angle;
+    float bottom_angle = 3.14 - root_angle;
+    LXVector front_normal = new LXVector(1, 0, 0);
+    LXVector mouth_top = new LXVector(sin(top_angle), cos(top_angle), 0);
+    LXVector mouth_bottom = new LXVector(sin(bottom_angle), cos(bottom_angle), 0);
+    
+    int col = pacman_color.getColor();
+    
+    float maxDist = (float)spike_radius.getValue();
+    
+    LXVector to_center;
+    float to_center_dot_front;
+    float to_center_dot_mouth_top;
+    float to_center_dot_mouth_bottom;
+    float distance;
+    
+    for (LXPoint point : model.leds) {
+      to_center = LXPointToVector(point);
+      distance = to_center.magSq();
+      
+      to_center_dot_front = to_center.dot(front_normal);
+      to_center_dot_mouth_top = to_center.dot(mouth_top);
+      to_center_dot_mouth_bottom = to_center.dot(mouth_bottom);
+      
+      int final_color = col;
+      if ((to_center_dot_mouth_bottom > 0 && to_center_dot_mouth_top > 0)
+        || distance > maxDist
+      ) {
+        final_color = LXColor.BLACK;
+      }
+      
+      colors[point.index] = final_color;
+    }
+  }
+}
