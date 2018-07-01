@@ -1,6 +1,6 @@
 {
   "version": "0.1",
-  "timestamp": 1529800764993,
+  "timestamp": 1530488373989,
   "engine": {
     "id": 1,
     "class": "heronarts.lx.LXEngine",
@@ -132,7 +132,8 @@
             "parameters": {
               "label": "RevolvingDiscs",
               "rot": 0.0,
-              "off": 1.5560001076906937,
+              "offZ": 0.30000001192092896,
+              "offY": 0.0,
               "num": 1,
               "wid": 1.1499999929219484,
               "inRad": 0.0,
@@ -213,7 +214,10 @@
               "label": "TestLedStrips",
               "spi": 0,
               "spo": 0,
-              "pin": 0
+              "pin": 0,
+              "hrt": 0,
+              "um": 0.0,
+              "print": false
             },
             "modulation": {
               "modulators": [],
@@ -318,7 +322,7 @@
                     "phase": 0.0,
                     "exp": 0.0
                   },
-                  "basis": 0.21448734777323786
+                  "basis": 0.06017321137695537
                 }
               ],
               "modulations": [
@@ -422,7 +426,7 @@
                     "phase": 0.0,
                     "exp": 0.0
                   },
-                  "basis": 0.191914915765079
+                  "basis": 0.13141397675048755
                 }
               ],
               "modulations": [
@@ -558,7 +562,8 @@
             "parameters": {
               "label": "RevolvingDiscs",
               "rot": 0.0,
-              "off": 0.30000001192092896,
+              "offZ": 0.30000001192092896,
+              "offY": 0.0,
               "num": 2,
               "wid": 176.1999968141317,
               "inRad": 0.0,
@@ -587,7 +592,7 @@
                     "phase": 0.0,
                     "exp": 0.0
                   },
-                  "basis": 0.648400313710795
+                  "basis": 0.4406609197762636
                 }
               ],
               "modulations": [
@@ -690,6 +695,65 @@
             "autoCycleEnabled": true
           }
         ]
+      },
+      {
+        "id": 617,
+        "class": "heronarts.lx.LXChannel",
+        "modulationColor": -16711746,
+        "parameters": {
+          "label": "Channel-6",
+          "arm": false,
+          "selected": true,
+          "enabled": true,
+          "cue": false,
+          "fader": 1.0,
+          "crossfadeGroup": 0,
+          "blendMode": 0,
+          "midiMonitor": false,
+          "midiChannel": 16,
+          "autoCycleEnabled": false,
+          "autoCycleMode": 0,
+          "autoCycleTimeSecs": 60.0,
+          "transitionEnabled": false,
+          "transitionTimeSecs": 5.0,
+          "transitionBlendMode": 0
+        },
+        "effects": [],
+        "clips": [],
+        "patternIndex": 1,
+        "patterns": [
+          {
+            "id": 614,
+            "class": "heronarts.lx.pattern.IteratorPattern",
+            "modulationColor": -16318209,
+            "parameters": {
+              "label": "Iterator",
+              "speed": 10.0
+            },
+            "modulation": {
+              "modulators": [],
+              "modulations": [],
+              "triggers": []
+            },
+            "autoCycleEnabled": false
+          },
+          {
+            "id": 618,
+            "class": "RadiaLumia$PinspotTwinkle",
+            "modulationColor": -16711750,
+            "parameters": {
+              "label": "PinspotTwinkle",
+              "spd": 201.00001415610302,
+              "sin": true
+            },
+            "modulation": {
+              "modulators": [],
+              "modulations": [],
+              "triggers": []
+            },
+            "autoCycleEnabled": true
+          }
+        ]
       }
     ],
     "master": {
@@ -699,7 +763,7 @@
       "parameters": {
         "label": "Master",
         "arm": false,
-        "selected": true
+        "selected": false
       },
       "effects": [
         {
@@ -710,7 +774,9 @@
             "label": "UmbrellaMask",
             "enabled": true,
             "umbB": 100.0,
-            "oaB": 100.0
+            "oaB": 100.0,
+            "heart": 100.0,
+            "pin": 100.0
           },
           "modulation": {
             "modulators": [],
@@ -845,7 +911,7 @@
       "audioExpanded": true,
       "paletteExpanded": true,
       "cameraExpanded": true,
-      "clipViewVisible": true,
+      "clipViewVisible": false,
       "modulatorExpanded": {},
       "preview": {
         "mode": 0,
@@ -858,9 +924,9 @@
         "centerPoint": false,
         "camera": {
           "active": false,
-          "radius": 663.3225254375299,
-          "theta": -1.6080000000000096,
-          "phi": 0.9427166738510158,
+          "radius": 806.2726754351015,
+          "theta": -2.034000000000011,
+          "phi": 0.7897166738510154,
           "x": 0.0,
           "y": 0.0,
           "z": 0.0
@@ -868,9 +934,9 @@
         "cue": [
           {
             "active": false,
-            "radius": 663.3225254375299,
-            "theta": -1.6080000000000096,
-            "phi": 0.9427166738510158,
+            "radius": 806.2726754351015,
+            "theta": -2.034000000000011,
+            "phi": 0.7897166738510154,
             "x": 0.0,
             "y": 0.0,
             "z": 0.0
