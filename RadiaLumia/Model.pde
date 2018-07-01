@@ -459,9 +459,12 @@ public static class Bloom extends LXModel {
     
     public void update(double deltaMs, int[] colors) {
       // TODO: should we model the motor's acceleration or response?
-      double requestedPosition = (0xff & colors[this.position.index]) / 255.;
+      double requestedPosition = (RadiaNodeSpecialDatagram.MOTOR_DATA_MASK & colors[this.position.index]);
+      requestedPosition /= MaxSteps;
+            
       double dist = requestedPosition - this.simulatedPosition;
       double maxMovement = UMBRELLA_MAX_VELOCITY * deltaMs;
+      
       if (Math.abs(dist) > maxMovement) {
         this.simulatedPosition += maxMovement * (dist > 0 ? 1 : -1);
       } else {
