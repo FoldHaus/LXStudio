@@ -18,7 +18,7 @@ public class UmbrellaMask extends UmbrellaEffect {
   public final CompoundParameter pinSpot_Brightness =
     new CompoundParameter ("pin", 0, 0, 100)
     .setDescription("The brightness of the pin spot lights");
-  
+
   public UmbrellaMask (LX lx) {
    super(lx);
    
@@ -27,6 +27,7 @@ public class UmbrellaMask extends UmbrellaEffect {
    addParameter(heart_Brightness);
    addParameter(pinSpot_Brightness);
 
+   
    this.enable();
   }
   

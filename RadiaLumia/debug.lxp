@@ -1,6 +1,6 @@
 {
   "version": "0.1",
-  "timestamp": 1529871844753,
+  "timestamp": 1530477324294,
   "engine": {
     "id": 1,
     "class": "heronarts.lx.LXEngine",
@@ -15,7 +15,7 @@
       "crossfader": 0.5,
       "crossfaderBlendMode": 0,
       "speed": 1.0,
-      "focusedChannel": 1,
+      "focusedChannel": 0,
       "cueA": false,
       "cueB": false,
       "multithreaded": true,
@@ -45,7 +45,7 @@
         "parameters": {
           "label": "Channel-1",
           "arm": false,
-          "selected": false,
+          "selected": true,
           "enabled": true,
           "cue": false,
           "fader": 1.0,
@@ -73,7 +73,9 @@
               "spi": 0,
               "spo": 0,
               "pin": 99,
-              "hrt": 99
+              "hrt": 99,
+              "um": 0.0,
+              "print": false
             },
             "modulation": {
               "modulators": [],
@@ -92,7 +94,7 @@
       "parameters": {
         "label": "Master",
         "arm": false,
-        "selected": true
+        "selected": false
       },
       "effects": [
         {

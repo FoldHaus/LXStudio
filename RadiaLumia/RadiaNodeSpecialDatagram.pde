@@ -11,7 +11,7 @@ public class RadiaNodeSpecialDatagram extends StreamingACNDatagram {
   public final static int MOTOR_DATA_MASK = (1 << (MOTOR_DATA_LENGTH * 8)) - 1;
 
   protected final static int PINSPOT_DATA_POSITION = MOTOR_DATA_POSITION + MOTOR_DATA_LENGTH;
-  protected final static int PINSPOT_DATA_LENGTH = 2;
+  protected final static int PINSPOT_DATA_LENGTH = 1;
 
   protected final static int PAYLOAD_SIZE = PINSPOT_DATA_POSITION + PINSPOT_DATA_LENGTH;
 
@@ -35,7 +35,7 @@ public class RadiaNodeSpecialDatagram extends StreamingACNDatagram {
   public void onSend(int[] colors) {
     // Do this manually for now since `super.onSend(colors)` doesn't work for some reason
     this.buffer[SEQUENCE_NUMBER_POSITION] = ++this.sequenceNumber;
-
+    
     writeLENumberToBuffer(colors[motorPositionIndex], MOTOR_DATA_POSITION, MOTOR_DATA_LENGTH);
     writeLENumberToBuffer(colors[pinspotIndex], PINSPOT_DATA_POSITION, PINSPOT_DATA_LENGTH);
     writePayloadCRC();

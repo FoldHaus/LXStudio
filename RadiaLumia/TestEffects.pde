@@ -8,10 +8,17 @@ public class TestLedStrips extends RadiaLumiaPattern {
     new DiscreteParameter("spo", 100, 0, 100);
   
   public final DiscreteParameter pinSpotBrightness =
-    new DiscreteParameter("pin", 100, 0, 100);
+    new DiscreteParameter("pin", 0, 0, 256);
 
   public final DiscreteParameter heartBrightness =
     new DiscreteParameter("hrt", 100, 0, 100);
+
+  public final CompoundParameter umbrellaPosition =
+    new CompoundParameter ("um", 0, 0, 1);
+  
+  public final BooleanParameter printDebug =
+    new BooleanParameter("print");
+  
   
   public TestLedStrips(LX lx) {
     super(lx);
@@ -19,6 +26,8 @@ public class TestLedStrips extends RadiaLumiaPattern {
     addParameter(spikeBrightness);
     addParameter(pinSpotBrightness);
     addParameter(heartBrightness);
+    addParameter(umbrellaPosition);
+    addParameter(printDebug);
   }
   
   public void run(double deltaMs) {
@@ -29,11 +38,13 @@ public class TestLedStrips extends RadiaLumiaPattern {
     int spokeOutColor = LXColor.hsb(128, 100, spokeBrightness.getValuei());
     int spokeInColor = LXColor.hsb(192, 100, spokeBrightness.getValuei());
     
-    int pinSpotColor = LXColor.hsb(256, 100, pinSpotBrightness.getValue());
+    int pinSpotColor = pinSpotBrightness.getValuei();
     
     int heartColor = LXColor.hsb(320, 100, heartBrightness.getValue());
     
-    boolean bloom_debug = true;
+    double umbrellaPos = umbrellaPosition.getValue();
+
+    boolean bloom_debug = !printDebug.getValueb();
     
     for (Bloom bloom : model.blooms) {
       
@@ -53,8 +64,9 @@ public class TestLedStrips extends RadiaLumiaPattern {
         }
       }
       
-      colors[bloom.spike.pinSpot.index] = pinSpotColor;
-      
+      setPinSpot(bloom, pinSpotColor);
+      setUmbrella(bloom, umbrellaPos);
+
       if (!bloom_debug) {
         println("Pinspot Index:", bloom.spike.pinSpot.index);
         println("Pinspot Color:", colors[bloom.spike.pinSpot.index]);

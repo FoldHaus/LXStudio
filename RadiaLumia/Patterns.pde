@@ -3,17 +3,17 @@ public abstract class RadiaLumiaPattern extends LXModelPattern<Model> {
     super(lx);
   }
 
+  //NOTE(peter): umbrella position is in a range from (0, 1) inclusive
   public void setUmbrella(Bloom bloom, double position) {
     final int positionSteps = RadiaNodeSpecialDatagram.MOTOR_DATA_MASK & (int) (Bloom.Umbrella.MaxSteps * position);
     this.colors[bloom.umbrella.position.index] = 0xff000000 | positionSteps;
   }
+
+  //NOTE(peter): pin spot brightness is in a range from (0, 255) inclusive
+  public void setPinSpot (Bloom bloom, int brightness) {
+    this.colors[bloom.spike.pinSpot.index] = LXColor.rgba(0, 0, brightness, 255);
+  }
 }
-
-
-
-
-
-
 
 public class Sparkle extends RadiaLumiaPattern {
 
