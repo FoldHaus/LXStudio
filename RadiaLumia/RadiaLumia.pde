@@ -49,10 +49,15 @@ void initialize(final heronarts.lx.studio.LXStudio lx, heronarts.lx.studio.LXStu
       }
     }
   });
+
+  InitializeUmbrellaMask();
 }
 
 void onUIReady(heronarts.lx.studio.LXStudio lx, heronarts.lx.studio.LXStudio.UI ui) {
   // Add custom UI components here
+  /* TODO(peter): model.leds doesn't and shouldn't include the pin spots. Create a
+     new ArrayList called displayedInPointCloud, and use it here. Grrrr
+   */
   ui.preview.pointCloud.setModel(new LXModel(model.leds));
   ui.preview.addComponent(new UISimulation());
 }

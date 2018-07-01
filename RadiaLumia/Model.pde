@@ -321,7 +321,9 @@ public static class Bloom extends LXModel {
     // See Fixture.inPoints an Fixture.outPoints for documentation
     public final List<LXPoint> inPoints;
     public final List<LXPoint> outPoints;
-    
+
+    public final float maxLedDistance;
+
     public Spoke(Config _config, int _bloomIndex, int _spokeIndex, boolean _isShort) {
       super(new Fixture(_config, _bloomIndex, _spokeIndex, _isShort));
       this.spokeIndex = _spokeIndex;
@@ -332,6 +334,8 @@ public static class Bloom extends LXModel {
       this.outPoints = f.outPoints;
 
       this.pointsAtBloomIndex = _config.getBloom(_bloomIndex).getJSONArray("neighbors").getInt(_spokeIndex);
+      this.maxLedDistance = f.maxLedDistance;
+      
     }
   
     private static class Fixture extends LXAbstractFixture {
@@ -347,6 +351,8 @@ public static class Bloom extends LXModel {
       // outPoints: the lights which, physically, receive data from this hub
       final List<LXPoint> outPoints = new ArrayList<LXPoint>();
 
+      final float maxLedDistance;
+      
       public Fixture(Config config, int bloomIndex, int spokeIndex, boolean _isShort) {
         JSONObject bloomConfig = config.getBloom(bloomIndex);
         
@@ -388,6 +394,8 @@ public static class Bloom extends LXModel {
           led_out.add(pitch);
           led_in.add(pitch);
         }
+
+        maxLedDistance = (float)led_out.dist(bloomCenter);
       }
     }
   }

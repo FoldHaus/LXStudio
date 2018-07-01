@@ -37,6 +37,8 @@ public class UmbrellaMask extends UmbrellaEffect {
 
   public void maskUncoveredLights (double deltaMs, double enabledAmount) {
     
+    UpdateUmbrellaMask();
+    
     int heart_brightness = (int)(heart_Brightness.getValue());
     int pinSpot_brightness = (int)(pinSpot_Brightness.getValue());
 
@@ -47,48 +49,22 @@ public class UmbrellaMask extends UmbrellaEffect {
     
     for (LXPoint p : model.heart.points) {
       int curr_color = colors[p.index];
-      
       colors[p.index] = LXColor.hsb(LXColor.h(curr_color), LXColor.s(curr_color), heart_brightness);
     }
-        
+
+    int underUmbrellaMultiplyBy = LXColor.hsb(0, 0, underUmbrellaBrightness);
+    int openAirMultiplyBy = LXColor.hsb(0, 0, openAirBrightness);
+    
     for (Bloom b : model.blooms) {
-      // TODO: GetSpikePointsUnderUmbrella constructs a new dynamic list every time,
-      // this is too costly to do in a loop on every iteration
-      List<LXPoint> spikePoints_openAir = GetSpikePointsUnderUmbrella(b, true);
-      List<LXPoint> spikePoints_underUmbrella = GetSpikePointsUnderUmbrella(b, false);
-
-      List<LXPoint> spokePoints_openAir = GetSpokePointsUnderUmbrella(b, true);
-      List<LXPoint> spokePoints_underUmbrella = GetSpokePointsUnderUmbrella(b, false);
-      
-      for (LXPoint p : spikePoints_openAir) {
-        colors[p.index] = LXColor.multiply(LXColor.hsb(0, 0, openAirBrightness), colors[p.index]);
+      for (LXPoint p : b.leds) {
+        if (POINT_COVEREDBYUMBRELLA[p.index]) {
+          colors[p.index] = LXColor.multiply(underUmbrellaMultiplyBy, colors[p.index]);
+        }else{
+          colors[p.index] = LXColor.multiply(openAirMultiplyBy, colors[p.index]);
+        }
       }
-
-      for (LXPoint p : spikePoints_underUmbrella) {
-        colors[p.index] = LXColor.multiply(LXColor.hsb(0, 0, underUmbrellaBrightness), colors[p.index]);
-      }
-      
-      for (LXPoint p : spokePoints_openAir) {
-        colors[p.index] = LXColor.multiply(LXColor.hsb(0, 0, openAirBrightness), colors[p.index]);
-      }
-
-      for (LXPoint p : spokePoints_underUmbrella) {
-        colors[p.index] = LXColor.multiply(LXColor.hsb(0, 0, underUmbrellaBrightness), colors[p.index]);
-      }
-      
-      colors[b.spike.pinSpot.index] = LXColor.multiply(LXColor.hsb(0, 0, pinSpot_brightness), colors[b.spike.pinSpot.index]);
-      
-      
-      if (!bloom_debug) {
-        int r = LXColor.red(colors[b.spike.pinSpot.index]);
-        int g = LXColor.green(colors[b.spike.pinSpot.index]);
-        int bl = LXColor.blue(colors[b.spike.pinSpot.index]);
-//        println("Pinspot Index:", b.spike.pinSpot.index);
- //       println("Pinspot Color:", r, g, bl);
-   //     println("Pinspot Pos:", b.spike.pinSpot.x, b.spike.pinSpot.y, b.spike.pinSpot.z);
-        bloom_debug = true;
-      }
-
     }
+
+    UmbrellaMaskEndFrame();
   }  
 }
