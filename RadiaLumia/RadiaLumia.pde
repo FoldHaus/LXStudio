@@ -58,7 +58,7 @@ void onUIReady(heronarts.lx.studio.LXStudio lx, heronarts.lx.studio.LXStudio.UI 
   /* TODO(peter): model.leds doesn't and shouldn't include the pin spots. Create a
      new ArrayList called displayedInPointCloud, and use it here. Grrrr
    */
-  ui.preview.pointCloud.setModel(new LXModel(model.leds));
+  ui.preview.pointCloud.setModel(new LXModel(model.displayPoints));
   ui.preview.addComponent(new UISimulation());
 }
 

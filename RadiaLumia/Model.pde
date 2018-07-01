@@ -31,25 +31,41 @@ public static class Model extends LXModel {
   public final List<Bloom> blooms;
   public final List<LXPoint> leds;
   public final Heart heart;
-  
+
+  // This is just a list of all the points that should be displayed in the simulation
+  // This is made up of:
+  // - Spike Points
+  // - Spoke Points
+  // - Pinspots
+  // - Heart points
+  public final List<LXPoint> displayPoints;
+
   public Model(Config config) {
     super(new Fixture(config));
+    
+    List<LXPoint> displayPoints_ = new ArrayList<LXPoint>();
+    
     Fixture f = (Fixture) this.fixtures.get(0);
     this.blooms = Collections.unmodifiableList(f.blooms);
+    
     
     List<LXPoint> leds = new ArrayList<LXPoint>();
     for (Bloom bloom : this.blooms) {
       for (LXPoint p : bloom.leds) {
         leds.add(p);
+        displayPoints_.add(p);
       }
+      displayPoints_.add(bloom.spike.pinSpot);
     }
 
     this.heart = f.heart;
     for (LXPoint p : heart.points) {
       leds.add(p);
+      displayPoints_.add(p);
     }
     
     this.leds = Collections.unmodifiableList(leds);
+    this.displayPoints = Collections.unmodifiableList(displayPoints_);
     println("Leds: " + this.leds.size());
     println("Length of led strips: " + (leds.size() / 60));
       
@@ -282,7 +298,7 @@ public static class Bloom extends LXModel {
         }
         
         LXVector pinspotPos = led_a.copy().add(led_b).mult(.5);
-        pinspotPos = pinspotPos.add(pitch.copy().mult(3));
+        pinspotPos = pinspotPos.add(pitch.copy().mult(10));
         addPoint(new LXPoint(pinspotPos));
         this.pinSpot = this.points.get(this.points.size() - 1);
         

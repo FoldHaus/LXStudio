@@ -11,7 +11,7 @@ public abstract class RadiaLumiaPattern extends LXModelPattern<Model> {
 
   //NOTE(peter): pin spot brightness is in a range from (0, 255) inclusive
   public void setPinSpot (Bloom bloom, int brightness) {
-    this.colors[bloom.spike.pinSpot.index] = LXColor.rgba(0, 0, brightness, 255);
+    this.colors[bloom.spike.pinSpot.index] = LXColor.rgba(brightness, brightness, brightness, 255);
   }
 }
 
