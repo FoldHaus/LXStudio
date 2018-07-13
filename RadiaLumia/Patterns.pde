@@ -15,6 +15,35 @@ public abstract class RadiaLumiaPattern extends LXModelPattern<Model> {
   }
 }
 
+// RadiaSolid
+
+public class RadiaSolid extends RadiaLumiaPattern {
+  
+  // color parameters
+  
+  public final ColorParameter currentColor = 
+    new ColorParameter("currentColor");
+  
+  public RadiaSolid (LX lx){
+    super(lx);
+    
+    addParameter(currentColor);
+    
+  }
+  
+  public void run(double deltaMs){
+    
+    int c = currentColor.getColor();
+    
+    for (LXPoint light : model.leds) {
+      colors[light.index] = c;
+    }
+    
+  }
+  
+}
+
+
 // Sparkle
 
 public class Sparkle extends RadiaLumiaPattern {
