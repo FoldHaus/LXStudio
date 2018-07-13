@@ -15,6 +15,8 @@ public abstract class RadiaLumiaPattern extends LXModelPattern<Model> {
   }
 }
 
+// Sparkle
+
 public class Sparkle extends RadiaLumiaPattern {
 
   // Parameters
@@ -176,7 +178,7 @@ public class Sparkle extends RadiaLumiaPattern {
 
 
 
-
+// Static
 
 public class Static extends RadiaLumiaPattern {
   public final CompoundParameter brightness = 

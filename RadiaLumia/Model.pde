@@ -238,7 +238,9 @@ public static class Bloom extends LXModel {
     // See Fixture.stripA and Fixture.stripB for documentation
     public final List<LXPoint> stripA;
     public final List<LXPoint> stripB;
-    public final LXPoint pinSpot;
+    public final LXPoint pinSpot; 
+    // TODO(peter)take these out of model.leds & put in own list 
+    
 
     public final List<LXPoint> leds;
     

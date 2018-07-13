@@ -20,6 +20,64 @@ public class UmbrellaUniversalState extends RadiaLumiaPattern {
   }
 }
 
+// UmbrellaTest1
+/*
+  Umbrellas are 100% open at bottom and closed at top
+  
+  Increase complexity w/ selectable start top / bottom. Can make 100% a selectable spot (in middle). 
+  */ 
+
+@LXCategory("Umbrella")
+public class yPositionOpen extends RadiaLumiaPattern {  
+    private float lowestUmbrella;
+    private float highestUmbrella;
+    private float umbrellaDelta;
+    
+    public final CompoundParameter yPositionOpen =
+    new CompoundParameter ("yPosOpen", 0, 1)
+    .setDescription ("What percent verticle in y direction");
+    
+    public final CompoundParameter ySquash =
+    new CompoundParameter ("ySquash", 0.01, 1)
+    .setDescription ("How large of a gradient is created");
+    
+    public yPositionOpen (LX lx) {
+    super(lx);
+      addParameter (yPositionOpen);
+      addParameter (ySquash);
+      
+      lowestUmbrella = 0;
+      highestUmbrella = 0;
+      
+      for (Bloom b : model.blooms) {
+  
+        if (b.center.y < lowestUmbrella)
+          lowestUmbrella = b.center.y;
+  
+        if (b.center.y > highestUmbrella)
+          highestUmbrella = b.center.y;
+      }
+      
+      umbrellaDelta = highestUmbrella - lowestUmbrella;
+      
+    }
+    public void run (double deltaMs) {
+      
+      float yPositionOpen = (float)this.yPositionOpen.getValue();
+      float ySquash = (float)this.ySquash.getValue(); 
+      
+      for (Bloom b : model.blooms) {
+        float centerPoint = b.center.y;
+        float pct = (centerPoint - lowestUmbrella) / umbrellaDelta;
+        float yPosDistance = (1-abs(pct - yPositionOpen)); //inverse gives out 1 at ypos
+        float yPosPCT = 1-yPosDistance/ySquash; 
+        setUmbrella(b, constrain(yPosPCT, 0, 1));
+      }
+  }
+    
+}
+
+
 // UmbrellaVerticalWave
 /*
   Visualizes a sin wave on the umbrellas.
