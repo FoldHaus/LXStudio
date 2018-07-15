@@ -39,7 +39,7 @@ public class RadiaWindProtect extends UmbrellaEffect {
 		// contract the shells if windy
 		if (windState > CLOSE_THRESHOLD) {
 		  for (Bloom b : model.blooms) {
-				setUmbrella(b, 1);
+				setUmbrella(b, 255);
 	    }
 	  }
 	  // otherwise let the other animation channels do their thing

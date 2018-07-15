@@ -1,6 +1,6 @@
 {
   "version": "0.1",
-  "timestamp": 1529798716732,
+  "timestamp": 1531616691800,
   "engine": {
     "id": 1,
     "class": "heronarts.lx.LXEngine",
@@ -15,7 +15,7 @@
       "crossfader": 0.5,
       "crossfaderBlendMode": 0,
       "speed": 1.0,
-      "focusedChannel": 1,
+      "focusedChannel": 2,
       "cueA": false,
       "cueB": false,
       "multithreaded": true,
@@ -104,7 +104,7 @@
         "parameters": {
           "label": "Channel-2",
           "arm": false,
-          "selected": true,
+          "selected": false,
           "enabled": true,
           "cue": false,
           "fader": 1.0,
@@ -121,7 +121,7 @@
         },
         "effects": [],
         "clips": [],
-        "patternIndex": 1,
+        "patternIndex": 3,
         "patterns": [
           {
             "id": 533,
@@ -145,7 +145,8 @@
             "parameters": {
               "label": "RevolvingDiscs",
               "rot": 3.2656001764774345,
-              "off": 3.691200049418208,
+              "offZ": 0.30000001192092896,
+              "offY": 0.0,
               "num": 5,
               "wid": 60.19999903440476,
               "inRad": 153.59999656677246,
@@ -174,7 +175,7 @@
                     "phase": 0.0,
                     "exp": 0.0
                   },
-                  "basis": 0.7133763917399072
+                  "basis": 0.7974763917399444
                 }
               ],
               "modulations": [
@@ -200,6 +201,83 @@
               "triggers": []
             },
             "autoCycleEnabled": true
+          },
+          {
+            "id": 586,
+            "class": "RadiaLumia$PinspotTwinkle",
+            "modulationColor": -59648,
+            "parameters": {
+              "label": "PinspotTwinkle",
+              "spd": 1.0,
+              "sin": false
+            },
+            "modulation": {
+              "modulators": [],
+              "modulations": [],
+              "triggers": []
+            },
+            "autoCycleEnabled": true
+          },
+          {
+            "id": 588,
+            "class": "RadiaLumia$RadialSinWave",
+            "modulationColor": -1048832,
+            "parameters": {
+              "label": "RadialSinWave",
+              "per": 0.2499999962747097,
+              "off": 0.0,
+              "wid": 0.3899999912828207,
+              "spc": 0.19000000320374966
+            },
+            "modulation": {
+              "modulators": [
+                {
+                  "id": 590,
+                  "class": "heronarts.lx.modulator.VariableLFO",
+                  "modulationColor": -46848,
+                  "parameters": {
+                    "label": "LFO",
+                    "running": true,
+                    "trigger": false,
+                    "loop": true,
+                    "tempoSync": false,
+                    "tempoMultiplier": 5,
+                    "tempoLock": true,
+                    "clockMode": 0,
+                    "periodFast": 1635.1201175093233,
+                    "periodSlow": 10000.0,
+                    "wave": 2,
+                    "skew": 0.0,
+                    "shape": 0.0,
+                    "phase": 0.0,
+                    "exp": 0.0
+                  },
+                  "basis": 0.8792087490651108
+                }
+              ],
+              "modulations": [
+                {
+                  "source": {
+                    "id": 590
+                  },
+                  "target": {
+                    "componentId": 588,
+                    "parameterPath": "per"
+                  },
+                  "id": 591,
+                  "class": "heronarts.lx.parameter.LXCompoundModulation",
+                  "modulationColor": -65280,
+                  "parameters": {
+                    "label": "",
+                    "enabled": true,
+                    "Polarity": 1,
+                    "Range": 0.19999999552965164
+                  }
+                }
+              ],
+              "triggers": []
+            },
+            "autoCycleEnabled": true
           }
         ]
       }
@@ -211,7 +289,7 @@
       "parameters": {
         "label": "Master",
         "arm": false,
-        "selected": false
+        "selected": true
       },
       "effects": [
         {
@@ -222,7 +300,9 @@
             "label": "UmbrellaMask",
             "enabled": false,
             "umbB": 100.0,
-            "oaB": 37.00000084936619
+            "oaB": 37.00000084936619,
+            "heart": 0.0,
+            "pin": 0.0
           },
           "modulation": {
             "modulators": [],
@@ -237,7 +317,7 @@
           "parameters": {
             "label": "RadiaWindProtect",
             "enabled": true,
-            "wind": 0.0,
+            "wind": 0.18000001646578312,
             "speed": 5000.0
           },
           "modulation": {
@@ -386,9 +466,9 @@
         "centerPoint": false,
         "camera": {
           "active": false,
-          "radius": 464.41783447162254,
-          "theta": 0.02099999999998716,
-          "phi": 0.27971667385101207,
+          "radius": 503.9526860644092,
+          "theta": 1.2119999999999838,
+          "phi": -0.2692833261489883,
           "x": 0.0,
           "y": 0.0,
           "z": 0.0
@@ -396,9 +476,9 @@
         "cue": [
           {
             "active": false,
-            "radius": 464.41783447162254,
-            "theta": 0.02099999999998716,
-            "phi": 0.27971667385101207,
+            "radius": 503.9526860644092,
+            "theta": 1.2119999999999838,
+            "phi": -0.2692833261489883,
             "x": 0.0,
             "y": 0.0,
             "z": 0.0
