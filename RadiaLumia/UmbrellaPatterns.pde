@@ -178,6 +178,18 @@ public class UmbrellaPath extends RadiaLumiaPattern {
         GoalNode = model.blooms.get(0).neighbors.get(0).id;
     }
     
+    public boolean BloomInTrail(
+        int checkForId
+        )
+    {
+        for (Bloom b : Trail)
+        {
+            if (b.id == checkForId)
+                return true;
+        }
+        return false;
+    }
+    
     public void run (double deltaMs)
     {
         double CurrentTravel = TravelModulator.getValue();
@@ -189,60 +201,65 @@ public class UmbrellaPath extends RadiaLumiaPattern {
         {
             int LastOrigin = GoalNode;
             
-            if (Trail.size() >= MaxTrailLength)
+            for (int i = Trail.size() - 1; i > 0; i--)
             {
-                for (int i = Trail.size() - 1; i > 0; i++)
+                if (i >= MaxTrailLength)
                 {
-                    if (i >= MaxTrailLength)
-                    {
-                        setUmbrella(Trail.get(i), 0);
-                        Trail.remove(i);
-                    }
-                    else
-                    {
-                        Trail.set(i, Trail.get(i - 1));
-                    }
+                    println("Removing at Index: " + i);
+                    println("Trail Size: " + Trail.size());
+                    
+                    setUmbrella(Trail.get(i), 0);
+                    Trail.remove(i);
                 }
             }
             
-            if (Trail.size() == MaxTrailLength)
+            print("Adding at 0: ");
+            Trail.add(0, model.blooms.get(LastOrigin));
+            for (int b = 0; b < Trail.size(); b++)
             {
-                Trail.set(0, model.blooms.get(LastOrigin));
+                print(Trail.get(b).id + " : ");
             }
-            else if (Trail.size() < MaxTrailLength - 1)
-            {
-                Trail.add(model.blooms.get(LastOrigin));
-            }
+            println();
+            
             
             boolean FoundNewGoal = false;
             int RandomGoalIndex;
             int RandomGoalId;
             
-            while (!FoundNewGoal)
+            int NumNeighbors = model.blooms.get(LastOrigin).neighbors.size();
+            int RandomStartingIndex = int(random(0, NumNeighbors));
+            int NumChecked = 0;
+            
+            while (!FoundNewGoal || NumChecked < NumNeighbors)
             {
-                RandomGoalIndex = int(random(0, model.blooms.get(LastOrigin).neighbors.size()));
+                RandomGoalIndex = (RandomStartingIndex + NumChecked) % NumNeighbors;
                 RandomGoalId = model.blooms.get(LastOrigin).neighbors.get(RandomGoalIndex).id;
                 
-                if(RandomGoalId != LastOrigin)
+                if(RandomGoalId != LastOrigin &&
+                   !BloomInTrail(RandomGoalId))
                 {
                     GoalNode = RandomGoalId;
                     FoundNewGoal = true;
                 }
+                
+                NumChecked++;
             }
+            println();
         }
         
         // NOTE(peter): This doubles as the open pct of the Goal
         double GoalPct = CurrentTravel;
         double TrailPct = GoalPct;
         double TrailPctStep = TrailPct / (double)Trail.size();
-        
+        /*
         println("Num Trail " + MaxTrailLength + " Trail Members " + Trail.size());
         println("Travel Pct " + GoalPct + " Pct " + TrailPct + " Step " + TrailPctStep);
-        println();
-        
-        for (int trail = 0; trail < min(Trail.size(), MaxTrailLength); trail++)
+        */
+        int TrailLength = min(Trail.size(), MaxTrailLength);
+        for (int trail = 0; trail < TrailLength; trail++)
         {
-            TrailPct -= TrailPctStep;
+            TrailPct = 1.0 - ((1.0 / TrailLength) * trail) - (CurrentTravel * (1.0 / TrailLength));
+            //println(GoalPct + " : " + trail + " : " + TrailPct);
             setUmbrella(Trail.get(trail), TrailPct); 
         }
         
@@ -257,7 +274,8 @@ public class UmbrellaPath extends RadiaLumiaPattern {
         int redValue = 0;
         for (int trail = 0; trail < min(Trail.size(), MaxTrailLength); trail++)
         {
-            redValue = (int)(255.0f * ((float)trail / (float)MaxTrailLength));
+            TrailPct = 1.0 - ((1.0 / TrailLength) * trail) - (CurrentTravel * (1.0 / TrailLength));
+            redValue = (int)(255.0f * TrailPct);
             colors[Trail.get(trail).spike.pinSpot.index] = LXColor.rgb(redValue, 0, 0);
         }
         
