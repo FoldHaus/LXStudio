@@ -43,6 +43,52 @@ public class RadiaSolid extends RadiaLumiaPattern {
   
 }
 
+//rotateAroundBlooms
+@LXCategory("Color")
+public class Pinwheel extends RadiaLumiaPattern {
+   
+  public final CompoundParameter period = 
+    new CompoundParameter ("delay", 1, 0, 10000);
+    
+  public final DiscreteParameter step =  
+    new DiscreteParameter ("step", 1, 0, 60);
+    
+  protected int spokeCount = 0;
+  protected double timeSinceLastHueChange = 0;
+  protected int hueOffset = 0; 
+  
+  public Pinwheel (LX lx){
+    super(lx); 
+    
+    addParameter(period);
+    addParameter(step);
+    
+  }
+  
+  public void run (double deltaMs){
+
+    timeSinceLastHueChange += deltaMs;
+         
+     if (timeSinceLastHueChange >= period.getValue()) {
+       hueOffset = (hueOffset+step.getValuei())%360;
+       timeSinceLastHueChange = 0;
+     }
+         
+    for (Bloom b : model.blooms) { //loops through all blooms
+         int hueCount = 0 + hueOffset; 
+         for (Bloom.Spoke s : b.spokes){
+           for (LXPoint p : s.points){
+             colors[p.index] = LXColor.hsb(hueCount, 100, 100);
+           }
+           
+           hueCount = (hueCount + 60)%360;
+           
+         }
+         
+         
+    }
+  }
+}
 
 // Sparkle
 
