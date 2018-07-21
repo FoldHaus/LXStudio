@@ -110,4 +110,3 @@ public class RadiaEntranceEffect extends UmbrellaEffect {
         }
     }
 }
-
