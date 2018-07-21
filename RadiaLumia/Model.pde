@@ -504,7 +504,6 @@ public static class Heart extends LXModel {
                 addPoints(s);
             }
         }
-        
     }
     
     public static class Spine extends LXModel {

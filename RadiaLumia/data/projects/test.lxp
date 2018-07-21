@@ -1,6 +1,6 @@
 {
   "version": "0.1",
-  "timestamp": 1531696096711,
+  "timestamp": 1532115802810,
   "engine": {
     "id": 1,
     "class": "heronarts.lx.LXEngine",
@@ -322,7 +322,7 @@
                     "phase": 0.0,
                     "exp": 0.0
                   },
-                  "basis": 0.7784879995268003
+                  "basis": 0.14873816846568286
                 }
               ],
               "modulations": [
@@ -426,7 +426,7 @@
                     "phase": 0.0,
                     "exp": 0.0
                   },
-                  "basis": 0.13592225308333827
+                  "basis": 0.1713482035173461
                 }
               ],
               "modulations": [
@@ -522,7 +522,7 @@
           "label": "Channel-4",
           "arm": false,
           "selected": false,
-          "enabled": true,
+          "enabled": false,
           "cue": false,
           "fader": 1.0,
           "crossfadeGroup": 0,
@@ -592,7 +592,7 @@
                     "phase": 0.0,
                     "exp": 0.0
                   },
-                  "basis": 0.3247998869026248
+                  "basis": 0.93281532810316
                 }
               ],
               "modulations": [
@@ -629,7 +629,7 @@
           "label": "Channel-5",
           "arm": false,
           "selected": false,
-          "enabled": true,
+          "enabled": false,
           "cue": false,
           "fader": 0.6142857242375612,
           "crossfadeGroup": 0,
@@ -927,7 +927,7 @@
       "audioExpanded": true,
       "paletteExpanded": true,
       "cameraExpanded": true,
-      "clipViewVisible": true,
+      "clipViewVisible": false,
       "modulatorExpanded": {},
       "preview": {
         "mode": 0,
@@ -940,9 +940,9 @@
         "centerPoint": false,
         "camera": {
           "active": false,
-          "radius": 432.11932373046875,
-          "theta": 0.0,
-          "phi": 0.0,
+          "radius": 638.4370472120291,
+          "theta": -0.29400000000000015,
+          "phi": -0.12300000000000005,
           "x": 0.0,
           "y": 0.0,
           "z": 0.0
@@ -950,9 +950,9 @@
         "cue": [
           {
             "active": false,
-            "radius": 120.0,
-            "theta": 0.0,
-            "phi": 0.0,
+            "radius": 638.4370472120291,
+            "theta": -0.29400000000000015,
+            "phi": -0.12300000000000005,
             "x": 0.0,
             "y": 0.0,
             "z": 0.0

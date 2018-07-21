@@ -28,42 +28,58 @@ Config config;
 Model model;
 UIRadiaLumia umbrellaModel;
 
+ProjectController ProjController;
+UIProjectControllerPanel UIProjectControls;
+
 void setup() {
-  // Processing setup, constructs the window and the LX instance
-  size(800, 720, P3D);
-  config = new Config();
-  model = new Model(config);
-  lx = new heronarts.lx.studio.LXStudio(this, model, MULTITHREADED);
-  lx.ui.setResizable(RESIZABLE);
+    // Processing setup, constructs the window and the LX instance
+    size(800, 720, P3D);
+    config = new Config();
+    model = new Model(config);
+    
+    lx = new heronarts.lx.studio.LXStudio(this, model, MULTITHREADED);
+    
+    
+    ProjController = new ProjectController(lx);
+    
+    UIProjectControls = (UIProjectControllerPanel)new UIProjectControllerPanel(
+        lx.ui,
+        lx.ui.leftPane.global.getContentWidth(),
+        ProjController
+        ).addToContainer((UIContainer)lx.ui.leftPane.global);
+    lx.addProjectListener(UIProjectControls);
+    
+    lx.ui.setResizable(RESIZABLE);
 }
 
 void initialize(final heronarts.lx.studio.LXStudio lx, heronarts.lx.studio.LXStudio.UI ui) {
-  buildOutput(lx);
-  
-  // Add a loop task to rate-limit and simulate umbrella position
-  lx.engine.addLoopTask(new LXLoopTask() {
-    public void loop(double deltaMs) {
-      int[] colors = lx.getColors();
-      for (Bloom bloom : model.blooms) {
-        bloom.umbrella.update(deltaMs, colors);
-      }
-    }
-  });
-
-  InitializeUmbrellaMask();
+    buildOutput(lx);
+    
+    // Add a loop task to rate-limit and simulate umbrella position
+    lx.engine.addLoopTask(new LXLoopTask() {
+                          public void loop(double deltaMs) {
+                          int[] colors = lx.getColors();
+                          for (Bloom bloom : model.blooms) {
+                          bloom.umbrella.update(deltaMs, colors);
+                          }
+                          }
+                          });
+    
+    InitializeUmbrellaMask();
 }
 
 void onUIReady(heronarts.lx.studio.LXStudio lx, heronarts.lx.studio.LXStudio.UI ui) {
-  // Add custom UI components here
-  /* TODO(peter): model.leds doesn't and shouldn't include the pin spots. Create a
-     new ArrayList called displayedInPointCloud, and use it here. Grrrr
-   */
-  ui.preview.pointCloud.setModel(new LXModel(model.displayPoints));
-  ui.preview.addComponent(new UISimulation());
+    // Add custom UI components here
+    /* TODO(peter): model.leds doesn't and shouldn't include the pin spots. Create a
+    new ArrayList called displayedInPointCloud, and use it here. Grrrr
+    */
+    ui.preview.pointCloud.setModel(new LXModel(model.displayPoints));
+    ui.preview.addComponent(new UISimulation());
 }
 
 void draw() {
-  // All is handled by LX Studio
+    // All is handled by LX Studio
+    
 }
 
 // Configuration flags
@@ -79,3 +95,5 @@ final static float CM = IN / 2.54;
 final static float MM = CM * .1;
 final static float M = CM * 100;
 final static float METER = M;
+
+final static float UI_PADDING = 4;

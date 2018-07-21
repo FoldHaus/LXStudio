@@ -1,0 +1,19 @@
+{"projects": [
+	{
+		"path": "default.lxp",
+		"minTime": "12:01a",
+		"maxTime": "02:56p",
+		"moods": [
+				"happy"
+			]
+	},
+	{
+		"path": "debug.lxp",
+		"minTime": "12:01a",
+		"maxTime": "11:59p",
+		"moods": [
+				"sad"
+			]
+	}
+]}
+
