@@ -282,3 +282,88 @@ public class ColorWipe extends RadiaLumiaPattern
         }
     }
 }
+
+@LXCategory("Color")
+public class ColorLighthouse extends RadiaLumiaPattern
+{
+    public final CompoundParameter P_RotationSpeed = 
+        new CompoundParameter("Spd", 1000, 30000, 1)
+        .setDescription("How fast the colors revolve");
+    
+    public final CompoundParameter P_BeamWidth =
+        new CompoundParameter("Wid", 10, 0, 200)
+        .setDescription("The width of the beam");
+    
+    public final CompoundParameter P_Spread =
+        new CompoundParameter("Spread", 0, 0, 360);
+    
+    public final CompoundParameter P_Variance =
+        new CompoundParameter("Var", 100, 0, 360);
+    
+    public final SawLFO P_Rotator =
+        new SawLFO(0, 6.14, P_RotationSpeed);
+    
+    public ColorLighthouse(LX lx)
+    {
+        super(lx);
+        
+        addParameter(P_RotationSpeed);
+        addParameter(P_BeamWidth);
+        addParameter(P_Spread);
+        addParameter(P_Variance);
+        
+        startModulator(P_Rotator);
+    }
+    
+    public void run(double deltaMs)
+    {
+        // Spatial Parameters
+        float Theta = P_Rotator.getValuef(); 
+        float SinTheta = sin(Theta);
+        float CosTheta = cos(Theta);
+        
+        LXVector FrontNormal = new LXVector(SinTheta, 0, CosTheta);
+        LXVector BackNormal = new LXVector(-SinTheta, 0, -CosTheta);
+        
+        LXVector FrontCenter = FrontNormal.copy().mult(P_BeamWidth.getValuef());
+        LXVector BackCenter = BackNormal.copy().mult(P_BeamWidth.getValuef());
+        
+        // Color Parameters
+        float BaseHue = palette.getHuef();
+        float Sat = palette.getSaturationf();;
+        float Spread = P_Spread.getValuef();
+        float Variance = P_Variance.getValuef();
+        
+        // Per LED Parameters 
+        LXVector PointVector;
+        LXVector ToFront, ToBack;
+        float PointDotFrontNormal;
+        float PointDotBackNormal;
+        float AnglePointFront;
+        
+        for (LXPoint p : model.leds) {
+            PointVector = LXPointToVector(p);
+            
+            ToFront = PointVector.copy().add(FrontCenter);
+            ToBack = PointVector.copy().add(BackCenter);
+            
+            AnglePointFront =  ToFront.copy().normalize().dot(FrontNormal);
+            PointDotFrontNormal = AnglePointFront * 1000;
+            PointDotBackNormal = ToBack.copy().normalize().dot(BackNormal) * 1000;
+            
+            PointDotFrontNormal = 1 - constrain(PointDotFrontNormal, 0, 1);
+            PointDotBackNormal = 1 - constrain(PointDotBackNormal, 0, 1);
+            
+            // Hue = Base + Lighthouse Angle Variance (primary) + Distance Based Variance (secondary)
+            float Hue = BaseHue + 
+                Spread * (PointDotFrontNormal + PointDotBackNormal) +
+                (Variance * (sin(AnglePointFront * TWO_PI) + 
+                             sin(AnglePointFront * (PI/1.739))));
+            
+            colors[p.index] = LXColor.hsb(
+                Hue,
+                Sat,
+                100);
+        }
+    }
+}

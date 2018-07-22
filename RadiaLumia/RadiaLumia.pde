@@ -96,4 +96,7 @@ final static float MM = CM * .1;
 final static float M = CM * 100;
 final static float METER = M;
 
+final static float PI = 3.1415;
+final static float TWO_PI = PI * 2;
+
 final static float UI_PADDING = 4;
