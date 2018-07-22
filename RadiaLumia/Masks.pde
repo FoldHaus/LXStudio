@@ -292,3 +292,86 @@ public class RadialSinWave extends RadiaLumiaPattern {
         }
     }
 }
+
+@LXCategory("Masks")
+public class DotMask extends RadiaLumiaPattern
+{
+    
+    public final CompoundParameter P_Speed =
+        new CompoundParameter("Speed", 1000, 60000, 1);
+    
+    public final CompoundParameter P_DotSize =
+        new CompoundParameter("Size", .5, 0, 1);
+    
+    public final CompoundParameter P_AnimTime =
+        new CompoundParameter("A Time", 1000, 10000, 1);
+    
+    public final CompoundParameter P_OffTime =
+        new CompoundParameter("O Time", 5000, 30000, 1);
+    
+    public SawLFO Oscillator = 
+        new SawLFO(-1, 3, P_Speed);
+    
+    public DotMask(LX lx)
+    {
+        super(lx);
+        
+        addParameter(P_Speed);
+        addParameter(P_DotSize);
+        addParameter(P_AnimTime);
+        addParameter(P_OffTime);
+        
+        startModulator(Oscillator);
+    }
+    
+    public void run (double deltaMs)
+    {
+        
+        float RadiusPercent = P_DotSize.getValuef();
+        float OscillatorValue = constrain(Oscillator.getValuef(), -1, 1);
+        
+        float AnimTime = P_AnimTime.getValuef();
+        float OffTime = P_OffTime.getValuef();
+        
+        LXVector BloomCenter;
+        float MaxDistance;
+        float Radius;
+        
+        LXVector PointVector;
+        float Distance;
+        
+        float AnimationPosition;
+        
+        for (Bloom b : model.blooms)
+        {
+            BloomCenter = b.center;
+            MaxDistance = b.maxSpokesDistance;
+            
+            // TODO(peter): Make this offset somehow per bloom
+            AnimationPosition = OscillatorValue;
+            
+            // abs(((cos(PI + X * 4) * .5) + .5) * X * 1.2) ^ 4.2)
+            //Radius = MaxDistance * RadiusPercent;
+            Radius = abs(((cos(PI + AnimationPosition * 4) * .5) + .5) * AnimationPosition * 1.2); 
+            
+            Radius = pow(Radius, 4.2);
+            
+            println(OscillatorValue + " : " + Radius);
+            
+            Radius *= MaxDistance * RadiusPercent;
+            
+            for (LXPoint p : b.leds)
+            {
+                PointVector = LXPointToVector(p);
+                Distance = PointVector.dist(BloomCenter);
+                
+                if (Distance <= Radius)
+                {
+                    colors[p.index] = LXColor.WHITE;
+                }else{
+                    colors[p.index] = LXColor.BLACK;
+                }
+            }
+        }
+    }
+}
