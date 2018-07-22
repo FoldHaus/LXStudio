@@ -40,6 +40,7 @@ String[] MOOD_JSON_IDS = new String[] {
     "party"
 };
 
+// WHY ARENT THERE STRUCTS IN JAVA???
 class Project {
     public String Path;
     public TimeRange DisplayTimeRange;
@@ -48,7 +49,8 @@ class Project {
 
 List<Project> RegisteredProjects;
 
-TimeRange ParseTimeRange(String minTime, String maxTime)
+TimeRange 
+ParseTimeRange(String minTime, String maxTime)
 {
     TimeRange Result = new TimeRange();
     
@@ -67,7 +69,8 @@ TimeRange ParseTimeRange(String minTime, String maxTime)
     return Result;
 }
 
-byte ParseMoods (JSONArray moods)
+byte 
+ParseMoods (JSONArray moods)
 {
     byte Result = 0;
     
@@ -89,7 +92,8 @@ byte ParseMoods (JSONArray moods)
     return Result;
 }
 
-void InitProjects () 
+void 
+InitProjects () 
 {
     JSONObject ProjectRepo = loadJSONObject("data/projects.json");
     JSONArray ProjectsConfig = ProjectRepo.getJSONArray("projects");
@@ -114,7 +118,11 @@ void InitProjects ()
     }
 }
 
-void OpenProject (LX _lx, Project _project)
+void 
+OpenProject (
+LX _lx, 
+Project _project
+)
 {
     String AbsoluteProjectPath = dataPath("") + "\\projects\\" + _project.Path;
     
@@ -124,13 +132,24 @@ void OpenProject (LX _lx, Project _project)
     lx.openProject(ProjectFile);
 }
 
-boolean IsValidTimeForProject (Project _project, int _CurrHour, int _CurrMin)
+boolean 
+IsValidTimeForProject (
+Project _project, 
+int _CurrHour, 
+int _CurrMin
+)
 {
     return _project.DisplayTimeRange.MinHour <= _CurrHour && _project.DisplayTimeRange.MinMinute <= _CurrMin &&
         _project.DisplayTimeRange.MaxHour >= _CurrHour && _project.DisplayTimeRange.MaxMinute >= _CurrMin;
 }
 
-Project NextProject (LX _lx, int _CurrHour, int _CurrMin, Project _CurrentProject)
+Project 
+NextProject (
+LX _lx, 
+int _CurrHour, 
+int _CurrMin, 
+Project _CurrentProject
+)
 {
     int RandomStartIndex = (int)random(0, RegisteredProjects.size());
     
@@ -152,6 +171,8 @@ Project NextProject (LX _lx, int _CurrHour, int _CurrMin, Project _CurrentProjec
     return null;
 }
 
+// Handles tracking the current project and changing it at acceptable times
+// when registered as a LoopTask with LX.engine
 class ProjectController implements LXLoopTask
 {
     private LX lx;
@@ -214,6 +235,7 @@ class ProjectController implements LXLoopTask
     }
 }
 
+// Displays information about the ProjectController Object
 class UIProjectControllerPanel extends UICollapsibleSection implements LXParameterListener, LX.ProjectListener
 {
     ProjectController Controller;
@@ -273,7 +295,10 @@ class UIProjectControllerPanel extends UICollapsibleSection implements LXParamet
         }
     }
     
-    void projectChanged(File project, LX.ProjectListener.Change change)
+    void projectChanged(
+        File project, 
+        LX.ProjectListener.Change change
+        )
     {
         if (change == LX.ProjectListener.Change.OPEN)
         {

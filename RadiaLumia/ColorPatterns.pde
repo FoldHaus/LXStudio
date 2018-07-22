@@ -1,33 +1,27 @@
 @LXCategory("Color")
 public class ColorSpheres extends RadiaLumiaPattern {
     
-    public final CompoundParameter sphereBaseSize = 
+    public final CompoundParameter P_SphereBaseSize = 
         new CompoundParameter("size", 1, 0, 350);
     
-    public final CompoundParameter deltaMag =
+    public final CompoundParameter P_DeltaMagnitude =
         new CompoundParameter("dmag", 0, 0, 300);
     
-    public final CompoundParameter offset =
+    public final CompoundParameter P_AngleOffset =
         new CompoundParameter("off", 0, 0, 300);
-    
-    public final ColorParameter colorA =
-        new ColorParameter("A");
-    
-    
     
     public ColorSpheres (LX lx) {
         super(lx);
-        addParameter(sphereBaseSize);
-        addParameter(deltaMag);
-        addParameter(offset);
-        addParameter(colorA);
+        addParameter(P_SphereBaseSize);
+        addParameter(P_DeltaMagnitude);
+        addParameter(P_AngleOffset);
     }
     
     public void run (double deltaMs) {
         
-        double diameter = sphereBaseSize.getValue();
-        float theta = (float)(offset.getValue());
-        float delta_mag = (float)(deltaMag.getValue());
+        double diameter = P_SphereBaseSize.getValue();
+        float theta = (float)(P_AngleOffset.getValue());
+        float delta_mag = (float)(P_DeltaMagnitude.getValue());
         
         LXVector sphereA_pos = new LXVector(sin(theta), sin(.835 * (theta + .3251)), cos(theta)).normalize().mult(delta_mag);
         LXVector sphereB_pos = new LXVector(sin(-theta + .3), cos(.831 * (theta + .3415) + .3), cos(-theta + .3)).normalize().mult(delta_mag);
@@ -39,9 +33,9 @@ public class ColorSpheres extends RadiaLumiaPattern {
         
         LXVector light_pos;
         
-        int hueA = (int)(sin(theta * .1) * 360);
-        int hueB = (int)(sin(theta * .162 + .138) * 360);
-        int hueC = (int)(sin(theta - .183) * 360);
+        float hueA = palette.getHuef();
+        float hueB = (hueA + (sin(theta * .162 + .138) * 360)) % 360;
+        float hueC = (hueA + (sin(theta - .183) * 360)) % 360;
         
         for (LXPoint light : model.leds) {
             light_pos = new LXVector(light.x, light.y, light.z);
@@ -101,6 +95,8 @@ public class RadialGradient extends RadiaLumiaPattern
         double ColorPeriod = P_ColorPeriod.getValue();
         double ColorOffset = Progress.getValue();
         
+        float BaseHue = palette.getHuef();
+        
         for (Bloom bloom : model.blooms)
         {
             for (LXPoint spikePoint : bloom.spike.leds)
@@ -109,7 +105,7 @@ public class RadialGradient extends RadiaLumiaPattern
                 // the percentage of the total distance this pixel is
                 LedPctDistance = (LedDistance/bloom.maxSpikeDistance);
                 
-                int Hue = (int)(360 * (LedPctDistance * ColorPeriod) + ColorOffset) % 360;
+                float Hue = (BaseHue + (float)(360 * (LedPctDistance * ColorPeriod) + ColorOffset)) % 360;
                 colors[spikePoint.index] = LXColor.hsb(Hue, 100, 100);
             }
             
@@ -118,7 +114,8 @@ public class RadialGradient extends RadiaLumiaPattern
                 LedDistance = new LXVector(spokePoint.x, spokePoint.y, spokePoint.z).dist(bloom.center);
                 LedPctDistance = (LedDistance/bloom.maxSpikeDistance);
                 
-                int Hue = (int)(360 * (LedPctDistance * ColorPeriod) + ColorOffset) % 360;
+                
+                float Hue = (BaseHue + (float)(360 * (LedPctDistance * ColorPeriod) + ColorOffset)) % 360;
                 colors[spokePoint.index] = LXColor.hsb(Hue, 100, 100);
             }
         }
