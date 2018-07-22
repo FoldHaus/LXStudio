@@ -27,7 +27,6 @@ public abstract class RadiaLumiaPattern extends LXModelPattern<Model> {
 }
 
 // RadiaSolid
-
 public class RadiaSolid extends RadiaLumiaPattern {
     
     // color parameters
@@ -102,7 +101,7 @@ public class Pinwheel extends RadiaLumiaPattern {
 }
 
 // Sparkle
-
+@LXCategory("Masks")
 public class Sparkle extends RadiaLumiaPattern {
     
     // Parameters
@@ -258,15 +257,10 @@ public class Sparkle extends RadiaLumiaPattern {
     
 }
 
-
-
-
-
-
-
 // Static
-
-public class Static extends RadiaLumiaPattern {
+@LXCategory("Texture")
+public class Static extends RadiaLumiaPattern 
+{
     public final CompoundParameter brightness = 
         new CompoundParameter ("Brightness", .1, 0,1)
         .setDescription("Set global brightness");
@@ -279,35 +273,42 @@ public class Static extends RadiaLumiaPattern {
         new DiscreteParameter ("Width", 1, 0, 100)
         .setDescription("Set distance of exapansion");
     
-    public Static(LX lx) {
+    public Static(LX lx) 
+    {
         super(lx);
         addParameter(this.brightness); 
         addParameter(this.numPoints);
         addParameter(this.maxDistance);
     }
     
-    public void run(double deltaMs) {
+    public void run(double deltaMs) 
+    {
         int curMaxValue = maxDistance.getValuei();
         double curBrightness = brightness.getValue();
         
         
-        for (Bloom b : model.blooms) { //loops through all blooms
+        for (Bloom b : model.blooms) 
+        { //loops through all blooms
             
-            for (int p = 0; p < numPoints.getValue(); p++) {
+            for (int p = 0; p < numPoints.getValue(); p++) 
+            {
                 
                 int rI = (int)random((float)b.points.length);  
                 
                 int min = rI-curMaxValue; 
-                if (min < 0) {
+                if (min < 0) 
+                {
                     min = 0; 
                 }
                 
                 int max = rI+curMaxValue;
-                if (max >= b.points.length) {
+                if (max >= b.points.length) 
+                {
                     max =  b.points.length-1;
                 }
                 
-                for (int i=min; i<max; i++){
+                for (int i=min; i<max; i++)
+                {
                     double distance; 
                     distance = abs(i-rI)/(float)curMaxValue;
                     colors[b.points[i].index] = LXColor.hsb(0,0,(int)(curBrightness*255*distance));     
@@ -390,50 +391,64 @@ public class BlossomOscillation extends RadiaLumiaPattern {
     }
 }
 
+@LXCategory("Masks")
 public class BloomPulse extends RadiaLumiaPattern {
     
-    public final CompoundParameter oscillatorPeriod =
-        new CompoundParameter("per", 0, 10000);
+    public final CompoundParameter P_OscillatorPeriod =
+        new CompoundParameter("Period", 0, 10000);
     
-    public final CompoundParameter pulseSize =
-        new CompoundParameter("siz", 0, 1);
+    public final CompoundParameter P_PulseSize =
+        new CompoundParameter("Size", 0, 1);
     
-    public final CompoundParameter pulsePos = 
-        new CompoundParameter("pos", 0, 1);
+    public final SawLFO P_Offset =
+        new SawLFO(0, TWO_PI, P_OscillatorPeriod);
     
-    
-    public BloomPulse(LX lx) {
+    public BloomPulse(LX lx)
+    {
         super(lx);
-        addParameter(this.oscillatorPeriod);
-        addParameter(this.pulseSize);
-        addParameter(this.pulsePos);
+        
+        addParameter(P_OscillatorPeriod);
+        addParameter(P_PulseSize);
+        
+        startModulator(P_Offset);
     }
     
-    public void run(double deltaMs) {
+    public void run(double deltaMs)
+    {
         
-        float oscillatorValue = (float) this.pulsePos.getValue();
-        float pulseSizeValue = (float) this.pulseSize.getValue();
+        float OscillatorValue = (float) this.P_Offset.getValue();
+        float PulseSize = (float) this.P_PulseSize.getValue();
         
+        LXVector PointVector;
+        float Percent;
+        float Offset;
+        float Brightness;
         
-        for (Bloom bloom : model.blooms) {
+        for (Bloom bloom : model.blooms)
+        {
             // Spike
-            for (LXPoint spike : bloom.spike.points) {
-                float percent = 1 - new LXVector(spike.x, spike.y, spike.z).dist(bloom.center) / bloom.maxSpikeDistance;
-                percent = percent + oscillatorValue;
+            for (LXPoint spike : bloom.spike.leds) 
+            {
+                PointVector = LXPointToVector(spike);
+                Percent = 1 - (PointVector.dist(bloom.center) / bloom.maxSpikeDistance);
+                Offset = (Percent + OscillatorValue) % TWO_PI;
                 
-                float bright = round(sin(percent / pulseSizeValue)) * 100;
+                Brightness = constrain(sin(Offset / PulseSize) * 100, 0, 100);
                 
-                colors[spike.index] = LXColor.hsb(360, 100, bright); //LXColor.multiply(colors[spike.index], LXColor.hsb(256, 256, bright));
+                colors[spike.index] = LXColor.hsb(360, 0, Brightness);
             }
             
-            for (LXPoint spoke : bloom.spokePoints) {
-                float percent = new LXVector(spoke.x, spoke.y, spoke.z).dist(bloom.center) / bloom.maxSpokesDistance;
-                percent = (percent * .5) + oscillatorValue;
+            for (LXPoint spoke : bloom.spokePoints) 
+            {
+                PointVector = LXPointToVector(spoke);
+                Percent = PointVector.dist(bloom.center) / bloom.maxSpokesDistance;
+                Offset = ((Percent * .5) + OscillatorValue) % TWO_PI;
                 
-                float bright = round(sin(percent / pulseSizeValue)) * 100;
+                Brightness = constrain((sin(Offset / PulseSize) * 100), 0, 100);
                 
-                colors[spoke.index] = LXColor.hsb(360, 0, bright);
+                colors[spoke.index] = LXColor.hsb(360, 0, Brightness);
             }
         }
     }
 }
+
