@@ -317,3 +317,75 @@ public class NoahsPattern extends RadiaLumiaPattern {
         }
     }
 }
+
+@LXCategory("Umbrella")
+public class RandomToggle extends RadiaLumiaPattern {
+    
+    public final CompoundParameter AvgToggleFreq =new CompoundParameter("AvFreq", 5000, 100000, 1)
+        .setDescription("The average frequency at which umbrells will toggle state");
+    
+    public final CompoundParameter ToggleVariabilityPct =
+        new CompoundParameter("DFP", 0, 1)
+        .setDescription("The percentage of the current AvgFreq that toggle time can vary over");
+    
+    double TimeSinceLastToggle;
+    double TimeToNextToggle;
+    
+    int ChangedCount;
+    double CurrentTarget;
+    
+    public RandomToggle (LX lx)
+    {
+        super(lx);
+        
+        addParameter(AvgToggleFreq);
+        addParameter(ToggleVariabilityPct);
+        
+        TimeSinceLastToggle = 0;
+        TimeToNextToggle = 0;
+        
+        ChangedCount = 0;
+        CurrentTarget = 1.0;
+    }
+    
+    public void run (double deltaMs)
+    {
+        TimeSinceLastToggle += deltaMs;
+        if (TimeSinceLastToggle >= TimeToNextToggle)
+        {
+            
+            double RandomPct = (double)random(-ToggleVariabilityPct.getValuef(), ToggleVariabilityPct.getValuef());
+            TimeToNextToggle = max(AvgToggleFreq.getValue() + RandomPct, 0);
+            TimeSinceLastToggle = 0;
+            
+            ToggleRandom();
+        }
+    }
+    
+    public void ToggleRandom()
+    {
+        int RandomStartingIndex = (int)(random(0, model.blooms.size()));
+        for (int umbrella = 0; umbrella < model.blooms.size(); umbrella++)
+        {
+            Bloom CurrUmbrella = model.blooms.get((RandomStartingIndex + umbrella) % model.blooms.size());
+            
+            if (abs(CurrUmbrella.umbrella.simulatedPosition - (1.0 - CurrentTarget)) < .1)
+            {
+                setUmbrella(CurrUmbrella, CurrentTarget);
+                ChangedCount++;
+                
+                if (ChangedCount >= model.blooms.size())
+                {
+                    ChangedCount = 0;
+                    CurrentTarget = 1.0 - CurrentTarget;
+                }
+                
+                return;
+            }
+        }
+        
+        // NOTE(peter): If we get here, then all umbrellas are headed in the direction we want so we should swap directions regardless.
+        ChangedCount = 0;
+        CurrentTarget = 1.0 - CurrentTarget;
+    }
+}
