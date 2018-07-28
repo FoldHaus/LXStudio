@@ -114,7 +114,7 @@ public class RevolvingDiscs extends RadiaLumiaPattern {
     }
 }
 
-@LXCategory("Commercial as Fuck")
+@LXCategory("Takeover")
 public class PacMan extends RadiaLumiaPattern {
     
     public final CompoundParameter mouth_angle =

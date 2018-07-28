@@ -1,6 +1,6 @@
 {
   "version": "0.1",
-  "timestamp": 1532291835734,
+  "timestamp": 1532301213093,
   "engine": {
     "id": 1,
     "class": "heronarts.lx.LXEngine",
@@ -60,24 +60,9 @@
           "transitionTimeSecs": 5.0,
           "transitionBlendMode": 0
         },
-        "effects": [
-          {
-            "id": 216,
-            "class": "RadiaLumia$UmbrellaMute",
-            "modulationColor": -14549248,
-            "parameters": {
-              "label": "UmbrellaMute",
-              "enabled": true
-            },
-            "modulation": {
-              "modulators": [],
-              "modulations": [],
-              "triggers": []
-            }
-          }
-        ],
+        "effects": [],
         "clips": [],
-        "patternIndex": 0,
+        "patternIndex": 1,
         "patterns": [
           {
             "id": 82,
@@ -88,6 +73,21 @@
               "color/brightness": 100.0,
               "color/saturation": 100.0,
               "color/hue": 359.0
+            },
+            "modulation": {
+              "modulators": [],
+              "modulations": [],
+              "triggers": []
+            },
+            "autoCycleEnabled": true
+          },
+          {
+            "id": 343,
+            "class": "RadiaLumia$UmbrellaUniversalState",
+            "modulationColor": -58368,
+            "parameters": {
+              "label": "UmbrellaUniversalState",
+              "position": 0.0
             },
             "modulation": {
               "modulators": [],
@@ -235,7 +235,7 @@
       "audioExpanded": true,
       "paletteExpanded": true,
       "cameraExpanded": true,
-      "clipViewVisible": true,
+      "clipViewVisible": false,
       "modulatorExpanded": {},
       "preview": {
         "mode": 0,

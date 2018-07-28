@@ -19,17 +19,14 @@ void buildOutput(LX lx) {
         
         // Only debug first bloom output...
         boolean BLOOM_DEBUG_ONE = false;
+        String DEBUG_ONE_IP = "192.168.1.215";
         
         // Debug three blooms, with the ips in the array
         boolean BLOOM_DEBUG_THREE = true;
         String[] DEBUG_THREE_IPS = {
-            "192.168.1.209",
-            "192.168.1.212",
-            "192.168.1.215",
-            "192.168.1.218",
-            "192.168.1.219",
+            "192.168.1.201",
             "192.168.1.233",
-            "192.168.1.236"
+            "192.168.1.234"
         };
         
         int mappedBloomCount = 0;
@@ -45,9 +42,9 @@ void buildOutput(LX lx) {
                 
                 if (bloom.spokes.size() == 6)
                 {
-                    buildHexaBloomOutput(lx, output, config, bloomConfig, bloom, "192.168.1.229");
+                    buildHexaBloomOutput(lx, output, config, bloomConfig, bloom, DEBUG_ONE_IP);
                 }else{
-                    buildPentaBloomOutput(lx, output, config, bloomConfig, bloom, "192.168.1.229");
+                    buildPentaBloomOutput(lx, output, config, bloomConfig, bloom, DEBUG_ONE_IP);
                 }
                 
                 ++mappedBloomCount;
@@ -91,6 +88,8 @@ void buildPentaBloomOutput (LX lx,
 {
     int start_universe = calculateStartUniverseFromIp(ip);
     int universe = start_universe;
+    
+    println("Start Universe: " + start_universe + " DMX: " + (start_universe + DMX_UNIVERSE_OFFSET));
     
     try {
         int spoke_index = 0;
@@ -143,6 +142,10 @@ void buildHexaBloomOutput (LX lx, LXDatagramOutput output, Config config, JSONOb
             longSpokes.add(spoke);
         }
     }
+    
+    
+    println("IP: " + ip + " Start Universe: " + start_universe + " DMX: " + (start_universe + DMX_UNIVERSE_OFFSET));
+    
     
     try {
         // Short   
