@@ -8,7 +8,7 @@ class Config {
     private final JSONObject j; 
     
     Config() {
-        this.j = loadJSONObject("data/radialumia.json");
+        this.j = loadJSONObject("data/new_radialumia.json");
         
     }
     
@@ -454,7 +454,8 @@ public static class Bloom extends LXModel {
         // upon its speed limitations
         public double simulatedPosition = 0.;
         
-        public static final int MaxSteps = 1234; // TODO: real number
+        // NOTE(peter): This is what to change if the travel distance changes
+        public static final int MaxSteps = 3025; // TODO: real number
         public static final int MaxStepsVel = 10000; // TODO: these match the code as it is, but that will change
         public static final int MaxStepsAcc = 50000; // TODO: these match the code as it is, but that will change
         

@@ -100,12 +100,21 @@ public class IdentifyBloom extends RadiaLumiaPattern {
         new ColorParameter("col")
         .setDescription("The light to illuminate the selected umbrella with");
     
+    public final BooleanParameter singleSpoke =
+        new BooleanParameter("sspoke");
+    
+    public final DiscreteParameter spokeNumber =
+        new DiscreteParameter("snum", 0, 0, 6);
+    
     public IdentifyBloom(LX lx) {
         super(lx);
         addParameter(bloomId);
         addParameter(useLights);
         addParameter(useUmbrellas);
         addParameter(lightColor);
+        addParameter(singleSpoke);
+        addParameter(spokeNumber);
+        
     }
     
     public void run (double deltaMs) {
@@ -130,9 +139,38 @@ public class IdentifyBloom extends RadiaLumiaPattern {
                 curr_pos = 0.0;
             }
             
-            
-            for (LXPoint light : bloom.leds) {        
-                colors[light.index] = curr_col;
+            if (bloom.id == id && lit)
+            {
+                if (!singleSpoke.getValueb())
+                {
+                    int curr_spokeNumber = 0;
+                    
+                    for (Bloom.Spoke spoke: bloom.spokes) {
+                        println(curr_spokeNumber + " : " + (60 * curr_spokeNumber));
+                        for (LXPoint p : spoke.points)
+                        {
+                            colors[p.index] = LXColor.hsb(60 * curr_spokeNumber, 100, 100);
+                        }
+                        curr_spokeNumber++;
+                    }
+                }
+                else
+                {
+                    int SpokeNumber = min(spokeNumber.getValuei(), bloom.neighbors.size());
+                    
+                    Bloom.Spoke spoke = bloom.spokes.get(SpokeNumber);
+                    for (LXPoint p : spoke.points)
+                    {
+                        colors[p.index] = LXColor.hsb(60 * SpokeNumber, 100, 100);
+                    }
+                }
+            }
+            else
+            {
+                for (LXPoint p : bloom.leds)
+                {
+                    colors[p.index] = LXColor.rgb(0, 0, 0);
+                }
             }
             
             setUmbrella(bloom, curr_pos);
