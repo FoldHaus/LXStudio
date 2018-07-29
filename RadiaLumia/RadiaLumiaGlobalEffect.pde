@@ -77,9 +77,11 @@ public static int ENTRANCE_BLOOM_THREE = 27;
 @LXCategory("Umbrella")
 public class RadiaEntranceEffect extends UmbrellaEffect {
     
-    public final CompoundParameter loadCellValue = 
+    public final CompoundParameter SensorRef_Ladder;
+    /*= 
         new CompoundParameter ("lcv", 0, 0, 1)
         .setDescription("The value being sent over from the ladder load cells");
+    */
     
     public final BooleanParameter overrideEntrance = 
         new BooleanParameter ("ovr")
@@ -88,13 +90,14 @@ public class RadiaEntranceEffect extends UmbrellaEffect {
     public RadiaEntranceEffect (LX lx) {
         super(lx);
         
-        addParameter(loadCellValue);
         addParameter(overrideEntrance);
+        
+        SensorRef_Ladder = sensors.SensorValueCache.get(Sensors.SENSOR_ADDRESS_LADDER);
     }
     
     public void run (double deltaMs, double enabledAmount) {
         
-        double openClosedValue = loadCellValue.getValue();
+        double openClosedValue = SensorRef_Ladder.getValue();
         
         if (openClosedValue > 0.0 || overrideEntrance.getValueb())
         {

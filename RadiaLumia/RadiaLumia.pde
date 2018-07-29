@@ -31,6 +31,9 @@ UIRadiaLumia umbrellaModel;
 ProjectController ProjController;
 UIProjectControllerPanel UIProjectControls;
 
+Sensors sensors;
+UISensors uiSensors;
+
 void setup() {
     // Processing setup, constructs the window and the LX instance
     size(800, 720, P3D);
@@ -48,6 +51,25 @@ void setup() {
         ProjController
         ).addToContainer((UIContainer)lx.ui.leftPane.global);
     lx.addProjectListener(UIProjectControls);
+    
+    sensors = new Sensors(lx);
+    uiSensors = (UISensors)new UISensors(
+        lx.ui,
+        sensors,
+        lx.ui.leftPane.global.getContentWidth()).addToContainer((UIContainer)lx.ui.leftPane.global);
+    
+    // Default, RadiaLumia specific effects
+    ColorBalance cb = new ColorBalance(lx);
+    lx.engine.masterChannel.addEffect(cb);
+    cb.enabled.setValue(true);
+    
+    RadiaEntranceEffect ree = new RadiaEntranceEffect(lx);
+    lx.engine.masterChannel.addEffect(ree);
+    ree.enabled.setValue(true);
+    
+    RadiaWindProtect rwp = new RadiaWindProtect(lx);
+    lx.engine.masterChannel.addEffect(rwp);
+    rwp.enabled.setValue(true);
     
     lx.ui.setResizable(RESIZABLE);
 }

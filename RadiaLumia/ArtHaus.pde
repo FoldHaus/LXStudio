@@ -131,6 +131,7 @@ public class UmbrellaLightSteps extends ArtHausPattern
     
     public void run (double deltaMs)
     {
+        // TODO(peter): Make it so that umbrellas can be lit and fade over more than one beat
         int Period = TempoMultiplier.getValuei();
         int Progress = lx.tempo.beatCount() % Period;
         float ProgressPercent = (float)lx.tempo.ramp();
@@ -174,3 +175,4 @@ public class UmbrellaLightSteps extends ArtHausPattern
         }
     }
 }
+
