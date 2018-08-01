@@ -1,19 +1,182 @@
 // Globals
 
 int MAX_TEMPO_MULTIPLIER = 32;
+int NUM_MUSICIANS = 4;
+int MUSICIAN_MAX_PATTERN_REPETITION = 32;
+
+// General Controls
+
+public class ArtHausPerformance
+{
+    /* TODO(peter): ArtHausPerformance
+    
+     Beat
+     - Need to have a Pulse Channel
+     - Need to be able to control what part of the structure is displaying the pulse
+     
+     
+     
+    */
+    
+    public LXPattern[] BeatPatterns;
+    public int NumMusicianPatterns;
+    
+    public ArtHausMusician BeatMusician;
+    public ArtHausMusician[] Musicians;
+    
+    public LX lx;
+    
+    public ArtHausPerformance (
+        LX _LX
+        )
+    {
+        this.lx = _LX;
+        
+        InitPerformance(NUM_MUSICIANS);
+    }
+    
+    public void InitPerformance (int _NumMusicians)
+    {
+        // Initialize the ArtHaus Performance Patterns
+        BeatPatterns = new LXPattern[] {
+            new BeatPinSpots(lx),
+            new BeatSpikes(lx)
+        };
+        
+        // Create the Musicians
+        BeatMusician = InitMusician(
+            BeatPatterns,
+            "Beat");
+        
+        Musicians = new ArtHausMusician[_NumMusicians];
+        for (int muse = 0; muse < _NumMusicians; muse++)
+        {
+            Musicians[muse] = InitMusician(
+                InitMusicianPatterns(),
+                "Musician " + muse);
+        }
+    }
+    
+    public ArtHausMusician InitMusician (
+        LXPattern[] _Patterns,
+        String _MusicianName
+        )
+    {
+        LXChannel MusicianChannel = lx.engine.addChannel(_Patterns);
+        MusicianChannel.label.setValue(_MusicianName);
+        MusicianChannel.fader.setValue(1);
+        
+        ArtHausMusician Result = new ArtHausMusician(
+            MusicianChannel
+            );
+        
+        SetMusicianPattern(
+            Result,
+            (int)random(0, NumMusicianPatterns),
+            (int)random(0, MUSICIAN_MAX_PATTERN_REPETITION)
+            );
+        
+        return Result;
+    }
+    
+    public LXPattern[] InitMusicianPatterns ()
+    {
+        LXPattern[] Patterns = new LXPattern[]{
+            new UmbrellaLightSteps(lx)
+        };
+        
+        this.NumMusicianPatterns = Patterns.length;
+        
+        return Patterns;
+    }
+    
+    public void OnPatternCompleted (
+        ArtHausMusician _Musician
+        )
+    {
+        _Musician.ElapsedRepetitions += 1;
+        if (_Musician.ElapsedRepetitions >= _Musician.TotalRepetitions)
+        {
+            ChooseNewPattern(_Musician);
+        }
+    }
+    
+    public void ChooseNewPattern (
+        ArtHausMusician _Musician
+        )
+    {
+        SetMusicianPattern(
+            _Musician,
+            (int)random(0, NumMusicianPatterns),
+            (int)random(0, MUSICIAN_MAX_PATTERN_REPETITION)
+            );
+    }
+    
+    public void SetMusicianPattern (
+        ArtHausMusician _Musician,
+        int _PatternIndex,
+        int _Repetitions
+        )
+    {
+        _Musician.TotalRepetitions = _Repetitions;
+        _Musician.ElapsedRepetitions = 0;
+        _Musician.Channel.goIndex(_PatternIndex);
+        
+        ArtHausPattern newPattern = (ArtHausPattern)_Musician.Channel.getPattern(_PatternIndex);
+        newPattern.Musician = _Musician;
+    }
+    
+    public void FadeToMusicians (float _FadeDuration)
+    {
+        
+    }
+    
+    public void FadeToScriptedPatterns (float _FadeDuration)
+    {
+        
+    }
+}
+
+public class ArtHausMusician
+{
+    public int TotalRepetitions;
+    public int ElapsedRepetitions;
+    public LXChannel Channel;
+    
+    public ArtHausMusician (
+        LXChannel _Channel
+        )
+    {
+        this.Channel = _Channel;
+    }
+}
 
 // Patterns
 
 public abstract class ArtHausPattern extends RadiaLumiaPattern
 {
     
+    // TODO(peter): Needed fields
+    // - registerCompleted()
+    // - channelMode - the blend mode of the channel while this pattern is on
+    // - musician - track which musician is playing 
+    
     public final DiscreteParameter TempoMultiplier =
         new DiscreteParameter("tempo", 4, 1, MAX_TEMPO_MULTIPLIER);
+    
+    public ArtHausMusician Musician;
+    public boolean HasPassedFirstFrame;
     
     public ArtHausPattern (LX lx)
     {
         super(lx);
         addParameter(TempoMultiplier);
+        HasPassedFirstFrame = false;
+    }
+    
+    public void PatternCompleted ()
+    {
+        artHaus.ChooseNewPattern(this.Musician);
     }
 }
 
@@ -138,10 +301,8 @@ public class UmbrellaLightSteps extends ArtHausPattern
         
         if (lx.tempo.beat())
         {
-            println(0);
             if (Progress == 0)
             {
-                println(1);
                 // Init new Pattern
                 IlluminatedUmbrellas[0] = (int)random(0, 42);
                 println("Step: " + IlluminatedUmbrellas[0]);
@@ -150,14 +311,18 @@ public class UmbrellaLightSteps extends ArtHausPattern
                     Bloom previousBloom = model.blooms.get(IlluminatedUmbrellas[i-1]);
                     
                     IlluminatedUmbrellas[i] = previousBloom.neighbors.get((int)random(0, previousBloom.neighbors.size())).id;
-                    
-                    println("Step: " + IlluminatedUmbrellas[i]);
                 }
+            }
+            
+            if (HasPassedFirstFrame)
+            {
+                PatternCompleted();
             }
         }
         
         // Fade all illuminated umbrellas
         IlluminateUmbrella(IlluminatedUmbrellas[Progress], ProgressPercent);
+        this.HasPassedFirstFrame = true;
     }
     
     public void IlluminateUmbrella (

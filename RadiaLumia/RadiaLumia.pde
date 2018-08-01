@@ -34,6 +34,8 @@ UIProjectControllerPanel UIProjectControls;
 Sensors sensors;
 UISensors uiSensors;
 
+ArtHausPerformance artHaus;
+
 void setup() {
     // Processing setup, constructs the window and the LX instance
     size(800, 720, P3D);
@@ -41,7 +43,6 @@ void setup() {
     model = new Model(config);
     
     lx = new heronarts.lx.studio.LXStudio(this, model, MULTITHREADED);
-    
     
     ProjController = new ProjectController(lx);
     
@@ -57,6 +58,10 @@ void setup() {
         lx.ui,
         sensors,
         lx.ui.leftPane.global.getContentWidth()).addToContainer((UIContainer)lx.ui.leftPane.global);
+    
+    // Arthaus
+    // TEMPORARY
+    //artHaus = new ArtHausPerformance(lx);
     
     // Default, RadiaLumia specific effects
     ColorBalance cb = new ColorBalance(lx);
