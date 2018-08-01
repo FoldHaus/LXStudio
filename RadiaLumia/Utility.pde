@@ -59,11 +59,18 @@ public double abs(double val)
 
 // Convenience
 
-float[] SPIKE_COVEREDRANGE_TOP = {.5, .2};
-float[] SPIKE_COVEREDRANGE_BOTTOM = {0, 0};
+float[] PENTA_SPIKE_COVEREDRANGE_TOP = {.25, .018};float[] PENTA_SPIKE_COVEREDRANGE_BOTTOM = {0, 0};
 
-float[] SPOKE_COVEREDRANGE_TOP = {.2, 1};
-float[] SPOKE_COVEREDRANGE_BOTTOM = {0, 0};
+float[] PENTA_SPOKE_COVEREDRANGE_TOP = {.2, 1};
+float[] PENTA_SPOKE_COVEREDRANGE_BOTTOM = {0, 0};
+
+
+// Was .3 and .05
+float[] HEXA_SPIKE_COVEREDRANGE_TOP = {.3, .05};
+float[] HEXA_SPIKE_COVEREDRANGE_BOTTOM = {0, 0};
+
+float[] HEXA_SPOKE_COVEREDRANGE_TOP = {.2, 1};
+float[] HEXA_SPOKE_COVEREDRANGE_BOTTOM = {0, 0};
 
 public boolean[] POINT_COVEREDBYUMBRELLA;
 public boolean UmbrellaMask_UpdatedThisFrame = false;
@@ -85,7 +92,8 @@ public void InitializeUmbrellaMask () {
     }
 }
 
-public void UpdateUmbrellaMask () {
+public void UpdateUmbrellaMask () 
+{
     
     if (UmbrellaMask_UpdatedThisFrame)
         return;
@@ -98,14 +106,34 @@ public void UpdateUmbrellaMask () {
     float point_distance;
     float point_percentTotalDistance;
     
+    float[] Working_SpikeCoveredRange_Top;
+    float[] Working_SpikeCoveredRange_Bottom;
+    float[] Working_SpokeCoveredRange_Top;
+    float[] Working_SpokeCoveredRange_Bottom;
+    
     for (Bloom b : model.blooms) {
+        if (b.spokes.size() == 6)
+        {
+            Working_SpikeCoveredRange_Top = HEXA_SPIKE_COVEREDRANGE_TOP ;
+            Working_SpikeCoveredRange_Bottom = HEXA_SPIKE_COVEREDRANGE_BOTTOM;
+            Working_SpokeCoveredRange_Top = HEXA_SPOKE_COVEREDRANGE_TOP;
+            Working_SpokeCoveredRange_Bottom = HEXA_SPOKE_COVEREDRANGE_BOTTOM;
+        }
+        else
+        {
+            Working_SpikeCoveredRange_Top = PENTA_SPIKE_COVEREDRANGE_TOP ;
+            Working_SpikeCoveredRange_Bottom = PENTA_SPIKE_COVEREDRANGE_BOTTOM;
+            Working_SpokeCoveredRange_Top = PENTA_SPOKE_COVEREDRANGE_TOP;
+            Working_SpokeCoveredRange_Bottom = PENTA_SPOKE_COVEREDRANGE_BOTTOM;
+        }
+        
         // Calculate Spike Covered Range
-        spike_coveredRange_bottomPosition = ((float)b.umbrella.simulatedPosition * SPIKE_COVEREDRANGE_BOTTOM[0]) + ((1f - (float)b.umbrella.simulatedPosition) * SPIKE_COVEREDRANGE_BOTTOM[1]);
-        spike_coveredRange_topPosition = ((float)b.umbrella.simulatedPosition * SPIKE_COVEREDRANGE_TOP[0]) + ((1f - (float)b.umbrella.simulatedPosition) * SPIKE_COVEREDRANGE_TOP[1]);
+        spike_coveredRange_bottomPosition = ((float)b.umbrella.simulatedPosition * Working_SpikeCoveredRange_Bottom[0]) + ((1f - (float)b.umbrella.simulatedPosition) * Working_SpikeCoveredRange_Bottom[1]);
+        spike_coveredRange_topPosition = ((float)b.umbrella.simulatedPosition * Working_SpikeCoveredRange_Top[0]) + ((1f - (float)b.umbrella.simulatedPosition) * Working_SpikeCoveredRange_Top[1]);
         
         // Calculate Spoke Covered Range
-        spoke_coveredRange_bottomPosition = ((float)b.umbrella.simulatedPosition * SPOKE_COVEREDRANGE_BOTTOM[0]) + ((1f - (float)b.umbrella.simulatedPosition) * SPOKE_COVEREDRANGE_BOTTOM[1]);
-        spoke_coveredRange_topPosition = ((float)b.umbrella.simulatedPosition * SPOKE_COVEREDRANGE_TOP[0]) + ((1f - (float)b.umbrella.simulatedPosition) * SPOKE_COVEREDRANGE_TOP[1]);
+        spoke_coveredRange_bottomPosition = ((float)b.umbrella.simulatedPosition * Working_SpokeCoveredRange_Bottom[0]) + ((1f - (float)b.umbrella.simulatedPosition) * Working_SpokeCoveredRange_Bottom[1]);
+        spoke_coveredRange_topPosition = ((float)b.umbrella.simulatedPosition * Working_SpokeCoveredRange_Top[0]) + ((1f - (float)b.umbrella.simulatedPosition) * Working_SpokeCoveredRange_Top[1]);
         
         for (Bloom.Spoke s : b.spokes) {
             for (LXPoint p : s.points) {

@@ -24,7 +24,9 @@ void buildOutput(LX lx) {
         // Debug three blooms, with the ips in the array
         boolean BLOOM_DEBUG_THREE = true;
         String[] DEBUG_THREE_IPS = {
-            "192.168.1.241"
+            "192.168.1.216",
+            "192.168.1.214",
+            "192.168.1.200"
         };
         
         int mappedBloomCount = 0;
@@ -86,33 +88,53 @@ void buildPentaBloomOutput (LX lx,
 {
     int start_universe = calculateStartUniverseFromIp(ip);
     int universe = start_universe;
+    if(universe == 0)
+        universe++;
     
     println("Start Universe: " + start_universe + " DMX: " + (start_universe + DMX_UNIVERSE_OFFSET));
     
     try {
-        int spoke_index = 0;
+        // Mod 5 to ensure the value is always within 0-5 range
+        int spoke_index = bloom.FlipValue % 5;
         
+        println("Spoke " + spoke_index + ": " + universe);
         int[] indices = makeSpokeIndices(bloom, bloom.spokes.get(spoke_index++), universe, 102);
         output.addDatagram(new StreamingACNDatagram(universe++, indices).setAddress(ip));
+        spoke_index = spoke_index % 5;
         
         // Spike
+        println("Spike 1" + ": " + universe);
         output.addDatagram(new StreamingACNDatagram(universe++, makeIndices(bloom.spike.stripA, 170, 0)).setAddress(ip));
+        output.addDatagram(new StreamingACNDatagram(universe++, makeIndices(bloom.spike.stripA, 170, 170)).setAddress(ip));
+        output.addDatagram(new StreamingACNDatagram(universe++, makeIndices(bloom.spike.stripA, 6, 340)).setAddress(ip));
         
+        
+        println("Spoke " + spoke_index + ": " + universe);
         indices = makeSpokeIndices(bloom, bloom.spokes.get(spoke_index++), universe, 102);
         output.addDatagram(new StreamingACNDatagram(universe++, indices).setAddress(ip));
+        spoke_index = spoke_index % 5;
         
+        println("Spoke " + spoke_index + ": " +  universe);
         indices = makeSpokeIndices(bloom, bloom.spokes.get(spoke_index++), universe, 102);
         output.addDatagram(new StreamingACNDatagram(universe++, indices).setAddress(ip));
+        spoke_index = spoke_index % 5;
         
+        println("Spoke " + spoke_index + ": " +  universe);
         indices = makeSpokeIndices(bloom, bloom.spokes.get(spoke_index++), universe, 102);
         output.addDatagram(new StreamingACNDatagram(universe++, indices).setAddress(ip));
+        spoke_index = spoke_index % 5;
         
         // Spike
+        println("Spike 2" + ": " + universe);
         output.addDatagram(new StreamingACNDatagram(universe++, makeIndices(bloom.spike.stripA, 170, 0)).setAddress(ip));
+        output.addDatagram(new StreamingACNDatagram(universe++, makeIndices(bloom.spike.stripA, 170, 170)).setAddress(ip));
+        output.addDatagram(new StreamingACNDatagram(universe++, makeIndices(bloom.spike.stripA, 6, 340)).setAddress(ip));
         
+        
+        println("Spoke " + spoke_index + ": " + universe);
         indices = makeSpokeIndices(bloom, bloom.spokes.get(spoke_index++), universe, 102);
         output.addDatagram(new StreamingACNDatagram(universe++, indices).setAddress(ip));
-        
+        spoke_index = spoke_index % 5;
         
         // Set up DMX output
         output.addDatagram(new RadiaNodeSpecialDatagram(start_universe + DMX_UNIVERSE_OFFSET, bloom).setAddress(ip));

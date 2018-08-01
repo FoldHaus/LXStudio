@@ -104,6 +104,11 @@ public static class Bloom extends LXModel {
     
     public final int id;
     
+    // NOTE(peter): this is how many places to offset the rotation of the node.
+    // This only applies to the output value, and you won't see any effect in
+    // the editor.
+    public final int FlipValue;
+    
     public final List<LXPoint> leds;
     public final Spike spike;
     public final List<Spoke> spokes;
@@ -121,7 +126,7 @@ public static class Bloom extends LXModel {
         super(new Fixture(config, id));
         JSONObject bloomConfig = config.getBloom(id);
         this.id = bloomConfig.getInt("id");
-        
+        this.FlipValue = bloomConfig.getInt("flip");
         
         Fixture f = (Fixture) this.fixtures.get(0);
         this.center = f.center;
@@ -190,11 +195,12 @@ public static class Bloom extends LXModel {
             
             if (numSpokes == 6) {
                 SetHexaSpokes(config, index);
+                this.umbrella = new Umbrella(false);
             }else{
                 SetPentaSpokes(config, index);
+                this.umbrella = new Umbrella(true);
             }
             
-            this.umbrella = new Umbrella();
             addPoints(this.umbrella);
         }
         
@@ -449,12 +455,16 @@ public static class Bloom extends LXModel {
         // Dummy point that holds the requested position of the Umbrella in the last byte
         // so 0xff000000 is 0% expanded and 0xffxxxxxx is 100% closed
         public final LXPoint position;    
+        public boolean IsPentaNode;
         
         // An updated once-per-frame simulation of where we believe the motor to be based
         // upon its speed limitations
         public double simulatedPosition = 0.;
         
         // NOTE(peter): This is what to change if the travel distance changes
+        public static final int MaxHexaSteps = 3346;
+        public static final int MaxPentaSteps = 3346; 
+        
         public static final int MaxSteps = 3025; // TODO: real number
         public static final int MaxStepsVel = 10000; // TODO: these match the code as it is, but that will change
         public static final int MaxStepsAcc = 50000; // TODO: these match the code as it is, but that will change
@@ -462,14 +472,26 @@ public static class Bloom extends LXModel {
         private static final double FULL_OPEN_TO_CLOSE_TIME = 4000; // 4 Seconds
         private static final double UMBRELLA_MAX_VELOCITY = 1.0 / FULL_OPEN_TO_CLOSE_TIME;
         
-        public Umbrella() {
+        public Umbrella(boolean _IsPentaNode) {
+            this.IsPentaNode = _IsPentaNode;
             addPoint(this.position = new LXPoint(0, 0, 0));      
         }
         
         public void update(double deltaMs, int[] colors) {
             // TODO: should we model the motor's acceleration or response?
-            double requestedPosition = (RadiaNodeSpecialDatagram.MOTOR_DATA_MASK & colors[this.position.index]);
-            requestedPosition /= MaxSteps;
+            double requestedPosition = 
+                (RadiaNodeSpecialDatagram.MOTOR_DATA_MASK & colors[this.position.index]);
+            
+            if (this.IsPentaNode)
+            {
+                requestedPosition /= MaxPentaSteps;
+            }
+            else
+            {
+                requestedPosition /= MaxHexaSteps;
+            }
+            
+            requestedPosition = 1.0 - requestedPosition;
             
             double dist = requestedPosition - this.simulatedPosition;
             double maxMovement = UMBRELLA_MAX_VELOCITY * deltaMs;
