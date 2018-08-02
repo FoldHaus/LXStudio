@@ -150,27 +150,20 @@ void buildHexaBloomOutput (LX lx, LXDatagramOutput output, Config config, JSONOb
     int start_universe = calculateStartUniverseFromIp(ip);
     int universe = start_universe;
     
-    List<Bloom.Spoke> shortSpokes = new ArrayList<Bloom.Spoke>();
-    List<Bloom.Spoke> longSpokes = new ArrayList<Bloom.Spoke>();
-    
-    // Find Short Struts
-    // Find Long Struts
-    for (Bloom.Spoke spoke : bloom.spokes) {
-        if (spoke.isShort) {
-            shortSpokes.add(spoke);
-        }else{
-            longSpokes.add(spoke);
-        }
-    }
-    
-    
     println("IP: " + ip + " Start Universe: " + start_universe + " DMX: " + (start_universe + DMX_UNIVERSE_OFFSET));
     
-    
     try {
-        // Short   
-        int[] indices = makeSpokeIndices(bloom, shortSpokes.get(0), universe, 102);
+        
+        // For hexa nodes, there are only two valid orientations, 
+        //   1. rotated 0 degrees   (0 indecies)
+        //   2. rotated 180 degrees (3 indecies)
+        int startSpokeIndex = bloom.FlipValue > 0 ? 3 : 0;
+        
+        // Short
+        println("Short 0: " + startSpokeIndex);
+        int[] indices = makeSpokeIndices(bloom, bloom.spokes.get(startSpokeIndex), universe, 102);
         output.addDatagram(new StreamingACNDatagram(universe++, indices).setAddress(ip));
+        startSpokeIndex = (startSpokeIndex + 1) % 6;
         
         // Spike
         output.addDatagram(new StreamingACNDatagram(universe++, makeIndices(bloom.spike.stripA, 170, 0)).setAddress(ip));
@@ -178,16 +171,22 @@ void buildHexaBloomOutput (LX lx, LXDatagramOutput output, Config config, JSONOb
         output.addDatagram(new StreamingACNDatagram(universe++, makeIndices(bloom.spike.stripA, 6, 340)).setAddress(ip));
         
         // Long 
-        indices = makeSpokeIndices(bloom, longSpokes.get(0), universe, 123);
+        println("Long 0: " + startSpokeIndex);
+        indices = makeSpokeIndices(bloom, bloom.spokes.get(startSpokeIndex), universe, 123);
         output.addDatagram(new StreamingACNDatagram(universe++, indices).setAddress(ip));
+        startSpokeIndex = (startSpokeIndex + 1) % 6;
         
         // Long
-        indices = makeSpokeIndices(bloom, longSpokes.get(1), universe, 123);
+        println("Long 1: " + startSpokeIndex);
+        indices = makeSpokeIndices(bloom, bloom.spokes.get(startSpokeIndex), universe, 123);
         output.addDatagram(new StreamingACNDatagram(universe++, indices).setAddress(ip));
+        startSpokeIndex = (startSpokeIndex + 1) % 6;
         
         // Short
-        indices = makeSpokeIndices(bloom, shortSpokes.get(0), universe, 102);
+        println("Short 1: " + startSpokeIndex);
+        indices = makeSpokeIndices(bloom, bloom.spokes.get(startSpokeIndex), universe, 102);
         output.addDatagram(new StreamingACNDatagram(universe++, indices).setAddress(ip));
+        startSpokeIndex = (startSpokeIndex + 1) % 6;
         
         
         // Spike
@@ -196,12 +195,16 @@ void buildHexaBloomOutput (LX lx, LXDatagramOutput output, Config config, JSONOb
         output.addDatagram(new StreamingACNDatagram(universe++, makeIndices(bloom.spike.stripB, 6, 340)).setAddress(ip));
         
         // Long 
-        indices = makeSpokeIndices(bloom, longSpokes.get(2), universe, 123);
+        println("Long 2: " + startSpokeIndex);
+        indices = makeSpokeIndices(bloom, bloom.spokes.get(startSpokeIndex), universe, 123);
         output.addDatagram(new StreamingACNDatagram(universe++, indices).setAddress(ip));
+        startSpokeIndex = (startSpokeIndex + 1) % 6;
         
         // Long
-        indices = makeSpokeIndices(bloom, longSpokes.get(3), universe, 123);
+        println("Long 3: " + startSpokeIndex);
+        indices = makeSpokeIndices(bloom, bloom.spokes.get(startSpokeIndex), universe, 123);
         output.addDatagram(new StreamingACNDatagram(universe++, indices).setAddress(ip));
+        startSpokeIndex = (startSpokeIndex + 1) % 6;
         
         // Set up DMX output
         output.addDatagram(new RadiaNodeSpecialDatagram(start_universe + DMX_UNIVERSE_OFFSET, bloom).setAddress(ip));
