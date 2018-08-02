@@ -1,0 +1,33 @@
+------------------------
+
+------TODO List
+
+------------------------
+
+BASIC FUNCTION
+- Motor Acceleration Function:
+-   needs to be replicated in the simulation of Umbrellas
+-   Probably needs Cameron and Peter for 30 minutes
+
+SENSORS
+- Test getting input to the new sensors cache in Sensors.pde
+- Test Anemometer -> RadiaWindProtect Pattern
+- Implement basic Pulley Umbrella Functionality - default 1-3 patterns that trigger when you pull an umbrella
+- Implement programming the structure with specific combo's of pulling the umbrellas
+
+ART HAUS
+- Finish the virtual musicians implementation
+- Write more patterns, that sync up with the tempo object
+- Create intro, crescendo and daybreak patterns
+
+PATTERNS
+- Top Priority: Need Umbrella Patterns
+- Need more color patterns
+- Need more mask patterns
+- (low priority) Need more pinspot patterns
+
+------------------------
+
+------WISH LIST
+
+-----------------------
