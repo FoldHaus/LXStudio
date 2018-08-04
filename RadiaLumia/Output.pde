@@ -23,10 +23,12 @@ void buildOutput(LX lx) {
         
         // Debug three blooms, with the ips in the array
         boolean BLOOM_DEBUG_THREE = true;
-        String[] DEBUG_THREE_IPS = {
+        String[] DEBUG_MULTIPLE_IPS = {
             "192.168.1.216",
             "192.168.1.214",
-            "192.168.1.200"
+            "192.168.1.200",
+            "192.168.1.228",
+            "192.168.1.217"
         };
         
         int mappedBloomCount = 0;
@@ -48,8 +50,8 @@ void buildOutput(LX lx) {
                 }
                 
                 ++mappedBloomCount;
-            } else if (!BLOOM_DEBUG_ONE && BLOOM_DEBUG_THREE && (mappedBloomCount < DEBUG_THREE_IPS.length)) {
-                if (stringIn(bloomConfig.getString("ip"), DEBUG_THREE_IPS)){
+            } else if (!BLOOM_DEBUG_ONE && BLOOM_DEBUG_THREE && (mappedBloomCount < DEBUG_MULTIPLE_IPS.length)) {
+                if (stringIn(bloomConfig.getString("ip"), DEBUG_MULTIPLE_IPS)){
                     
                     if (bloom.spokes.size() == 6)
                     {
