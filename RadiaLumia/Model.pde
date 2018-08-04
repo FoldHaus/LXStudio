@@ -108,6 +108,7 @@ public static class Bloom extends LXModel {
     // This only applies to the output value, and you won't see any effect in
     // the editor.
     public final int FlipValue;
+    public final boolean MirrorOutputs;
     
     public final List<LXPoint> leds;
     public final Spike spike;
@@ -127,6 +128,7 @@ public static class Bloom extends LXModel {
         JSONObject bloomConfig = config.getBloom(id);
         this.id = bloomConfig.getInt("id");
         this.FlipValue = bloomConfig.getInt("flip");
+        this.MirrorOutputs = bloomConfig.getInt("mirror") == 0;
         
         Fixture f = (Fixture) this.fixtures.get(0);
         this.center = f.center;
