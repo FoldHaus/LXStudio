@@ -339,6 +339,8 @@ public class UmbrellaLightSteps extends ArtHausPattern
     }
 }
 
+// a rotating plane, that, at its edge, takes whatever color is currently in the led,
+// and adds some value to it
 @LXCategory("ArtHaus")
 public class RotatingColorFade extends ArtHausPattern
 {
@@ -363,15 +365,38 @@ public class RotatingColorFade extends ArtHausPattern
         int Progress = lx.tempo.beatCount() % Period;
         float ProgressPercent = (float)lx.tempo.ramp();
         
-        float LeadingAngle = Rotator.getValuef();
-        float TrailingAngle = LeadingAngle - FadeAngle.getValuef();
+        LXVector Normal = new LXVector(cos(Period), 0, sin(Period));
+        LXVector Forward = new LXVector(sin(Period), 0, cos(Period));
+        
+        LXVector Center = new LXVector(0, 0, 0);
         
         LXVector pointVector;
         
         for (LXPoint p : model.leds)
         {
             pointVector = LXPointToVector(p);
+            float PointDotNormal = pointVector.dot(Normal);
+            float PointDotForward = pointVector.dot(Forward);
+            
+            colors[p.index] = LXColor.rgb((int)(abs(PointDotNormal) * 255),
+                                          0,
+                                          (int)(abs(PointDotForward) * 255));
         }
+    }
+}
+
+// A pattern that moves random umbrellas slowly, and lightens them as they get further away from the center.
+@LXCategory("ArtHaus")
+public class UmbrellaIlluminatedMove extends ArtHausPattern
+{
+    public UmbrellaIlluminatedMove (LX lx)
+    {
+        super(lx);
+    }
+    
+    public void run(double deltaMs)
+    {
+        
     }
 }
 
@@ -380,7 +405,6 @@ public class Blossoms extends ArtHausPattern
 {
     
     // TODO(peter): make this change which umbrellas it is tracking at the same time.
-    
     public Blossoms (LX lx)
     {
         super(lx);
@@ -390,16 +414,16 @@ public class Blossoms extends ArtHausPattern
     {
         UpdateUmbrellaMask();
         
-        for (Bloom b : mode.blooms)
+        for (Bloom b : model.blooms)
         {
-            float UmbrellaBrightness = b.umbrella.simulatedPosition;
+            double UmbrellaBrightness = b.umbrella.simulatedPosition;
             int ColorValues = (int)(UmbrellaBrightness * 255);
             
             for (LXPoint p : b.leds)
             {
                 if (POINT_COVEREDBYUMBRELLA[p.index])
                 {
-                    colors[p.index] = LXColor(ColorValues, ColorValues, ColorValues);
+                    colors[p.index] = LXColor.rgb(ColorValues, ColorValues, ColorValues);
                 }
             }
         }

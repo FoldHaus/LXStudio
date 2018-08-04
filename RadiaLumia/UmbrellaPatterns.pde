@@ -401,19 +401,19 @@ public class UmbrellasPoint extends RadiaLumiaPattern
         new CompoundParameter("vspd", 1, 60000, 0.1);
     
     public final SawLFO P_ThetaHorizontal = 
-        new SawLFO(0, TWO_PI, HorizontalRotationSpeed);
+        new SawLFO(0, TWO_PI, P_HorizontalRotationSpeed);
     
     public final SawLFO P_ThetaVertical = 
-        new SawLFO(0, TWO_PI, VerticalRotationSpeed);
+        new SawLFO(0, TWO_PI, P_VerticalRotationSpeed);
     
     public UmbrellasPoint(LX lx)
     {
         super(lx);
         
-        addParameter(HorizontalRotationSpeed);
-        addParameter(VerticalRotationSpeed);
-        startModulator(ThetaHorizontal);
-        startModulator(ThetaVertical);
+        addParameter(P_HorizontalRotationSpeed);
+        addParameter(P_VerticalRotationSpeed);
+        startModulator(P_ThetaHorizontal);
+        startModulator(P_ThetaVertical);
     }
     
     public void run(double deltaMs)
@@ -424,7 +424,7 @@ public class UmbrellasPoint extends RadiaLumiaPattern
         // This should remain at radius = 1 this way
         LXVector TargetPoint = new LXVector(sin(ThetaHorizontal), 0, cos(ThetaHorizontal));
         
-        for (Bloom bloom : model.bloom)
+        for (Bloom bloom : model.blooms)
         {
             float DistanceToTarget = TargetPoint.dist(bloom.center);
             float TargetPercentOpen = 1 - (.5 + (DistanceToTarget / 2));
@@ -441,7 +441,7 @@ public class Breathe extends RadiaLumiaPattern
         new CompoundParameter("rate", 0, 300000, 4000);
     
     public final SinLFO CurrentBreath = 
-        new SinLFO(-1.5, 1.5, BreathRate);
+        new SinLFO(-1.25, 1.25, BreathRate);
     
     public Breathe (LX lx)
     {
@@ -453,8 +453,9 @@ public class Breathe extends RadiaLumiaPattern
     public void run(double deltaMs)
     {
         float Separator = CurrentBreath.getValuef();
+        Separator *= Config.SCALE;
         
-        for (Bloom bloom : model.bloom)
+        for (Bloom bloom : model.blooms)
         {
             if (bloom.center.y < Separator)
             {

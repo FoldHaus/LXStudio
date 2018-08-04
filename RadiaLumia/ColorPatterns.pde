@@ -157,9 +157,7 @@ public class RadialStripes extends RadiaLumiaPattern
         addParameter(P_ColorPeriod);
         addParameter(P_Warp);
         addParameter(P_WarpFrequency);
-        
-        addParameter(P_ColorA);
-        addParameter(P_ColorB);
+        addParameter(P_ColorDelta);
         
         startModulator(Progress);
     }
@@ -179,7 +177,7 @@ public class RadialStripes extends RadiaLumiaPattern
         
         int ColorA = palette.getColor();
         int ColorB = LXColor.hsb(palette.getHuef() + P_ColorDelta.getValuef(),
-                                 palette.getSatf(),
+                                 palette.getSaturationf(),
                                  100);
         
         for (Bloom bloom : model.blooms)
@@ -219,33 +217,28 @@ public class RadialStripes extends RadiaLumiaPattern
 public class ColorWipe extends RadiaLumiaPattern
 {
     
-    public final CompoundParameter HueChangeFrequency =
-        new CompoundParameter("d freq", 5, .25, 10000);
-    
-    public final CompoundParameter WipeSpeed =
-        new CompoundParameter("spd", 5, .25, 10000);
+    public final CompoundParameter P_WipeSpeed =
+        new CompoundParameter("spd", 5000, .25, 10000);
     
     public final CompoundParameter WipeSharpness = 
         new CompoundParameter("sharp", 1, 1, 100);
     
-    public final CompoundParameter P_WipeHeight =
-        new CompoundParameter("d", 0, 0, 1);
+    public final SinLFO P_WipePosition =
+        new SinLFO(-1, 1, P_WipeSpeed);
     
     int CurrentHue;
     int NextHue;
     
-    double TimeSinceLastWipe;
+    double LastFrameWipeHeight;
     double WipeHeight;
     
     public ColorWipe(LX lx)
     {
         super(lx);
         
-        addParameter(HueChangeFrequency);
-        addParameter(WipeSpeed);
+        addParameter(P_WipeSpeed);
         addParameter(WipeSharpness);
-        
-        addParameter(P_WipeHeight);
+        startModulator(P_WipePosition);
         
         CurrentHue = 0;
         NextHue = 0;
@@ -253,31 +246,31 @@ public class ColorWipe extends RadiaLumiaPattern
     
     public void run(double deltaMs)
     {
-        TimeSinceLastWipe += deltaMs;
-        if (TimeSinceLastWipe > HueChangeFrequency.getValue())
-        {
-            // NOTE(peter): Wipe Completed
-            if (TimeSinceLastWipe > HueChangeFrequency.getValue() + WipeSpeed.getValue())
-            {
-                TimeSinceLastWipe = 0;
-            }else{
-                
-            }
-        }
+        WipeHeight = P_WipePosition.getValue() * Config.SCALE;
         
-        // TODO(peter): NOT FINISHED
-        
-        WipeHeight = P_WipeHeight.getValue() * 150;
+        double Direction = -1;
+        if (WipeHeight > LastFrameWipeHeight)
+            Direction = 1;
         
         double Exponent = WipeSharpness.getValue();
+        float NewHue = palette.getHuef();
+        float PaletteSat = palette.getSaturationf();
         
         for (LXPoint p : model.leds)
         {
-            double Distance = abs(p.y - WipeHeight);
+            double Distance = Direction * (p.y - WipeHeight);
             double WipeInfluence = clamp(1.0 - (Distance / Exponent), 0, 1);
             
-            colors[p.index] = LXColor.hsb(0, 0, WipeInfluence * 100);
+            int CurrentColor = colors[p.index];
+            
+            float CurrentHue = LXColor.h(CurrentColor);
+            
+            float InterpolatedHue = lerp(CurrentHue, NewHue, (float)WipeInfluence);
+            
+            colors[p.index] = LXColor.hsb(InterpolatedHue, PaletteSat, 100);
         }
+        
+        LastFrameWipeHeight = WipeHeight;
     }
 }
 

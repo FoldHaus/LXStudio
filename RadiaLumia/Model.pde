@@ -484,23 +484,24 @@ public static class Bloom extends LXModel {
             LastFrameRequestedPosition = 0.0;
         }
         
-        public void GetAccelerationLimitedPosition(
-            double _RequestedPosition
+        public double GetAccelerationLimitedPosition(
+            double _RequestedPosition,
+            double _DeltaMs
             )
         {
             
-            double RequestedVelocity = (requestedPosition - LastFrameRequestedPosition) / deltaMs;
-            double RequestedAcceleration = abs(RequestedVelocity - CurrentVelocity) / deltaMs;
+            double RequestedVelocity = (_RequestedPosition - LastFrameRequestedPosition) / _DeltaMs;
+            double RequestedAcceleration = abs(RequestedVelocity - CurrentVelocity) / _DeltaMs;
             
             double ValidAccel = RequestedAcceleration;
             double ValidVelocity = RequestedVelocity;
-            double ValidPosition = requestedPosition;
+            double ValidPosition = _RequestedPosition;
             
             if (RequestedAcceleration > Umbrella.MaxStepsAcc)
             {
                 ValidAccel = Umbrella.MaxStepsAcc * sign(RequestedAcceleration);
                 
-                ValidVelocity = CurrentVelocity + (Umbrella.MaxStepsAcc * deltaMs);
+                ValidVelocity = CurrentVelocity + (Umbrella.MaxStepsAcc * _DeltaMs);
             }
             
             if(abs(ValidVelocity) > MaxStepsVel)
@@ -509,7 +510,7 @@ public static class Bloom extends LXModel {
             }
             
             CurrentVelocity = ValidVelocity;
-            ValidPosition = LastFrameRequestedPosition + (ValidVelocity * deltaMs);
+            ValidPosition = LastFrameRequestedPosition + (ValidVelocity * _DeltaMs);
             LastFrameRequestedPosition = ValidPosition;
             
             return ValidPosition;

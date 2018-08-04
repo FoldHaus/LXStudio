@@ -9,7 +9,7 @@ public class HeartGradient extends RadiaLumiaPattern
     public void run (double deltaMs)
     {
         float Hue = palette.getHuef();
-        float Sat = palette.getSatf();
+        float Sat = palette.getSaturationf();
         
         for (LXPoint p : model.heart.points)
         {
