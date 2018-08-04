@@ -143,11 +143,8 @@ public class RadialStripes extends RadiaLumiaPattern
         new CompoundParameter("wfq", 0, 0, 5)
         .setDescription("The amount of warping to apply to the stripes");
     
-    public final ColorParameter P_ColorA =
-        new ColorParameter("A", LXColor.hsb(100, 100, 100));
-    
-    public final ColorParameter P_ColorB = 
-        new ColorParameter("B", LXColor.hsb(200, 100, 100));
+    public final CompoundParameter P_ColorDelta = 
+        new CompoundParameter("cdelta", PI, 0, TWO_PI);
     
     public final SawLFO Progress =
         new SawLFO(0, 6, P_MotionSpeed);
@@ -180,8 +177,10 @@ public class RadialStripes extends RadiaLumiaPattern
         double WarpStrength = P_Warp.getValue();
         double WarpFrequency = P_WarpFrequency.getValue();
         
-        int ColorA = P_ColorA.getColor();
-        int ColorB = P_ColorB.getColor();
+        int ColorA = palette.getColor();
+        int ColorB = LXColor.hsb(palette.getHuef() + P_ColorDelta.getValuef(),
+                                 palette.getSatf(),
+                                 100);
         
         for (Bloom bloom : model.blooms)
         {
@@ -265,6 +264,8 @@ public class ColorWipe extends RadiaLumiaPattern
                 
             }
         }
+        
+        // TODO(peter): NOT FINISHED
         
         WipeHeight = P_WipeHeight.getValue() * 150;
         
@@ -417,21 +418,13 @@ public class Pinwheel extends RadiaLumiaPattern {
 @LXCategory("Color")
 public class RadiaSolid extends RadiaLumiaPattern {
     
-    // color parameters
-    
-    public final ColorParameter currentColor = 
-        new ColorParameter("currentColor");
-    
     public RadiaSolid (LX lx){
         super(lx);
-        
-        addParameter(currentColor);
-        
     }
     
     public void run(double deltaMs){
         
-        int c = currentColor.getColor();
+        int c = palette.getColor();
         
         for (LXPoint light : model.leds) {
             colors[light.index] = c;
