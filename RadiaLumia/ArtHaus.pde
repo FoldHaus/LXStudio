@@ -11,7 +11,6 @@ public class ArtHausPerformance
     /* TODO(peter): ArtHausPerformance
     
      Beat
-     - Need to have a Pulse Channel
      - Need to be able to control what part of the structure is displaying the pulse
      
      
@@ -337,6 +336,43 @@ public class UmbrellaLightSteps extends ArtHausPattern
             {
                 colors[p.index] = LXColor.hsb(0, 0, 100 * (1 - _Percent));
             }
+        }
+    }
+}
+
+
+@LXCategory("ArtHaus")
+public class RotatingColorFade extends ArtHausPattern
+{
+    
+    public final CompoundParameter FadeAngle = 
+        new CompoundParameter("angle", PI, 0.0, TWO_PI);
+    
+    public final SawLFO Rotator = 
+        new SawLFO(0, TWO_PI, this.TempoMultiplier);
+    
+    public RotatingColorFade (LX lx)
+    {
+        super(lx);
+        addParameter(FadeAngle);
+        startModulator(Rotator);
+    }
+    
+    public void run (double deltaMs)
+    {
+        // TODO(peter): Make it so that umbrellas can be lit and fade over more than one beat
+        int Period = TempoMultiplier.getValuei();
+        int Progress = lx.tempo.beatCount() % Period;
+        float ProgressPercent = (float)lx.tempo.ramp();
+        
+        float LeadingAngle = Rotator.getValuef();
+        float TrailingAngle = LeadingAngle - FadeAngle.getValuef();
+        
+        LXVector pointVector;
+        
+        for (LXPoint p : model.leds)
+        {
+            pointVector = LXPointToVector(p);
         }
     }
 }

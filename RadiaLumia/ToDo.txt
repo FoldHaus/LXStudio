@@ -16,7 +16,9 @@ SENSORS
 - Implement programming the structure with specific combo's of pulling the umbrellas
 
 ART HAUS
-- Finish the virtual musicians implementation
+- Virtual Musicians
+-    - Logic for weighted switching between patterns
+-    - Will they offset by 1 or 2 beats from eachother?
 - Write more patterns, that sync up with the tempo object
 - Create intro, crescendo and daybreak patterns
 
@@ -24,7 +26,7 @@ PATTERNS
 - Top Priority: Need Umbrella Patterns
 - Need more color patterns
 - Need more mask patterns
-- (low priority) Need more pinspot patterns
+- (low priority until they work) Need more pinspot patterns
 
 ------------------------
 

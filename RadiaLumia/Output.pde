@@ -82,6 +82,10 @@ int calculateStartUniverseFromIp (String ip) {
     return (UNIVERSES_PER_PIXLITE * id); // Every pixlite takes up 24 universes
 }
 
+
+int[] PENTA_BASE_SPOKE_ORDER = {0, 1, 2, 3, 4 };
+int[] PENTA_MIRRORED_SPOKE_ORDER = { 4, 3, 2, 1, 0};
+
 void buildPentaBloomOutput (LX lx, 
                             LXDatagramOutput output,
                             Config config,
@@ -95,14 +99,44 @@ void buildPentaBloomOutput (LX lx,
     
     println("Start Universe: " + start_universe + " DMX: " + (start_universe + DMX_UNIVERSE_OFFSET));
     
+    int OrderedSpikeIndex = 0;
+    int[] SpikeIndexOrder = PENTA_BASE_SPOKE_ORDER;
+    if (bloom.MirrorOutputs)
+    {
+        SpikeIndexOrder = PENTA_MIRRORED_SPOKE_ORDER;
+    }
+    
+    int[] CopyArray = new int[5];
+    
+    println();
+    println("Remapping");
+    println(SpikeIndexOrder);
+    println();
+    
+    for (int i = 0; i < SpikeIndexOrder.length; i++)
+    {
+        int inValue = i;
+        int outValue = (i + bloom.FlipValue) % SpikeIndexOrder.length;
+        int valAtIndex = SpikeIndexOrder[outValue];
+        
+        println(" - " + inValue + " : " + outValue + " : " + valAtIndex);
+        
+        CopyArray[inValue] = SpikeIndexOrder[outValue];
+    }
+    
+    SpikeIndexOrder = CopyArray;
+    
+    println();
+    println(SpikeIndexOrder);
+    println();
+    
     try {
         // Mod 5 to ensure the value is always within 0-5 range
-        int spoke_index = bloom.FlipValue % 5;
         
-        println("Spoke " + spoke_index + ": " + universe);
-        int[] indices = makeSpokeIndices(bloom, bloom.spokes.get(spoke_index++), universe, 102);
+        println("Spoke " + OrderedSpikeIndex + " Rot Order: "  + SpikeIndexOrder[OrderedSpikeIndex] + ": " + universe);
+        int[] indices = makeSpokeIndices(bloom, bloom.spokes.get(SpikeIndexOrder[OrderedSpikeIndex]), universe, 102);
         output.addDatagram(new StreamingACNDatagram(universe++, indices).setAddress(ip));
-        spoke_index = spoke_index % 5;
+        OrderedSpikeIndex++;
         
         // Spike
         println("Spike 1" + ": " + universe);
@@ -111,20 +145,20 @@ void buildPentaBloomOutput (LX lx,
         output.addDatagram(new StreamingACNDatagram(universe++, makeIndices(bloom.spike.stripA, 6, 340)).setAddress(ip));
         
         
-        println("Spoke " + spoke_index + ": " + universe);
-        indices = makeSpokeIndices(bloom, bloom.spokes.get(spoke_index++), universe, 102);
+        println("Spoke " + OrderedSpikeIndex + " Rot Order: "  + SpikeIndexOrder[OrderedSpikeIndex] + ": " + universe);
+        indices = makeSpokeIndices(bloom, bloom.spokes.get(SpikeIndexOrder[OrderedSpikeIndex]), universe, 102);
         output.addDatagram(new StreamingACNDatagram(universe++, indices).setAddress(ip));
-        spoke_index = spoke_index % 5;
+        OrderedSpikeIndex++;
         
-        println("Spoke " + spoke_index + ": " +  universe);
-        indices = makeSpokeIndices(bloom, bloom.spokes.get(spoke_index++), universe, 102);
+        println("Spoke " + OrderedSpikeIndex + " Rot Order: "  + SpikeIndexOrder[OrderedSpikeIndex] + ": " +  universe);
+        indices = makeSpokeIndices(bloom, bloom.spokes.get(SpikeIndexOrder[OrderedSpikeIndex]), universe, 102);
         output.addDatagram(new StreamingACNDatagram(universe++, indices).setAddress(ip));
-        spoke_index = spoke_index % 5;
+        OrderedSpikeIndex++;
         
-        println("Spoke " + spoke_index + ": " +  universe);
-        indices = makeSpokeIndices(bloom, bloom.spokes.get(spoke_index++), universe, 102);
+        println("Spoke " + OrderedSpikeIndex + " Rot Order: "  + SpikeIndexOrder[OrderedSpikeIndex] + ": " +  universe);
+        indices = makeSpokeIndices(bloom, bloom.spokes.get(SpikeIndexOrder[OrderedSpikeIndex]), universe, 102);
         output.addDatagram(new StreamingACNDatagram(universe++, indices).setAddress(ip));
-        spoke_index = spoke_index % 5;
+        OrderedSpikeIndex++;
         
         // Spike
         println("Spike 2" + ": " + universe);
@@ -133,10 +167,10 @@ void buildPentaBloomOutput (LX lx,
         output.addDatagram(new StreamingACNDatagram(universe++, makeIndices(bloom.spike.stripA, 6, 340)).setAddress(ip));
         
         
-        println("Spoke " + spoke_index + ": " + universe);
-        indices = makeSpokeIndices(bloom, bloom.spokes.get(spoke_index++), universe, 102);
+        println("Spoke " + OrderedSpikeIndex + " Rot Order: "  + SpikeIndexOrder[OrderedSpikeIndex] + ": " + universe);
+        indices = makeSpokeIndices(bloom, bloom.spokes.get(SpikeIndexOrder[OrderedSpikeIndex]), universe, 102);
         output.addDatagram(new StreamingACNDatagram(universe++, indices).setAddress(ip));
-        spoke_index = spoke_index % 5;
+        OrderedSpikeIndex++;
         
         // Set up DMX output
         output.addDatagram(new RadiaNodeSpecialDatagram(start_universe + DMX_UNIVERSE_OFFSET, bloom).setAddress(ip));
@@ -147,6 +181,11 @@ void buildPentaBloomOutput (LX lx,
     }
 }
 
+int[] HEXA_BASE_SPOKE_ORDER = {0, 1, 2, 3, 4, 5};
+int[] HEXA_FLIPPED_SPOKE_ORDER = {3, 4, 5, 0, 1, 2};
+int[] HEXA_MIRRORED_SPOKE_ORDER = {0, 5, 4, 3, 2, 1};
+int[] HEXA_FLIPPED_MIRRORED_SPOKE_ORDER = {3, 2, 1, 0, 5, 4};
+
 void buildHexaBloomOutput (LX lx, LXDatagramOutput output, Config config, JSONObject bloomConfig, Bloom bloom, String ip)
 {
     int start_universe = calculateStartUniverseFromIp(ip);
@@ -154,18 +193,41 @@ void buildHexaBloomOutput (LX lx, LXDatagramOutput output, Config config, JSONOb
     
     println("IP: " + ip + " Start Universe: " + start_universe + " DMX: " + (start_universe + DMX_UNIVERSE_OFFSET));
     
+    int OrderedSpokeIndex = 0;
+    int[] SpokeIndexOrder = HEXA_BASE_SPOKE_ORDER;
+    if (bloom.FlipValue > 0)
+    {
+        if (bloom.MirrorOutputs)
+        {
+            println("MIRRORED + FLIPPED");
+            SpokeIndexOrder = HEXA_FLIPPED_MIRRORED_SPOKE_ORDER;
+        }
+        else
+        {
+            println("FLIPPED");
+            SpokeIndexOrder = HEXA_FLIPPED_SPOKE_ORDER;
+        }
+    }
+    else
+    {
+        if (bloom.MirrorOutputs)
+        {
+            println("MIRRORED");
+            SpokeIndexOrder = HEXA_MIRRORED_SPOKE_ORDER;
+        }
+        else
+        {
+            // Base Order
+        }
+    }
+    
     try {
         
-        // For hexa nodes, there are only two valid orientations, 
-        //   1. rotated 0 degrees   (0 indecies)
-        //   2. rotated 180 degrees (3 indecies)
-        int startSpokeIndex = bloom.FlipValue > 0 ? 3 : 0;
-        
         // Short
-        println("Short 0: " + startSpokeIndex);
-        int[] indices = makeSpokeIndices(bloom, bloom.spokes.get(startSpokeIndex), universe, 102);
+        println("Short 0: " + SpokeIndexOrder[OrderedSpokeIndex]);
+        int[] indices = makeSpokeIndices(bloom, bloom.spokes.get(SpokeIndexOrder[OrderedSpokeIndex]), universe, 102);
         output.addDatagram(new StreamingACNDatagram(universe++, indices).setAddress(ip));
-        startSpokeIndex = (startSpokeIndex + 1) % 6;
+        OrderedSpokeIndex++;
         
         // Spike
         output.addDatagram(new StreamingACNDatagram(universe++, makeIndices(bloom.spike.stripA, 170, 0)).setAddress(ip));
@@ -173,23 +235,25 @@ void buildHexaBloomOutput (LX lx, LXDatagramOutput output, Config config, JSONOb
         output.addDatagram(new StreamingACNDatagram(universe++, makeIndices(bloom.spike.stripA, 6, 340)).setAddress(ip));
         
         // Long 
-        println("Long 0: " + startSpokeIndex);
-        indices = makeSpokeIndices(bloom, bloom.spokes.get(startSpokeIndex), universe, 123);
+        println("Long 0: " + SpokeIndexOrder[OrderedSpokeIndex]);
+        indices = makeSpokeIndices(bloom, bloom.spokes.get(SpokeIndexOrder[OrderedSpokeIndex]), universe, 123);
         output.addDatagram(new StreamingACNDatagram(universe++, indices).setAddress(ip));
-        startSpokeIndex = (startSpokeIndex + 1) % 6;
+        OrderedSpokeIndex++;
         
         // Long
-        println("Long 1: " + startSpokeIndex);
-        indices = makeSpokeIndices(bloom, bloom.spokes.get(startSpokeIndex), universe, 123);
+        println("Long 1: " + SpokeIndexOrder[OrderedSpokeIndex]);
+        indices = makeSpokeIndices(bloom, bloom.spokes.get(SpokeIndexOrder[OrderedSpokeIndex]), universe, 123);
         output.addDatagram(new StreamingACNDatagram(universe++, indices).setAddress(ip));
-        startSpokeIndex = (startSpokeIndex + 1) % 6;
+        OrderedSpokeIndex++;
         
         // Short
-        println("Short 1: " + startSpokeIndex);
-        indices = makeSpokeIndices(bloom, bloom.spokes.get(startSpokeIndex), universe, 102);
+        println("Short 1: " + SpokeIndexOrder[OrderedSpokeIndex]);
+        println("SpokeIndex: " + SpokeIndexOrder[OrderedSpokeIndex] + " Universe: " + universe +" Before: " + OrderedSpokeIndex);
+        indices = makeSpokeIndices(bloom, bloom.spokes.get(SpokeIndexOrder[OrderedSpokeIndex]), universe, 102);
         output.addDatagram(new StreamingACNDatagram(universe++, indices).setAddress(ip));
-        startSpokeIndex = (startSpokeIndex + 1) % 6;
         
+        OrderedSpokeIndex++;
+        println("SpokeIndex: " + SpokeIndexOrder[OrderedSpokeIndex] + " Universe: " + universe + " After: " + OrderedSpokeIndex);
         
         // Spike
         output.addDatagram(new StreamingACNDatagram(universe++, makeIndices(bloom.spike.stripB, 170, 0)).setAddress(ip));
@@ -197,16 +261,16 @@ void buildHexaBloomOutput (LX lx, LXDatagramOutput output, Config config, JSONOb
         output.addDatagram(new StreamingACNDatagram(universe++, makeIndices(bloom.spike.stripB, 6, 340)).setAddress(ip));
         
         // Long 
-        println("Long 2: " + startSpokeIndex);
-        indices = makeSpokeIndices(bloom, bloom.spokes.get(startSpokeIndex), universe, 123);
+        println("Long 2: " + SpokeIndexOrder[OrderedSpokeIndex]);
+        indices = makeSpokeIndices(bloom, bloom.spokes.get(SpokeIndexOrder[OrderedSpokeIndex]), universe, 123);
         output.addDatagram(new StreamingACNDatagram(universe++, indices).setAddress(ip));
-        startSpokeIndex = (startSpokeIndex + 1) % 6;
+        OrderedSpokeIndex++;
         
         // Long
-        println("Long 3: " + startSpokeIndex);
-        indices = makeSpokeIndices(bloom, bloom.spokes.get(startSpokeIndex), universe, 123);
+        println("Long 3: " + SpokeIndexOrder[OrderedSpokeIndex]);
+        indices = makeSpokeIndices(bloom, bloom.spokes.get(SpokeIndexOrder[OrderedSpokeIndex]), universe, 123);
         output.addDatagram(new StreamingACNDatagram(universe++, indices).setAddress(ip));
-        startSpokeIndex = (startSpokeIndex + 1) % 6;
+        OrderedSpokeIndex++;
         
         // Set up DMX output
         output.addDatagram(new RadiaNodeSpecialDatagram(start_universe + DMX_UNIVERSE_OFFSET, bloom).setAddress(ip));
