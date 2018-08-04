@@ -156,7 +156,6 @@ public abstract class ArtHausPattern extends RadiaLumiaPattern
 {
     
     // TODO(peter): Needed fields
-    // - registerCompleted()
     // - channelMode - the blend mode of the channel while this pattern is on
     // - musician - track which musician is playing 
     
@@ -340,7 +339,6 @@ public class UmbrellaLightSteps extends ArtHausPattern
     }
 }
 
-
 @LXCategory("ArtHaus")
 public class RotatingColorFade extends ArtHausPattern
 {
@@ -377,3 +375,33 @@ public class RotatingColorFade extends ArtHausPattern
     }
 }
 
+@LXCategory("ArtHaus")
+public class Blossoms extends ArtHausPattern
+{
+    
+    // TODO(peter): make this change which umbrellas it is tracking at the same time.
+    
+    public Blossoms (LX lx)
+    {
+        super(lx);
+    }
+    
+    public void run(double deltaMs)
+    {
+        UpdateUmbrellaMask();
+        
+        for (Bloom b : mode.blooms)
+        {
+            float UmbrellaBrightness = b.umbrella.simulatedPosition;
+            int ColorValues = (int)(UmbrellaBrightness * 255);
+            
+            for (LXPoint p : b.leds)
+            {
+                if (POINT_COVEREDBYUMBRELLA[p.index])
+                {
+                    colors[p.index] = LXColor(ColorValues, ColorValues, ColorValues);
+                }
+            }
+        }
+    }
+}
