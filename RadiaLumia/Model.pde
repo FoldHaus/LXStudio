@@ -31,6 +31,7 @@ public static class Model extends LXModel {
     public final List<Bloom> blooms;
     public final List<LXPoint> leds;
     public final Heart heart;
+
     
     // This is just a list of all the points that should be displayed in the simulation
     // This is made up of:
@@ -39,6 +40,7 @@ public static class Model extends LXModel {
     // - Pinspots
     // - Heart points
     public final List<LXPoint> displayPoints;
+    // public final float maxDistAllLeds;
     
     public Model(Config config) {
         super(new Fixture(config));
@@ -68,6 +70,11 @@ public static class Model extends LXModel {
         this.displayPoints = Collections.unmodifiableList(displayPoints_);
         println("Leds: " + this.leds.size());
         println("Length of led strips: " + (leds.size() / 60));
+
+        // float tempDist = 0.0;
+        // LXVector ledVector : LXPointToVector(leds[0]);
+        // for (LXPoint led : this.leds) {
+        // }
         
     }
     
