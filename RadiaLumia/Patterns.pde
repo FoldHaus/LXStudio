@@ -16,7 +16,8 @@ public abstract class RadiaLumiaPattern extends LXModelPattern<Model> {
     
     //NOTE(peter): umbrella position is in a range from (0, 1) inclusive
     public void setUmbrella(Bloom bloom, double position) {
-        final int positionSteps = RadiaNodeSpecialDatagram.MOTOR_DATA_MASK & (int) (Bloom.Umbrella.MaxSteps * position);
+        double ClampedPosition = clamp(position, 0, 1);
+        final int positionSteps = RadiaNodeSpecialDatagram.MOTOR_DATA_MASK & (int) (Bloom.Umbrella.MaxSteps * ClampedPosition);
         this.colors[bloom.umbrella.position.index] = 0xff000000 | positionSteps;
     }
     

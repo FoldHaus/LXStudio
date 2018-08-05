@@ -172,8 +172,11 @@ public abstract class ArtHausPattern extends RadiaLumiaPattern
         HasPassedFirstFrame = false;
     }
     
+    public abstract void ResetPattern ();
+    
     public void PatternCompleted ()
     {
+        this.ResetPattern();
         artHaus.ChooseNewPattern(this.Musician);
     }
 }
@@ -188,6 +191,15 @@ public class BeatPinSpots extends ArtHausPattern
         
         BloomPinspotOn = new boolean[42];
         
+        ResetPattern();
+    }
+    
+    int BeatsSinceUpdate = 0;
+    
+    public void ResetPattern ()
+    {
+        BeatsSinceUpdate = 0;
+        
         for (int i = 0; i < 42; i++) {
             // Turn roughly 1/4 of the pinspots on at a time.
             if (random(0, 1) > .75)
@@ -197,8 +209,6 @@ public class BeatPinSpots extends ArtHausPattern
             }
         }
     }
-    
-    int BeatsSinceUpdate = 0;
     
     public void run (double deltaMs) {
         if (lx.tempo.beat())
@@ -247,6 +257,11 @@ public class BeatSpikes extends ArtHausPattern
         addParameter(P_TrailLength);
     }
     
+    public void ResetPattern ()
+    {
+        
+    }
+    
     public void run (double deltaMs) {
         float Period = (float)TempoMultiplier.getValuei();
         float TrailLength = P_TrailLength.getValuef();
@@ -290,6 +305,11 @@ public class UmbrellaLightSteps extends ArtHausPattern
         IlluminatedUmbrellas = new int[42];
     }
     
+    public void ResetPattern ()
+    {
+        
+    }
+    
     public void run (double deltaMs)
     {
         // TODO(peter): Make it so that umbrellas can be lit and fade over more than one beat
@@ -303,7 +323,6 @@ public class UmbrellaLightSteps extends ArtHausPattern
             {
                 // Init new Pattern
                 IlluminatedUmbrellas[0] = (int)random(0, 42);
-                println("Step: " + IlluminatedUmbrellas[0]);
                 for (int i = 1; i < P_NumSteps.getValuei(); i++)
                 {
                     Bloom previousBloom = model.blooms.get(IlluminatedUmbrellas[i-1]);
@@ -358,6 +377,11 @@ public class RotatingColorFade extends ArtHausPattern
         startModulator(Rotator);
     }
     
+    public void ResetPattern ()
+    {
+        
+    }
+    
     public void run (double deltaMs)
     {
         // TODO(peter): Make it so that umbrellas can be lit and fade over more than one beat
@@ -394,6 +418,10 @@ public class UmbrellaIlluminatedMove extends ArtHausPattern
         super(lx);
     }
     
+    public void ResetPattern ()
+    {
+    }
+    
     public void run(double deltaMs)
     {
         
@@ -401,13 +429,19 @@ public class UmbrellaIlluminatedMove extends ArtHausPattern
 }
 
 @LXCategory("ArtHaus")
-public class Blossoms extends ArtHausPattern
+public class GlowingBlossoms extends ArtHausPattern
 {
     
-    // TODO(peter): make this change which umbrellas it is tracking at the same time.
-    public Blossoms (LX lx)
+    public int BeatsTracked = 0;
+    
+    public GlowingBlossoms (LX lx)
     {
         super(lx);
+    }
+    
+    public void ResetPattern ()
+    {
+        BeatsTracked = 0;
     }
     
     public void run(double deltaMs)
@@ -425,6 +459,15 @@ public class Blossoms extends ArtHausPattern
                 {
                     colors[p.index] = LXColor.rgb(ColorValues, ColorValues, ColorValues);
                 }
+            }
+        }
+        
+        if (lx.tempo.beat())
+        {
+            BeatsTracked++;
+            if (BeatsTracked > TempoMultiplier.getValuei())
+            {
+                PatternCompleted();
             }
         }
     }

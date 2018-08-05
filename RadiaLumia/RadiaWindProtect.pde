@@ -30,9 +30,10 @@ public class RadiaWindProtect extends UmbrellaEffect {
     
 	public RadiaWindProtect(LX lx) {
         super(lx);
+        WindProtect_Singleton = this;
         
-		//addParameter(windState);
-		addParameter(patternSpeed);
+        //addParameter(windState);
+        addParameter(patternSpeed);
 		startModulator(waveValue);
         
         SensorRef_WindState = sensors.SensorValueCache.get(Sensors.SENSOR_ADDRESS_ANEMOMETER);

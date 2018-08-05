@@ -29,6 +29,8 @@ Model model;
 UIRadiaLumia umbrellaModel;
 
 ProjectController ProjController;
+RadiaProjectListener ProjListener;
+
 UIProjectControllerPanel UIProjectControls;
 
 Sensors sensors;
@@ -45,6 +47,8 @@ void setup() {
     lx = new heronarts.lx.studio.LXStudio(this, model, MULTITHREADED);
     
     ProjController = new ProjectController(lx);
+    ProjListener = new RadiaProjectListener();
+    lx.addProjectListener((LX.ProjectListener)ProjListener);
     
     UIProjectControls = (UIProjectControllerPanel)new UIProjectControllerPanel(
         lx.ui,
@@ -63,20 +67,9 @@ void setup() {
     // TEMPORARY
     //artHaus = new ArtHausPerformance(lx);
     
-    // Default, RadiaLumia specific effects
-    ColorBalance cb = new ColorBalance(lx);
-    lx.engine.masterChannel.addEffect(cb);
-    cb.enabled.setValue(true);
-    
-    RadiaEntranceEffect ree = new RadiaEntranceEffect(lx);
-    lx.engine.masterChannel.addEffect(ree);
-    ree.enabled.setValue(true);
-    
-    RadiaWindProtect rwp = new RadiaWindProtect(lx);
-    lx.engine.masterChannel.addEffect(rwp);
-    rwp.enabled.setValue(true);
-    
     lx.ui.setResizable(RESIZABLE);
+    
+    ProjListener.ConditionallyAddRequiredEffects();
 }
 
 void initialize(final heronarts.lx.studio.LXStudio lx, heronarts.lx.studio.LXStudio.UI ui) {

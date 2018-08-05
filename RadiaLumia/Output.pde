@@ -24,11 +24,11 @@ void buildOutput(LX lx) {
         // Debug three blooms, with the ips in the array
         boolean BLOOM_DEBUG_THREE = true;
         String[] DEBUG_MULTIPLE_IPS = {
+            "192.168.1.234",
             "192.168.1.216",
             "192.168.1.214",
-            "192.168.1.200",
-            "192.168.1.228",
-            "192.168.1.217"
+            "192.168.1.205",
+            "192.168.1.200"
         };
         
         int mappedBloomCount = 0;

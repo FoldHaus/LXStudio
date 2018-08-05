@@ -259,6 +259,9 @@ public class ColorWipe extends RadiaLumiaPattern
         for (LXPoint p : model.leds)
         {
             double Distance = Direction * (p.y - WipeHeight);
+            if (Distance >= Exponent)
+                continue;
+            
             double WipeInfluence = clamp(1.0 - (Distance / Exponent), 0, 1);
             
             int CurrentColor = colors[p.index];

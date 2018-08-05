@@ -1,6 +1,6 @@
 {
   "version": "0.1",
-  "timestamp": 1532115802810,
+  "timestamp": 1533425807878,
   "engine": {
     "id": 1,
     "class": "heronarts.lx.LXEngine",
@@ -71,7 +71,7 @@
             "parameters": {
               "label": "RadialSinWave",
               "per": 0.10500000324100256,
-              "off": 0.5,
+              "off": 1.0,
               "wid": 0.12999999709427357,
               "spc": 0.999999986961484
             },
@@ -232,9 +232,8 @@
             "modulationColor": -65460,
             "parameters": {
               "label": "BloomPulse",
-              "per": 1799.9999597668648,
-              "siz": 0.1699999962002039,
-              "pos": 0.5
+              "Period": 0.0,
+              "Size": 0.0
             },
             "modulation": {
               "modulators": [
@@ -262,26 +261,7 @@
                   "basis": 0.5030000000003819
                 }
               ],
-              "modulations": [
-                {
-                  "source": {
-                    "id": 267
-                  },
-                  "target": {
-                    "componentId": 248,
-                    "parameterPath": "pos"
-                  },
-                  "id": 268,
-                  "class": "heronarts.lx.parameter.LXCompoundModulation",
-                  "modulationColor": -16711734,
-                  "parameters": {
-                    "label": "",
-                    "enabled": true,
-                    "Polarity": 1,
-                    "Range": 0.5
-                  }
-                }
-              ],
+              "modulations": [],
               "triggers": []
             },
             "autoCycleEnabled": true
@@ -294,10 +274,7 @@
               "label": "ColorSpheres",
               "size": 315.99999361112714,
               "dmag": 203.99999544024467,
-              "off": 1.884000020831822,
-              "A/brightness": 49.99999888241291,
-              "A/saturation": 100.0,
-              "A/hue": 0.0
+              "off": 1.884000020831822
             },
             "modulation": {
               "modulators": [
@@ -322,7 +299,7 @@
                     "phase": 0.0,
                     "exp": 0.0
                   },
-                  "basis": 0.14873816846568286
+                  "basis": 0.27017898971768584
                 }
               ],
               "modulations": [
@@ -399,7 +376,7 @@
             "parameters": {
               "label": "RadialSinWave",
               "per": 0.07500000018626451,
-              "off": 0.5,
+              "off": 1.0,
               "wid": 0.14999999850988388,
               "spc": 0.20000000298023224
             },
@@ -426,7 +403,7 @@
                     "phase": 0.0,
                     "exp": 0.0
                   },
-                  "basis": 0.1713482035173461
+                  "basis": 0.7370618116991509
                 }
               ],
               "modulations": [
@@ -522,7 +499,7 @@
           "label": "Channel-4",
           "arm": false,
           "selected": false,
-          "enabled": false,
+          "enabled": true,
           "cue": false,
           "fader": 1.0,
           "crossfadeGroup": 0,
@@ -592,7 +569,7 @@
                     "phase": 0.0,
                     "exp": 0.0
                   },
-                  "basis": 0.93281532810316
+                  "basis": 0.08460502157709328
                 }
               ],
               "modulations": [
@@ -629,7 +606,7 @@
           "label": "Channel-5",
           "arm": false,
           "selected": false,
-          "enabled": false,
+          "enabled": true,
           "cue": false,
           "fader": 0.6142857242375612,
           "crossfadeGroup": 0,
@@ -668,9 +645,8 @@
             "modulationColor": -3080448,
             "parameters": {
               "label": "BloomPulse",
-              "per": 2999.9999329447746,
-              "siz": 0.24999999441206455,
-              "pos": 1.0
+              "Period": 0.0,
+              "Size": 0.0
             },
             "modulation": {
               "modulators": [],
@@ -704,7 +680,7 @@
           "label": "Channel-6",
           "arm": false,
           "selected": false,
-          "enabled": true,
+          "enabled": false,
           "cue": false,
           "fader": 1.0,
           "crossfadeGroup": 0,
@@ -767,16 +743,16 @@
       },
       "effects": [
         {
-          "id": 696,
+          "id": 936,
           "class": "RadiaLumia$ColorBalance",
-          "modulationColor": -2555649,
+          "modulationColor": -65523,
           "parameters": {
             "label": "ColorBalance",
             "enabled": true,
             "umbB": 100.0,
-            "oaB": 100.0,
-            "heart": 100.0,
-            "pin": 100.0
+            "oaB": 0.0,
+            "heart": 0.0,
+            "pin": 0.0
           },
           "modulation": {
             "modulators": [],
@@ -785,14 +761,28 @@
           }
         },
         {
-          "id": 699,
+          "id": 939,
           "class": "RadiaLumia$RadiaEntranceEffect",
-          "modulationColor": -16724481,
+          "modulationColor": -35328,
           "parameters": {
             "label": "RadiaEntrance",
             "enabled": true,
-            "lcv": 0.0,
             "ovr": false
+          },
+          "modulation": {
+            "modulators": [],
+            "modulations": [],
+            "triggers": []
+          }
+        },
+        {
+          "id": 942,
+          "class": "RadiaLumia$RadiaWindProtect",
+          "modulationColor": -2621185,
+          "parameters": {
+            "label": "RadiaWindProtect",
+            "enabled": true,
+            "speed": 5000.0
           },
           "modulation": {
             "modulators": [],

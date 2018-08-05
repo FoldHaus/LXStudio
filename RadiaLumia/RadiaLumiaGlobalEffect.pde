@@ -1,7 +1,10 @@
+
+static ColorBalance ColorBalance_Singleton = null;
+static RadiaEntranceEffect EntranceEffect_Singleton = null;
+static RadiaWindProtect WindProtect_Singleton = null;
+
 @LXCategory("Umbrella")
 public class ColorBalance extends UmbrellaEffect {
-    
-    //  public static ColorBalance _singleton;
     
     public final CompoundParameter underUmbrella_Brightness = 
         new CompoundParameter ("umbB", 100, 0, 100)
@@ -21,6 +24,7 @@ public class ColorBalance extends UmbrellaEffect {
     
     public ColorBalance (LX lx) {
         super(lx);
+        ColorBalance_Singleton = this;
         
         addParameter(underUmbrella_Brightness);
         addParameter(openAir_Brightness);
@@ -89,6 +93,7 @@ public class RadiaEntranceEffect extends UmbrellaEffect {
     
     public RadiaEntranceEffect (LX lx) {
         super(lx);
+        EntranceEffect_Singleton = this;
         
         addParameter(overrideEntrance);
         
