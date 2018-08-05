@@ -393,7 +393,7 @@ public class Ripple extends RadiaLumiaPattern {
 
   public final CompoundParameter speed = 
     new CompoundParameter("spe", 500, 5000, 0)
-    .setDescription("Current offset of the sin wave");
+    .setDescription("Current speed of the sin wave");
 
   public final SawLFO oscillator =
     new SawLFO(0, 2 * 3.14, speed);
