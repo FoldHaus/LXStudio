@@ -412,14 +412,15 @@ public class Pinwheel extends RadiaLumiaPattern {
 
 // RadiaSolid
 @LXCategory("Color")
-public class RadiaSolid extends RadiaLumiaPattern {
-    
-    public RadiaSolid (LX lx){
+public class RadiaSolid extends RadiaLumiaPattern 
+{
+    public RadiaSolid (LX lx)
+    {
         super(lx);
     }
     
-    public void run(double deltaMs){
-        
+    public void run(double deltaMs)
+    {
         int c = palette.getColor();
         
         for (LXPoint light : model.leds) {
@@ -428,4 +429,62 @@ public class RadiaSolid extends RadiaLumiaPattern {
         
     }
     
+}
+
+@LXCategory("Color")
+public class ColorTakeover extends RadiaLumiaPattern
+{
+    
+    public final CompoundParameter P_Period =
+        new CompoundParameter("per", 10000, 5000, 60000);
+    
+    public final CompoundParameter P_DebugProgress =
+        new CompoundParameter("dbg", 0, 0, 1);
+    
+    public final SawLFO P_Progress = 
+        new SawLFO(0, 1, P_Period);
+    
+    public final float TotalTravelDistance;
+    
+    public int CurrentOriginNode;
+    
+    public LXVector CurrentOrigin;
+    public LXVector CurrentNormal;
+    
+    public ColorTakeover (LX lx)
+    {
+        super(lx);
+        addParameter(P_Period);
+        // TODO(peter): Remove this
+        addParameter(P_DebugProgress);
+        
+        startModulator(P_Progress);
+        TotalTravelDistance = Config.SCALE;
+        
+        CurrentOriginNode = 0;
+        Bloom OriginNode = model.blooms.get(CurrentOriginNode);
+        
+        CurrentOrigin = OriginNode.center.copy();
+        CurrentOrigin.add(CurrentOrigin.copy().normalize().mult(OriginNode.maxSpikeDistance));
+        
+        CurrentNormal = model.blooms.get(CurrentOriginNode).center.copy().mult(-1).normalize();
+    }
+    
+    public void run(double deltaMs)
+    {
+        float CurrentTravelDistance = P_DebugProgress.getValuef();
+        
+        LXVector BaseCenter = CurrentOrigin.copy().add(CurrentNormal.mult(CurrentTravelDistance));
+        
+        for (LXPoint p : model.leds)
+        {
+            LXVector PointVector = LXPointToVector(p);
+            LXVector PlaneLocalVector = PointVector.copy().add(BaseCenter.copy().mult(-1));
+            
+            float PointDotNormal = PlaneLocalVector.dot(CurrentNormal);
+            PointDotNormal = constrain(PointDotNormal, 0, 1);
+            
+            colors[p.index] = LXColor.hsb(0, 0, PointDotNormal * 100);
+        }
+    }
 }

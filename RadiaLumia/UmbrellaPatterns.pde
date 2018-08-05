@@ -468,3 +468,16 @@ public class Breathe extends RadiaLumiaPattern
         } 
     }
 }
+
+@LXCategory("Umbrella")
+public class ShadeStructure extends RadiaLumiaPattern
+{
+    public ShadeStructure (LX lx)
+    {
+        super(lx);
+    }
+    
+    public void run (double deltaMs)
+    {
+    }
+}

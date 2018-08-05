@@ -73,9 +73,9 @@ public class ColorBalance extends UmbrellaEffect {
 }
 
 
-public static int ENTRANCE_BLOOM_ONE = 3;
-public static int ENTRANCE_BLOOM_TWO = 28;
-public static int ENTRANCE_BLOOM_THREE = 27;
+public static int ENTRANCE_BLOOM_ONE = 14;
+public static int ENTRANCE_BLOOM_TWO = 16;
+public static int ENTRANCE_BLOOM_THREE = 0;
 
 // The effect for controlling the entrance to the Radia Lumia.
 @LXCategory("Umbrella")
@@ -110,6 +110,9 @@ public class RadiaEntranceEffect extends UmbrellaEffect {
             Bloom bloomOne = model.blooms.get(ENTRANCE_BLOOM_ONE);
             Bloom bloomTwo = model.blooms.get(ENTRANCE_BLOOM_TWO);
             Bloom bloomThree = model.blooms.get(ENTRANCE_BLOOM_THREE);
+            
+            // Reverse the signal to generate the correct umbrella signal
+            openClosedValue = 1.0 - openClosedValue;
             
             // Generate Percent Closed
             setUmbrella(bloomOne, openClosedValue);

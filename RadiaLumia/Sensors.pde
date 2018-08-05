@@ -6,7 +6,7 @@ public class Sensors implements LXOscListener {
     
     public static final String SENSOR_ADDRESS_LADDER = SENSOR_ADDRESS_ROOT + "/ladder/weighted";
     public static final String SENSOR_ADDRESS_ANEMOMETER =
-        SENSOR_ADDRESS_ROOT + "/anem";
+        SENSOR_ADDRESS_ROOT + "/wind";
     public static final String SENSOR_ADDRESS_PULLEY_ROOT = SENSOR_ADDRESS_ROOT + "/mshell";
     
     public static final String SENSOR_ADDRESS_PULLEY_ONE = SENSOR_ADDRESS_PULLEY_ROOT + "/1/pull";
