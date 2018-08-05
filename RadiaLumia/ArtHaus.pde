@@ -78,10 +78,13 @@ public class ArtHausPerformance
         return Result;
     }
     
+    // NOTE(peter): Add ArtHaus Performance Patterns Here
     public LXPattern[] InitMusicianPatterns ()
     {
         LXPattern[] Patterns = new LXPattern[]{
-            new UmbrellaLightSteps(lx)
+            new UmbrellaLightSteps(lx),
+            new RotatingColorFade(lx),
+            new GlowingBlossoms(lx)
         };
         
         this.NumMusicianPatterns = Patterns.length;
@@ -177,7 +180,10 @@ public abstract class ArtHausPattern extends RadiaLumiaPattern
     public void PatternCompleted ()
     {
         this.ResetPattern();
-        artHaus.ChooseNewPattern(this.Musician);
+        if (artHaus != null)
+        {
+            artHaus.ChooseNewPattern(this.Musician);
+        }
     }
 }
 
@@ -472,7 +478,7 @@ public class GlowingBlossoms extends ArtHausPattern
         
         for (Bloom b : model.blooms)
         {
-            double UmbrellaBrightness = b.umbrella.simulatedPosition;
+            double UmbrellaBrightness = clamp(1 - (1.2 * b.umbrella.simulatedPosition), 0, 1);
             int ColorValues = (int)(UmbrellaBrightness * 255);
             
             for (LXPoint p : b.leds)
