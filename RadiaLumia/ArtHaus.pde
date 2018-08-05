@@ -156,7 +156,6 @@ public abstract class ArtHausPattern extends RadiaLumiaPattern
 {
     
     // TODO(peter): Needed fields
-    // - registerCompleted()
     // - channelMode - the blend mode of the channel while this pattern is on
     // - musician - track which musician is playing 
     
@@ -173,8 +172,11 @@ public abstract class ArtHausPattern extends RadiaLumiaPattern
         HasPassedFirstFrame = false;
     }
     
+    public abstract void ResetPattern ();
+    
     public void PatternCompleted ()
     {
+        this.ResetPattern();
         artHaus.ChooseNewPattern(this.Musician);
     }
 }
@@ -189,6 +191,15 @@ public class BeatPinSpots extends ArtHausPattern
         
         BloomPinspotOn = new boolean[42];
         
+        ResetPattern();
+    }
+    
+    int BeatsSinceUpdate = 0;
+    
+    public void ResetPattern ()
+    {
+        BeatsSinceUpdate = 0;
+        
         for (int i = 0; i < 42; i++) {
             // Turn roughly 1/4 of the pinspots on at a time.
             if (random(0, 1) > .75)
@@ -198,8 +209,6 @@ public class BeatPinSpots extends ArtHausPattern
             }
         }
     }
-    
-    int BeatsSinceUpdate = 0;
     
     public void run (double deltaMs) {
         if (lx.tempo.beat())
@@ -248,6 +257,11 @@ public class BeatSpikes extends ArtHausPattern
         addParameter(P_TrailLength);
     }
     
+    public void ResetPattern ()
+    {
+        
+    }
+    
     public void run (double deltaMs) {
         float Period = (float)TempoMultiplier.getValuei();
         float TrailLength = P_TrailLength.getValuef();
@@ -291,6 +305,11 @@ public class UmbrellaLightSteps extends ArtHausPattern
         IlluminatedUmbrellas = new int[42];
     }
     
+    public void ResetPattern ()
+    {
+        
+    }
+    
     public void run (double deltaMs)
     {
         // TODO(peter): Make it so that umbrellas can be lit and fade over more than one beat
@@ -304,7 +323,6 @@ public class UmbrellaLightSteps extends ArtHausPattern
             {
                 // Init new Pattern
                 IlluminatedUmbrellas[0] = (int)random(0, 42);
-                println("Step: " + IlluminatedUmbrellas[0]);
                 for (int i = 1; i < P_NumSteps.getValuei(); i++)
                 {
                     Bloom previousBloom = model.blooms.get(IlluminatedUmbrellas[i-1]);
@@ -340,7 +358,8 @@ public class UmbrellaLightSteps extends ArtHausPattern
     }
 }
 
-
+// a rotating plane, that, at its edge, takes whatever color is currently in the led,
+// and adds some value to it
 @LXCategory("ArtHaus")
 public class RotatingColorFade extends ArtHausPattern
 {
@@ -358,6 +377,11 @@ public class RotatingColorFade extends ArtHausPattern
         startModulator(Rotator);
     }
     
+    public void ResetPattern ()
+    {
+        
+    }
+    
     public void run (double deltaMs)
     {
         // TODO(peter): Make it so that umbrellas can be lit and fade over more than one beat
@@ -365,15 +389,86 @@ public class RotatingColorFade extends ArtHausPattern
         int Progress = lx.tempo.beatCount() % Period;
         float ProgressPercent = (float)lx.tempo.ramp();
         
-        float LeadingAngle = Rotator.getValuef();
-        float TrailingAngle = LeadingAngle - FadeAngle.getValuef();
+        LXVector Normal = new LXVector(cos(Period), 0, sin(Period));
+        LXVector Forward = new LXVector(sin(Period), 0, cos(Period));
+        
+        LXVector Center = new LXVector(0, 0, 0);
         
         LXVector pointVector;
         
         for (LXPoint p : model.leds)
         {
             pointVector = LXPointToVector(p);
+            float PointDotNormal = pointVector.dot(Normal);
+            float PointDotForward = pointVector.dot(Forward);
+            
+            colors[p.index] = LXColor.rgb((int)(abs(PointDotNormal) * 255),
+                                          0,
+                                          (int)(abs(PointDotForward) * 255));
         }
     }
 }
 
+// A pattern that moves random umbrellas slowly, and lightens them as they get further away from the center.
+@LXCategory("ArtHaus")
+public class UmbrellaIlluminatedMove extends ArtHausPattern
+{
+    public UmbrellaIlluminatedMove (LX lx)
+    {
+        super(lx);
+    }
+    
+    public void ResetPattern ()
+    {
+    }
+    
+    public void run(double deltaMs)
+    {
+        
+    }
+}
+
+@LXCategory("ArtHaus")
+public class GlowingBlossoms extends ArtHausPattern
+{
+    
+    public int BeatsTracked = 0;
+    
+    public GlowingBlossoms (LX lx)
+    {
+        super(lx);
+    }
+    
+    public void ResetPattern ()
+    {
+        BeatsTracked = 0;
+    }
+    
+    public void run(double deltaMs)
+    {
+        UpdateUmbrellaMask();
+        
+        for (Bloom b : model.blooms)
+        {
+            double UmbrellaBrightness = b.umbrella.simulatedPosition;
+            int ColorValues = (int)(UmbrellaBrightness * 255);
+            
+            for (LXPoint p : b.leds)
+            {
+                if (POINT_COVEREDBYUMBRELLA[p.index])
+                {
+                    colors[p.index] = LXColor.rgb(ColorValues, ColorValues, ColorValues);
+                }
+            }
+        }
+        
+        if (lx.tempo.beat())
+        {
+            BeatsTracked++;
+            if (BeatsTracked > TempoMultiplier.getValuei())
+            {
+                PatternCompleted();
+            }
+        }
+    }
+}

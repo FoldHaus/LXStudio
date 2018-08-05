@@ -20,39 +20,39 @@ public boolean stringIn (String val, String[] array) {
 }
 
 // OGL Functions
-public double min(double a, double b) {
+public static double min(double a, double b) {
     return a < b ? a : b;
 }
 
-public double max(double a, double b) {
+public static double max(double a, double b) {
     return a < b ? b : a;
 }
 
-public double clamp(double x, double range_min, double range_max) {
+public static double clamp(double x, double range_min, double range_max) {
     return min(range_max, max(range_min, x));
 }
 
-public double sin(double v)
+public static double sin(double v)
 {
     return (double)sin((float)v);
 }
 
-public double lerp(double a, double b, double pct)
+public static double lerp(double a, double b, double pct)
 {
     return (a * pct) + (b * (1.0 - pct));
 }
 
-public double sign(double val)
+public static double sign(double val)
 {
     return val < 0 ? -1 : 1;
 }
 
-public double pow(double val, double exp)
+public static double pow(double val, double exp)
 {
     return (double)pow((float)val, (float)exp);
 }
 
-public double abs(double val)
+public static double abs(double val)
 {
     return (double)abs((float)val);
 }

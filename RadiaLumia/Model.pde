@@ -468,6 +468,8 @@ public static class Bloom extends LXModel {
         
         // An updated once-per-frame simulation of where we believe the motor to be based
         // upon its speed limitations
+        public double CurrentVelocity = 0.;
+        public double LastFrameRequestedPosition = 0.;
         public double simulatedPosition = 0.;
         
         // NOTE(peter): This is what to change if the travel distance changes
@@ -483,32 +485,74 @@ public static class Bloom extends LXModel {
         
         public Umbrella(boolean _IsPentaNode) {
             this.IsPentaNode = _IsPentaNode;
-            addPoint(this.position = new LXPoint(0, 0, 0));      
+            addPoint(this.position = new LXPoint(0, 0, 0));
+            
+            CurrentVelocity = 0.0;
+            LastFrameRequestedPosition = 0.0;
+        }
+        
+        public double GetAccelerationLimitedPosition(
+            double _RequestedPosition,
+            double _DeltaMs
+            )
+        {
+            
+            double RequestedVelocity = (_RequestedPosition - LastFrameRequestedPosition) / _DeltaMs;
+            double RequestedAcceleration = abs(RequestedVelocity - CurrentVelocity) / _DeltaMs;
+            
+            double ValidAccel = RequestedAcceleration;
+            double ValidVelocity = RequestedVelocity;
+            double ValidPosition = _RequestedPosition;
+            
+            if (RequestedAcceleration > Umbrella.MaxStepsAcc)
+            {
+                ValidAccel = Umbrella.MaxStepsAcc * sign(RequestedAcceleration);
+                
+                ValidVelocity = CurrentVelocity + (Umbrella.MaxStepsAcc * _DeltaMs);
+            }
+            
+            if(abs(ValidVelocity) > MaxStepsVel)
+            {
+                ValidVelocity = MaxStepsVel * sign(ValidVelocity);
+            }
+            
+            CurrentVelocity = ValidVelocity;
+            ValidPosition = LastFrameRequestedPosition + (ValidVelocity * _DeltaMs);
+            LastFrameRequestedPosition = ValidPosition;
+            
+            return ValidPosition;
         }
         
         public void update(double deltaMs, int[] colors) {
-            // TODO: should we model the motor's acceleration or response?
-            double requestedPosition = 
+            
+            double RequestedPosition = 
                 (RadiaNodeSpecialDatagram.MOTOR_DATA_MASK & colors[this.position.index]);
+            
+            // TODO(peter): This doesn't work and needs to be fixed
+            //GetAccelerationLimitedPosition(RequestedPosition);
+            
+            double ValidPosition = RequestedPosition;
             
             if (this.IsPentaNode)
             {
-                requestedPosition /= MaxPentaSteps;
+                ValidPosition /= MaxPentaSteps;
             }
             else
             {
-                requestedPosition /= MaxHexaSteps;
+                ValidPosition /= MaxHexaSteps;
             }
             
-            requestedPosition = 1.0 - requestedPosition;
+            ValidPosition = 1.0 - ValidPosition;
             
-            double dist = requestedPosition - this.simulatedPosition;
+            // TODO(peter): Do we need this anymore since I'm doing the limiting calculation on steps?
+            
+            double dist = ValidPosition - this.simulatedPosition;
             double maxMovement = UMBRELLA_MAX_VELOCITY * deltaMs;
             
             if (Math.abs(dist) > maxMovement) {
                 this.simulatedPosition += maxMovement * (dist > 0 ? 1 : -1);
             } else {
-                this.simulatedPosition = requestedPosition;
+                this.simulatedPosition = ValidPosition;
             }
         }
     }

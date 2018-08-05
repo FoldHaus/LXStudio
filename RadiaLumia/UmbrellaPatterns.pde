@@ -389,3 +389,82 @@ public class RandomToggle extends RadiaLumiaPattern {
         CurrentTarget = 1.0 - CurrentTarget;
     }
 }
+
+@LXCategory("Umbrella")
+public class UmbrellasPoint extends RadiaLumiaPattern
+{
+    
+    public final CompoundParameter P_HorizontalRotationSpeed = 
+        new CompoundParameter("hspd", 1, 60000, 0.1);
+    
+    public final CompoundParameter P_VerticalRotationSpeed = 
+        new CompoundParameter("vspd", 1, 60000, 0.1);
+    
+    public final SawLFO P_ThetaHorizontal = 
+        new SawLFO(0, TWO_PI, P_HorizontalRotationSpeed);
+    
+    public final SawLFO P_ThetaVertical = 
+        new SawLFO(0, TWO_PI, P_VerticalRotationSpeed);
+    
+    public UmbrellasPoint(LX lx)
+    {
+        super(lx);
+        
+        addParameter(P_HorizontalRotationSpeed);
+        addParameter(P_VerticalRotationSpeed);
+        startModulator(P_ThetaHorizontal);
+        startModulator(P_ThetaVertical);
+    }
+    
+    public void run(double deltaMs)
+    {
+        float ThetaHorizontal = P_ThetaHorizontal.getValuef();
+        float ThetaVertical = P_ThetaVertical.getValuef();
+        
+        // This should remain at radius = 1 this way
+        LXVector TargetPoint = new LXVector(sin(ThetaHorizontal), 0, cos(ThetaHorizontal));
+        
+        for (Bloom bloom : model.blooms)
+        {
+            float DistanceToTarget = TargetPoint.dist(bloom.center);
+            float TargetPercentOpen = 1 - (.5 + (DistanceToTarget / 2));
+            
+            setUmbrella(bloom, TargetPercentOpen);
+        }
+    }
+}
+
+@LXCategory("Umbrella")
+public class Breathe extends RadiaLumiaPattern
+{
+    public final CompoundParameter BreathRate = 
+        new CompoundParameter("rate", 0, 300000, 4000);
+    
+    public final SinLFO CurrentBreath = 
+        new SinLFO(-1.25, 1.25, BreathRate);
+    
+    public Breathe (LX lx)
+    {
+        super(lx);
+        addParameter(BreathRate);
+        startModulator(CurrentBreath);
+    }
+    
+    public void run(double deltaMs)
+    {
+        float Separator = CurrentBreath.getValuef();
+        Separator *= Config.SCALE;
+        
+        for (Bloom bloom : model.blooms)
+        {
+            if (bloom.center.y < Separator)
+            {
+                setUmbrella(bloom, 0);
+            }
+            else
+            {
+                setUmbrella(bloom, 1);
+            }
+        } 
+    }
+}

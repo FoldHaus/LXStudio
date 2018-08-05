@@ -117,37 +117,36 @@ public class RevolvingDiscs extends RadiaLumiaPattern {
 @LXCategory("Takeover")
 public class PacMan extends RadiaLumiaPattern {
     
-    public final CompoundParameter mouth_angle =
-        new CompoundParameter("ang", 0, 0, 6.28);
-    
     public final CompoundParameter spike_radius =
-        new CompoundParameter("rad", 0, 0, 100000);
-    
-    public final ColorParameter pacman_color =
-        new ColorParameter("col");
+        new CompoundParameter("rad", 36000, 0, 100000);
     
     public final CompoundParameter pill_offset =
         new CompoundParameter("pil", 0, 0, 1);
     
+    public final TriangleLFO MouthMovement = 
+        new TriangleLFO(0, .85, 855);
+    
+    int PacManColor = LXColor.hsb(53, 100, 100);
+    
     public PacMan (LX lx)
     {
         super(lx); 
-        addParameter(mouth_angle);
-        addParameter(pacman_color);
         addParameter(spike_radius);
         addParameter(pill_offset);
+        
+        startModulator(MouthMovement);
     }
     
     public void run(double deltaMs)
     {
-        float root_angle = (float)mouth_angle.getValue();
+        float root_angle = MouthMovement.getValuef();
         float top_angle = root_angle;
         float bottom_angle = 3.14 - root_angle;
         LXVector front_normal = new LXVector(1, 0, 0);
         LXVector mouth_top = new LXVector(sin(top_angle), cos(top_angle), 0);
         LXVector mouth_bottom = new LXVector(sin(bottom_angle), cos(bottom_angle), 0);
         
-        int col = pacman_color.getColor();
+        int col = PacManColor;
         
         float maxDist = (float)spike_radius.getValue();
         
