@@ -146,7 +146,7 @@ public class IdentifyBloom extends RadiaLumiaPattern {
                     int curr_spokeNumber = 0;
                     
                     for (Bloom.Spoke spoke: bloom.spokes) {
-                        println(curr_spokeNumber + " : " + (60 * curr_spokeNumber));
+                        //println(curr_spokeNumber + " : " + (60 * curr_spokeNumber));
                         for (LXPoint p : spoke.points)
                         {
                             colors[p.index] = LXColor.hsb(60 * curr_spokeNumber, 100, 100);

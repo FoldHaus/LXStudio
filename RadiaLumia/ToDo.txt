@@ -26,7 +26,7 @@ PATTERNS
 - Top Priority: Need Umbrella Patterns
 - Need more color patterns
 - Need more mask patterns
-- (low priority until they work) Need more pinspot patterns
+- Need more pinspot patterns
 
 ------------------------
 

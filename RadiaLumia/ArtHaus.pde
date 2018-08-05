@@ -365,7 +365,10 @@ public class RotatingColorFade extends ArtHausPattern
 {
     
     public final CompoundParameter FadeAngle = 
-        new CompoundParameter("angle", PI, 0.0, TWO_PI);
+        new CompoundParameter("angle", .6, 0.0, TWO_PI);
+    
+    public final CompoundParameter AdditiveHueStrength =
+        new CompoundParameter("hue", 6, 0, 360);
     
     public final SawLFO Rotator = 
         new SawLFO(0, TWO_PI, this.TempoMultiplier);
@@ -374,7 +377,10 @@ public class RotatingColorFade extends ArtHausPattern
     {
         super(lx);
         addParameter(FadeAngle);
+        addParameter(AdditiveHueStrength);
         startModulator(Rotator);
+        
+        TempoMultiplier.setValue(16);
     }
     
     public void ResetPattern ()
@@ -384,13 +390,27 @@ public class RotatingColorFade extends ArtHausPattern
     
     public void run (double deltaMs)
     {
-        // TODO(peter): Make it so that umbrellas can be lit and fade over more than one beat
+        float TrailAngle = FadeAngle.getValuef();
+        float BaseHue = AdditiveHueStrength.getValuef();
+        float AdditiveHue = BaseHue * TrailAngle;
+        // Each frame, add a percent of the desired hue shift, so that the trailing edge represents that hue.
+        
         int Period = TempoMultiplier.getValuei();
         int Progress = lx.tempo.beatCount() % Period;
-        float ProgressPercent = (float)lx.tempo.ramp();
         
-        LXVector Normal = new LXVector(cos(Period), 0, sin(Period));
-        LXVector Forward = new LXVector(sin(Period), 0, cos(Period));
+        float ProgressPercent = (float)lx.tempo.ramp();
+        ProgressPercent += (float) Progress;
+        ProgressPercent = ProgressPercent / (float)Period;
+        
+        float ProgressAngle = ProgressPercent * TWO_PI;
+        
+        float FrontCosAngle = cos(ProgressAngle);
+        float FrontSinAngle = sin(ProgressAngle);
+        float TrailCosAngle = cos(ProgressAngle - TrailAngle);
+        float TrailSinAngle = sin(ProgressAngle - TrailAngle);
+        
+        LXVector Normal = new LXVector(FrontCosAngle, 0, FrontSinAngle);
+        LXVector Forward = new LXVector(TrailCosAngle, 0, TrailSinAngle);
         
         LXVector Center = new LXVector(0, 0, 0);
         
@@ -399,12 +419,14 @@ public class RotatingColorFade extends ArtHausPattern
         for (LXPoint p : model.leds)
         {
             pointVector = LXPointToVector(p);
-            float PointDotNormal = pointVector.dot(Normal);
-            float PointDotForward = pointVector.dot(Forward);
+            float PointDotNormal = constrain(pointVector.dot(Normal), 0, 1);
+            float PointDotForward = constrain(pointVector.dot(Forward), 0, 1);
             
-            colors[p.index] = LXColor.rgb((int)(abs(PointDotNormal) * 255),
-                                          0,
-                                          (int)(abs(PointDotForward) * 255));
+            float AdditiveAmount = constrain((PointDotNormal - PointDotForward), 0, 1);
+            
+            float FinalHue = (LXColor.h(colors[p.index]) + AdditiveHue) % 360;
+            if (AdditiveAmount > 0)
+                colors[p.index] = LXColor.hsb(FinalHue, 100, 100);
         }
     }
 }
