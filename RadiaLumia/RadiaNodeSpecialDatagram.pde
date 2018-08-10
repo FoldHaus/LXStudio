@@ -52,4 +52,22 @@ public class RadiaNodeSpecialDatagram extends StreamingACNDatagram {
         int crc = 0xAA;
         writeLENumberToBuffer(crc, PAYLOAD_SIZE, CRC_SIZE);
     }
+
+    public void doHome() {
+        println("Do Home");
+
+        // TODO: Implementation
+    }
+
+    public void setHex() {
+        println("setting to Hex node");
+
+        // TODO: Implementation
+    }
+
+    public void setPenta() {
+        println("setting to Penta node");
+
+        // TODO: Implementation
+    }
 }
