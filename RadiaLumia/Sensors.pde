@@ -78,7 +78,6 @@ public class Sensors implements LXOscListener {
         Para.setValue(Value);
         
         DebugSensorMessages(Path, Value, Para);
-        
     }
     
     public void DebugSensorMessages(

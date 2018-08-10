@@ -252,21 +252,18 @@ class RadiaProjectListener implements LX.ProjectListener
     public void ConditionallyAddRequiredEffects ()
     {
         ColorBalance cb = ColorBalance_Singleton;
+        RadiaEntranceEffect ree = null;
         if (cb == null)
         {
             cb = new ColorBalance(lx);
-            lx.engine.masterChannel.addEffect(cb);
-        }
-        cb.enabled.setValue(true);
-        
-        RadiaEntranceEffect ree = EntranceEffect_Singleton;
-        println("REE: " + ree);
-        if (ree == null)
-        {
-            println("Creating Entrance Effect");
+            
             ree = new RadiaEntranceEffect(lx);
-            lx.engine.masterChannel.addEffect(ree);
         }
+        
+        lx.engine.masterChannel.addEffect(cb);
+        lx.engine.masterChannel.addEffect(ree);
+        
+        cb.enabled.setValue(true);
         ree.enabled.setValue(true);
         
         RadiaWindProtect rwp = WindProtect_Singleton;
