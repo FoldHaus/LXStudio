@@ -470,6 +470,8 @@ public static class Bloom extends LXModel {
         // upon its speed limitations
         public double CurrentVelocity = 0.;
         public double LastFrameRequestedPosition = 0.;
+        
+        // NOTE(peter): This is in percent
         public double simulatedPosition = 0.;
         
         // NOTE(peter): This is what to change if the travel distance changes
@@ -497,30 +499,8 @@ public static class Bloom extends LXModel {
             )
         {
             
-            double RequestedVelocity = (_RequestedPosition - LastFrameRequestedPosition) / _DeltaMs;
-            double RequestedAcceleration = abs(RequestedVelocity - CurrentVelocity) / _DeltaMs;
-            
-            double ValidAccel = RequestedAcceleration;
-            double ValidVelocity = RequestedVelocity;
-            double ValidPosition = _RequestedPosition;
-            
-            if (RequestedAcceleration > Umbrella.MaxStepsAcc)
-            {
-                ValidAccel = Umbrella.MaxStepsAcc * sign(RequestedAcceleration);
-                
-                ValidVelocity = CurrentVelocity + (Umbrella.MaxStepsAcc * _DeltaMs);
-            }
-            
-            if(abs(ValidVelocity) > MaxStepsVel)
-            {
-                ValidVelocity = MaxStepsVel * sign(ValidVelocity);
-            }
-            
-            CurrentVelocity = ValidVelocity;
-            ValidPosition = LastFrameRequestedPosition + (ValidVelocity * _DeltaMs);
-            LastFrameRequestedPosition = ValidPosition;
-            
-            return ValidPosition;
+            // TODO(cameron): Fill out Accel Limiting 
+            return 0;
         }
         
         public void update(double deltaMs, int[] colors) {
@@ -528,7 +508,8 @@ public static class Bloom extends LXModel {
             double RequestedPosition = 
                 (RadiaNodeSpecialDatagram.MOTOR_DATA_MASK & colors[this.position.index]);
             
-            // TODO(peter): This doesn't work and needs to be fixed
+            // TODO(cameron): This doesn't work and needs to be fixed
+            // Maybe add a member variable to track current position in steps
             //GetAccelerationLimitedPosition(RequestedPosition);
             
             double ValidPosition = RequestedPosition;

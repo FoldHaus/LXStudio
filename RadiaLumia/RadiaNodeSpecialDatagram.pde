@@ -23,6 +23,11 @@ public class RadiaNodeSpecialDatagram extends StreamingACNDatagram {
     
     protected int pinspotIndex;
     
+    // Special Messages
+    public boolean SendDoHomingMessage = false;
+    public boolean SendInitHexa = false;
+    public boolean SendInitPenta = false;
+    
     public RadiaNodeSpecialDatagram(int universe, Bloom bloom) {
         super(universe, PACKET_SIZE);
         motorPositionIndex = bloom.umbrella.position.index;
@@ -32,12 +37,30 @@ public class RadiaNodeSpecialDatagram extends StreamingACNDatagram {
     
     @Override
         public void onSend(int[] colors) {
-        // Do this manually for now since `super.onSend(colors)` doesn't work for some reason
-        this.buffer[SEQUENCE_NUMBER_POSITION] = ++this.sequenceNumber;
-        
-        writeLENumberToBuffer(colors[motorPositionIndex], MOTOR_DATA_POSITION, MOTOR_DATA_LENGTH);
-        writeLENumberToBuffer(colors[pinspotIndex], PINSPOT_DATA_POSITION, PINSPOT_DATA_LENGTH);
-        writePayloadCRC();
+        if (SendDoHomingMessage)
+        {
+            SendDoHomingMessage = false;
+            // TODO(cameron): Write Homing Message
+        }
+        else if (SendInitHexa)
+        {
+            SendInitHexa = false;
+            // TODO(cameron): Write Init Hexa Message
+        }
+        else if (SendInitPenta)
+        {
+            SendInitPenta = false;
+            // TODO(cameron): Write Init Penta Message
+        }
+        else
+        {
+            // Do this manually for now since `super.onSend(colors)` doesn't work for some reason
+            this.buffer[SEQUENCE_NUMBER_POSITION] = ++this.sequenceNumber;
+            
+            writeLENumberToBuffer(colors[motorPositionIndex], MOTOR_DATA_POSITION, MOTOR_DATA_LENGTH);
+            writeLENumberToBuffer(colors[pinspotIndex], PINSPOT_DATA_POSITION, PINSPOT_DATA_LENGTH);
+            writePayloadCRC();
+        }
     }
     
     protected void writeLENumberToBuffer(int number, int pos, int length) {
@@ -52,22 +75,19 @@ public class RadiaNodeSpecialDatagram extends StreamingACNDatagram {
         int crc = 0xAA;
         writeLENumberToBuffer(crc, PAYLOAD_SIZE, CRC_SIZE);
     }
-
+    
     public void doHome() {
         println("Do Home");
-
-        // TODO: Implementation
+        SendDoHomingMessage = true;
     }
-
+    
     public void setHex() {
         println("setting to Hex node");
-
-        // TODO: Implementation
+        SendInitHexa = true;
     }
-
+    
     public void setPenta() {
         println("setting to Penta node");
-
-        // TODO: Implementation
+        SendInitPenta = true;
     }
 }

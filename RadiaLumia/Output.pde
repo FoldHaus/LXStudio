@@ -22,7 +22,7 @@ void buildOutput(LX lx) {
         String DEBUG_ONE_IP = "192.168.1.215";
         
         // Debug three blooms, with the ips in the array
-        boolean BLOOM_DEBUG_THREE = false;
+        boolean BLOOM_DEBUG_THREE = true;
         String[] DEBUG_MULTIPLE_IPS = {
             "192.168.1.240",
             "192.168.1.234",
@@ -179,7 +179,10 @@ void buildPentaBloomOutput (LX lx,
         OrderedSpikeIndex++;
         
         // Set up DMX output
-        output.addDatagram(new RadiaNodeSpecialDatagram(start_universe + DMX_UNIVERSE_OFFSET, bloom).setAddress(ip));
+        RadiaNodeDatagrams[RadiaNodeDatagramCount] = new RadiaNodeSpecialDatagram(start_universe + DMX_UNIVERSE_OFFSET, bloom);
+        RadiaNodeDatagrams[RadiaNodeDatagramCount].setAddress(ip);
+        output.addDatagram((LXDatagram)RadiaNodeDatagrams[RadiaNodeDatagramCount]);
+        RadiaNodeDatagramCount++;
         
     } catch (Exception x) {
         println("Runtime Exception: " + x);
@@ -279,7 +282,10 @@ void buildHexaBloomOutput (LX lx, LXDatagramOutput output, Config config, JSONOb
         OrderedSpokeIndex++;
         
         // Set up DMX output
-        output.addDatagram(new RadiaNodeSpecialDatagram(start_universe + DMX_UNIVERSE_OFFSET, bloom).setAddress(ip));
+        RadiaNodeDatagrams[RadiaNodeDatagramCount] = new RadiaNodeSpecialDatagram(start_universe + DMX_UNIVERSE_OFFSET, bloom);
+        RadiaNodeDatagrams[RadiaNodeDatagramCount].setAddress(ip);
+        output.addDatagram((LXDatagram)RadiaNodeDatagrams[RadiaNodeDatagramCount]);
+        RadiaNodeDatagramCount++;
         
     } catch (Exception x) {
         println("Runtime Exception: " + x);
