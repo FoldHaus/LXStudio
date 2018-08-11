@@ -5,7 +5,7 @@
 ------------------------
 
 BASIC FUNCTION
-- Motor Acceleration Function:
+- Motor Acceleration Function (cameron):
 -   needs to be replicated in the simulation of Umbrellas
 -   Probably needs Cameron and Peter for 30 minutes
 

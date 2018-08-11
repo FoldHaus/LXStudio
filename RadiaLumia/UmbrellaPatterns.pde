@@ -472,12 +472,55 @@ public class Breathe extends RadiaLumiaPattern
 @LXCategory("Umbrella")
 public class ShadeStructure extends RadiaLumiaPattern
 {
+    
+    public final CompoundParameter P_Heading =
+        new CompoundParameter("Head", 0, 0, TWO_PI)
+        .setDescription("The compass-direction the current elevation angle is based off");
+    
+    public final CompoundParameter P_Elevation = 
+        new CompoundParameter("Ele", 0, 0, PI)
+        .setDescription("The elevation of the open nodes");
+    
+    public final CompoundParameter P_Distance =
+        new CompoundParameter("Dist", 0, 0, 200);
+    
+    public final CompoundParameter P_Radius =
+        new CompoundParameter("Rad", 25, 0, 200);
+    
     public ShadeStructure (LX lx)
     {
         super(lx);
+        
+        addParameter(P_Heading);
+        addParameter(P_Elevation);
+        addParameter(P_Distance);
+        addParameter(P_Radius);
     }
     
     public void run (double deltaMs)
     {
+        float Heading = P_Heading.getValuef();
+        float Elevation = P_Elevation.getValuef();
+        float Radius = P_Radius.getValuef();
+        
+        LXVector Center = new LXVector(sin(Heading) * cos(Elevation),
+                                       cos(Heading) * sin(Elevation),
+                                       sin(Elevation));
+        
+        LXVector NewCenter = Center.copy().normalize().mult(P_Distance.getValuef());
+        
+        for (Bloom b : model.blooms)
+        {
+            float Dist = NewCenter.dist(b.center);
+            
+            if (Dist < Radius)
+            {
+                setUmbrella(b, 1);
+            }
+            else
+            {
+                setUmbrella(b, 0);
+            }
+        }
     }
 }

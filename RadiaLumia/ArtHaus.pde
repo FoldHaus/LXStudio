@@ -437,29 +437,9 @@ public class RotatingColorFade extends ArtHausPattern
     }
 }
 
-// A pattern that moves random umbrellas slowly, and lightens them as they get further away from the center.
-@LXCategory("ArtHaus")
-public class UmbrellaIlluminatedMove extends ArtHausPattern
-{
-    public UmbrellaIlluminatedMove (LX lx)
-    {
-        super(lx);
-    }
-    
-    public void ResetPattern ()
-    {
-    }
-    
-    public void run(double deltaMs)
-    {
-        
-    }
-}
-
 @LXCategory("ArtHaus")
 public class GlowingBlossoms extends ArtHausPattern
 {
-    
     public int BeatsTracked = 0;
     
     public GlowingBlossoms (LX lx)
@@ -500,3 +480,5 @@ public class GlowingBlossoms extends ArtHausPattern
         }
     }
 }
+
+
