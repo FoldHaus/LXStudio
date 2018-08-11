@@ -177,3 +177,32 @@ public class IdentifyBloom extends RadiaLumiaPattern {
         }
     }
 }
+
+@LXCategory("Test")
+public class InitializeNode extends RadiaLumiaPattern
+{
+    public final DiscreteParameter P_Index =
+        new DiscreteParameter("Node", 0, 0, 42);
+    
+    public final BooleanParameter P_Initialize = 
+        new BooleanParameter("Init");
+    
+    public InitializeNode(LX lx)
+    {
+        super(lx);
+        addParameter(P_Index);
+        addParameter(P_Initialize);
+    }
+    
+    public void run(double deltaMs)
+    {
+        if(P_Initialize.getValueb())
+        {
+            int Index = P_Index.getValuei();
+            
+            P_Initialize.setValue(false);
+            
+            println("Initializing " + Index);
+        }
+    }
+}
