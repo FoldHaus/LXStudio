@@ -50,9 +50,11 @@ public class ColorBalance extends UmbrellaEffect {
         
         boolean bloom_debug = false;
         
+        int HeartMultiplyColor = LXColor.hsb(0, 0, heart_brightness);
+        
         for (LXPoint p : model.heart.points) {
             int curr_color = colors[p.index];
-            colors[p.index] = LXColor.hsb(LXColor.h(curr_color), LXColor.s(curr_color), heart_brightness);
+            colors[p.index] = LXColor.multiply(curr_color, HeartMultiplyColor);
         }
         
         int underUmbrellaMultiplyBy = LXColor.hsb(0, 0, underUmbrellaBrightness);

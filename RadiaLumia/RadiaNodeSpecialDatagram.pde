@@ -23,6 +23,8 @@ public class RadiaNodeSpecialDatagram extends StreamingACNDatagram {
     
     protected int pinspotIndex;
     
+    public int BloomId;
+    
     // Special Messages
     public boolean SendDoHomingMessage = false;
     public boolean SendInitHexa = false;
@@ -33,6 +35,7 @@ public class RadiaNodeSpecialDatagram extends StreamingACNDatagram {
         motorPositionIndex = bloom.umbrella.position.index;
         
         pinspotIndex = bloom.spike.pinSpot.index;
+        BloomId = bloom.id;
     }
     
     @Override

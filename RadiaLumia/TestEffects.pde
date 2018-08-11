@@ -184,25 +184,65 @@ public class InitializeNode extends RadiaLumiaPattern
     public final DiscreteParameter P_Index =
         new DiscreteParameter("Node", 0, 0, 42);
     
-    public final BooleanParameter P_Initialize = 
-        new BooleanParameter("Init");
+    public final BooleanParameter P_DoHoming = 
+        new BooleanParameter("Home");
+    
+    public final BooleanParameter P_SetPenta = 
+        new BooleanParameter("Penta");
+    
+    public final BooleanParameter P_SetHexa =
+        new BooleanParameter("Hexa");
     
     public InitializeNode(LX lx)
     {
         super(lx);
         addParameter(P_Index);
-        addParameter(P_Initialize);
+        addParameter(P_DoHoming);
+        addParameter(P_SetPenta);
+        addParameter(P_SetHexa);
     }
     
     public void run(double deltaMs)
     {
-        if(P_Initialize.getValueb())
+        boolean DoHoming = P_DoHoming.getValueb();
+        boolean SetPenta = P_SetPenta.getValueb();
+        boolean SetHexa = P_SetHexa.getValueb();
+        
+        int Index = -1;
+        RadiaNodeSpecialDatagram DGram = null;
+        
+        if(DoHoming)
         {
-            int Index = P_Index.getValuei();
-            
-            P_Initialize.setValue(false);
-            
-            println("Initializing " + Index);
+            Index = P_Index.getValuei();
+            for (int i = 0; i < RadiaNodeDatagramCount; i++)
+            {
+                RadiaNodeSpecialDatagram TestDGram = RadiaNodeDatagrams[i];
+                if (TestDGram.BloomId == Index)
+                {
+                    DGram = TestDGram;
+                }
+            }
+        }
+        
+        if (DoHoming)
+        {
+            P_DoHoming.setValue(false);
+            println("Homing " + Index);
+            DGram.doHome();
+        }
+        
+        if (SetPenta)
+        {
+            P_SetPenta.setValue(false);
+            println("Setting " + Index + " to Penta");
+            DGram.setPenta();
+        }
+        
+        if (SetHexa)
+        {
+            P_SetHexa.setValue(false);
+            println("Setting " + Index + " to Hexa");
+            DGram.setHexa();
         }
     }
 }
