@@ -524,3 +524,4 @@ public class ShadeStructure extends RadiaLumiaPattern
         }
     }
 }
+

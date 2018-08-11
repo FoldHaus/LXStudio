@@ -4,6 +4,11 @@ int MAX_TEMPO_MULTIPLIER = 32;
 int NUM_MUSICIANS = 4;
 int MUSICIAN_MAX_PATTERN_REPETITION = 32;
 
+// PATTERNS NEEDED
+/*
+*  - 
+*/
+
 // General Controls
 
 public class ArtHausPerformance
@@ -184,6 +189,21 @@ public abstract class ArtHausPattern extends RadiaLumiaPattern
         {
             artHaus.ChooseNewPattern(this.Musician);
         }
+    }
+}
+
+@LXCategory("ArtHaus")
+public class NoPattern extends ArtHausPattern
+{
+    public NoPattern(LX lx)
+    {
+        super(lx);
+    }
+    public  void ResetPattern ()
+    {
+    }
+    public void run(double deltaMs)
+    {
     }
 }
 
@@ -481,4 +501,31 @@ public class GlowingBlossoms extends ArtHausPattern
     }
 }
 
-
+@LXCategory("ArtHaus")
+public class BeatHeart extends ArtHausPattern
+{
+    public BeatHeart(LX lx)
+    {
+        super(lx);
+    }
+    
+    public void ResetPattern ()
+    {
+        
+    }
+    
+    public void run (double deltaMs)
+    {
+        int Period = TempoMultiplier.getValuei();
+        int Progress = lx.tempo.beatCount() % Period;
+        
+        float ProgressPercent = (float)lx.tempo.ramp();
+        ProgressPercent += (float) Progress;
+        ProgressPercent = ProgressPercent / (float)Period;
+        
+        for (LXPoint p : model.heart.points)
+        {
+            colors[p.index] = LXColor.hsb(0, 0, ProgressPercent * 100);
+        }
+    }
+}

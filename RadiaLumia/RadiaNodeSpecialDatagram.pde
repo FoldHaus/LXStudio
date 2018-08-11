@@ -5,9 +5,12 @@ public class RadiaNodeSpecialDatagram extends StreamingACNDatagram {
     private final static int DMX_DATA_POSITION = 126;
     private final static int SEQUENCE_NUMBER_POSITION = 111;
     private byte sequenceNumber = 0;
+
+    protected final static int COMMAND_POSITION = 0;
+    protected final static int COMMAND_LENGTH = 1;
     
-    protected final static int MOTOR_DATA_POSITION = 0;
-    protected final static int MOTOR_DATA_LENGTH = 3;
+    protected final static int MOTOR_DATA_POSITION = COMMAND_POSITION + COMMAND_LENGTH;
+    protected final static int MOTOR_DATA_LENGTH = 2;
     public final static int MOTOR_DATA_MASK = (1 << (MOTOR_DATA_LENGTH * 8)) - 1;
     
     protected final static int PINSPOT_DATA_POSITION = MOTOR_DATA_POSITION + MOTOR_DATA_LENGTH;
@@ -23,6 +26,8 @@ public class RadiaNodeSpecialDatagram extends StreamingACNDatagram {
     
     protected int pinspotIndex;
     
+    public int BloomId;
+    
     // Special Messages
     public boolean SendDoHomingMessage = false;
     public boolean SendInitHexa = false;
@@ -33,6 +38,7 @@ public class RadiaNodeSpecialDatagram extends StreamingACNDatagram {
         motorPositionIndex = bloom.umbrella.position.index;
         
         pinspotIndex = bloom.spike.pinSpot.index;
+        BloomId = bloom.id;
     }
     
     @Override
@@ -40,27 +46,36 @@ public class RadiaNodeSpecialDatagram extends StreamingACNDatagram {
         if (SendDoHomingMessage)
         {
             SendDoHomingMessage = false;
-            // TODO(cameron): Write Homing Message
+
+            writeLENumberToBuffer(0xff, COMMAND_POSITION, COMMAND_LENGTH);
         }
         else if (SendInitHexa)
         {
             SendInitHexa = false;
-            // TODO(cameron): Write Init Hexa Message
+            
+            writeLENumberToBuffer(1, COMMAND_POSITION, COMMAND_LENGTH);
+            writeLENumberToBuffer(Umbrella::MaxHexaSteps, MOTOR_DATA_POSITION, MOTOR_DATA_LENGTH);
         }
         else if (SendInitPenta)
         {
             SendInitPenta = false;
-            // TODO(cameron): Write Init Penta Message
+            
+            writeLENumberToBuffer(1, COMMAND_POSITION, COMMAND_LENGTH);
+            writeLENumberToBuffer(Umbrella::MaxPentaSteps, MOTOR_DATA_POSITION, MOTOR_DATA_LENGTH);
+
         }
         else
         {
-            // Do this manually for now since `super.onSend(colors)` doesn't work for some reason
-            this.buffer[SEQUENCE_NUMBER_POSITION] = ++this.sequenceNumber;
-            
+            writeLENumberToBuffer(0, COMMAND_POSITION, COMMAND_LENGTH);
             writeLENumberToBuffer(colors[motorPositionIndex], MOTOR_DATA_POSITION, MOTOR_DATA_LENGTH);
-            writeLENumberToBuffer(colors[pinspotIndex], PINSPOT_DATA_POSITION, PINSPOT_DATA_LENGTH);
-            writePayloadCRC();
         }
+
+        // Do this manually for now since `super.onSend(colors)` doesn't work for some reason
+        this.buffer[SEQUENCE_NUMBER_POSITION] = ++this.sequenceNumber;
+
+        writeLENumberToBuffer(colors[pinspotIndex], PINSPOT_DATA_POSITION, PINSPOT_DATA_LENGTH);
+
+        writePayloadCRC();
     }
     
     protected void writeLENumberToBuffer(int number, int pos, int length) {
