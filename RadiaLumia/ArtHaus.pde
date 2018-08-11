@@ -516,6 +516,16 @@ public class BeatHeart extends ArtHausPattern
     
     public void run (double deltaMs)
     {
+        int Period = TempoMultiplier.getValuei();
+        int Progress = lx.tempo.beatCount() % Period;
         
+        float ProgressPercent = (float)lx.tempo.ramp();
+        ProgressPercent += (float) Progress;
+        ProgressPercent = ProgressPercent / (float)Period;
+        
+        for (LXPoint p : model.heart.points)
+        {
+            colors[p.index] = LXColor.hsb(0, 0, ProgressPercent * 100);
+        }
     }
 }
