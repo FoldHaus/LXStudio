@@ -473,12 +473,48 @@ public static class Bloom extends LXModel {
         
         // NOTE(peter): This is in percent
         public double simulatedPosition = 0.;
+
+        // "Pulses" are traditional stepper motor steps (Tied to "Input Resolution")
+        // "Counts" are clearpath internal encoder counts (fixed at 800)
+
+        protected final int defaultMaxRPM            = 2000;
+        protected final int defaultMaxAccelPPSPS     = 8000;
+
+        protected final int absoluteMaxRPM            = 2200;
+        protected final int absoluteMaxAccelPPSPS     = 20000;
+
+        protected final int maxTravelInches   = 28; // Old and possibly wrong
+        protected final int rotationsPerInch  = 4;  //must be set per lead screw pitch
+
+        protected final int pulsesPerRevolution = 200; //must be set to this in the Clearpath firmware
+        protected final int countsPerRevolution = 800; // Motor encoder resolution
+
+        // This relates to a hack inside of the local copy of AccelStepper
+        protected final int overstep = 7;
+
+        // 108.3k counts ~ range for hexa-nodes
+        // 86.5k counts ~ range for penta-nodes
+        // 98k counts ~ range for test rig
+        protected final int hexaOpenCounts = 108300;
+        protected final int pentaOpenCounts = 86500;
+
+        protected final int absoluteMaxCounts = 120000;
+
+        protected final int backoffCounts = 1200;
+
+        // Full range in pulses
+        protected final int absoluteMaxPulses = (absoluteMaxCounts) * pulsesPerRevolution / countsPerRevolution / (1 + overstep);
+        // Holdover...
+        protected final int maxPulsesCalc = maxTravelInches * rotationsPerInch * pulsesPerRevolution / (1 + overstep);
+
+        protected final int absoluteMaxPulsesPerSecond = (absoluteMaxRPM/60) * pulsesPerRevolution / (1 + overstep);
+
+        protected final int absoluteMaxPulsesPerSecSec = absoluteMaxAccelPPSPS / (1 + overstep);
         
         // NOTE(peter): This is what to change if the travel distance changes
-        public static final int MaxHexaSteps = 3346;
-        public static final int MaxPentaSteps = 3346; 
+        public static final int MaxHexaPulses = (hexaOpenCounts - backoffCounts) * pulsesPerRevolution / countsPerRevolution / (1 + overstep);
+        public static final int MaxPentaPulses = (pentaOpenCounts - backoffCounts) * pulsesPerRevolution / countsPerRevolution / (1 + overstep); 
         
-        public static final int MaxSteps = 3025; // TODO: real number
         public static final int MaxStepsVel = 10000; // TODO: these match the code as it is, but that will change
         public static final int MaxStepsAcc = 50000; // TODO: these match the code as it is, but that will change
         

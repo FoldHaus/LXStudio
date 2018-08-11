@@ -51,14 +51,14 @@ public class RadiaNodeSpecialDatagram extends StreamingACNDatagram {
             SendInitHexa = false;
             
             writeLENumberToBuffer(1, COMMAND_POSITION, COMMAND_LENGTH);
-            writeLENumberToBuffer(Umbrella.MaxHexaSteps, MOTOR_DATA_POSITION, MOTOR_DATA_LENGTH);
+            writeLENumberToBuffer(Umbrella.MaxHexaPulses, MOTOR_DATA_POSITION, MOTOR_DATA_LENGTH);
         }
         else if (SendInitPenta)
         {
             SendInitPenta = false;
             
             writeLENumberToBuffer(1, COMMAND_POSITION, COMMAND_LENGTH);
-            writeLENumberToBuffer(Umbrella.MaxPentaSteps, MOTOR_DATA_POSITION, MOTOR_DATA_LENGTH);
+            writeLENumberToBuffer(Umbrella.MaxPentaPulses, MOTOR_DATA_POSITION, MOTOR_DATA_LENGTH);
 
         }
         else
