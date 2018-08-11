@@ -22,7 +22,7 @@ void buildOutput(LX lx) {
         String DEBUG_ONE_IP = "192.168.1.215";
         
         // Debug three blooms, with the ips in the array
-        boolean BLOOM_DEBUG_THREE = true;
+        boolean BLOOM_DEBUG_THREE = false;
         String[] DEBUG_MULTIPLE_IPS = {
             "192.168.1.240",
             "192.168.1.234",
