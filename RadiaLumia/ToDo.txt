@@ -32,4 +32,6 @@ PATTERNS
 
 ------WISH LIST
 
+- All print statements wrapped in DEBUG flag
+
 -----------------------
