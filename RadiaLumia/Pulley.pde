@@ -60,6 +60,10 @@ public class LoadingWipe extends RadiaLumiaPattern {
     private pulley pulley1;
     private pulley pulley2;
     private pulley pulley3;
+    private int avgSize = 50;
+    private MovingAverage pullAvg1 = new MovingAverage(avgSize);
+    private MovingAverage pullAvg2 = new MovingAverage(avgSize);
+    private MovingAverage pullAvg3 = new MovingAverage(avgSize);
     
     public LoadingWipe(LX lx){
         super(lx);
@@ -76,45 +80,45 @@ public class LoadingWipe extends RadiaLumiaPattern {
         pulley2 = new pulley(bloomId2);
         pulley3 = new pulley(bloomId3);
 
-        println(pulley1.bloomId);
-        println(pulley2.bloomId);
-        println(pulley3.bloomId);
-
         SensorRef_PullState1 = sensors.SensorValueCache.get(Sensors.SENSOR_ADDRESS_PULLEY_ONE);
         SensorRef_PullState2 = sensors.SensorValueCache.get(Sensors.SENSOR_ADDRESS_PULLEY_TWO);
         SensorRef_PullState3 = sensors.SensorValueCache.get(Sensors.SENSOR_ADDRESS_PULLEY_THREE);
+
     }
 
 
-    // public final SawLFO oscillator =
-    //     new SawLFO(0, 2 * 3.14, speed);
-
     public void run(double deltaMs) {
+
+
 
         boolean live = liveSensor.getValueb();
 
         double pullStrength1, pullStrength2, pullStrength3;
 
+        // double curr, prev1, prev2, prev3 = 0.0;
+
         if (live) {
-            pullStrength1 = this.SensorRef_PullState1.getValue();
-            pullStrength2 = this.SensorRef_PullState2.getValue();
-            pullStrength3 = this.SensorRef_PullState3.getValue();
+            // curr = this.SensorRef_PullState1.getValue();
+            // if (curr != prev1) {
+            //     pullStrength1 = pullAvg1.NextVal(curr); 
+            //     prev1 = curr;
+            // }
+            
+            pullStrength1 = pullAvg1.NextVal(this.SensorRef_PullState1.getValue());
+            pullStrength2 = pullAvg2.NextVal(this.SensorRef_PullState2.getValue());
+            pullStrength3 = pullAvg3.NextVal(this.SensorRef_PullState3.getValue());
 
         } else {
-            pullStrength1 = this.pul1.getValue();
-            pullStrength2 = this.pul2.getValue();
-            pullStrength3 = this.pul3.getValue();
+            pullStrength1 = pullAvg1.NextVal(this.pul1.getValue());
+            pullStrength2 = pullAvg2.NextVal(this.pul2.getValue());
+            pullStrength3 = pullAvg3.NextVal(this.pul3.getValue());
         }
-
-
 
         int maxDistance = 500;
 
         double totalStrength = pullStrength3 + pullStrength2 + pullStrength1;
         double threshold =  (totalStrength / 3) * maxDistance;
 
-
-        // LXVector centerVector3 = model.blooms.get(bloom3).center;
 
         LXVector centerVector1 = model.blooms.get(pulley1.bloomId).center;
         LXVector centerVector2 = model.blooms.get(pulley2.bloomId).center;
@@ -150,45 +154,26 @@ public class LoadingWipe extends RadiaLumiaPattern {
 }
 
 
+public class MovingAverage {
+    private double[] arr;
+    int ptr, n;
+    private double sum;
 
-// @LXCategory("Pulley")
-// public class Aftershock extends RadiaLumiaPattern {
-  
-//     public final CompoundParameter pulley =
-//         new CompoundParameter("pul", 0.5, 0, 1)
-//         .setDescription("The pulley strength");
+    public MovingAverage(int size) {
+        arr = new double[size];
+        ptr = 0;
+        sum = 0;
+    }
 
-//     public final DiscreteParameter source =
-//         new DiscreteParameter("src", 35, 0, 41);
+    public double NextVal(double val) {
+        if (n < arr.length) {
+            n++;
+        }
 
-//     public Aftershock(LX lx){
-//         super(lx);
-//         addParameter(this.pulley);
-//         addParameter(this.source);
-//     }
-
-//     public void run(double deltaMs) {
-//         double pullStrength = this.pulley.getValue();
-//         int sourceBloom = this.source.getValuei();
-
-//         int maxDistance = 500;
-//         double threshold = pullStrength * maxDistance;
-
-//         LXVector centerVector = model.blooms.get(sourceBloom).center;
-
-//         double tempDist;
-
-//         for (LXPoint led : model.leds) {
-//             LXVector ledVector = LXPointToVector(led);
-//             tempDist = centerVector.dist(ledVector);
-
-//             if (tempDist < threshold) {
-//                 colors[led.index] = LXColor.hsb(360, 0, 100);
-//             }
-//             else {
-//                 colors[led.index] = LXColor.hsb(0, 0, 0);
-
-//             }
-//         }
-//     }
-// }
+        sum = sum - arr[ptr];
+        sum = sum + val;
+        arr[ptr] = val;
+        ptr = (ptr + 1) % arr.length;
+        return (double)sum/n;
+    }
+}

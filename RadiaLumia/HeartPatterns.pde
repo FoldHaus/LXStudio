@@ -17,4 +17,3 @@ public class HeartGradient extends RadiaLumiaPattern
         }
     }
 }
-
