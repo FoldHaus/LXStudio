@@ -446,8 +446,8 @@ public static class Bloom extends LXModel {
       
       It handles requests for the umbrella to reach states which are expressed in terms of percent closed
       For Example:
-      - 1.0 = 100% Closed (looks like) <
-      - 0.0 = 0% Closed  (looks like) (
+      - 1.0 = 100% Closed - Shell is as small as possible (looks like) <
+      - 0.0 = 0% Closed - Shell is as open as possible (looks like) (
       
       It also handles the modeling the behaviour of the motors, so that the visualization, and any requests,
       can be evaluated accurately and safely.
@@ -468,10 +468,15 @@ public static class Bloom extends LXModel {
         
         // An updated once-per-frame simulation of where we believe the motor to be based
         // upon its speed limitations
-        public double CurrentVelocity = 0.;
-        public double LastFrameRequestedPosition = 0.;
+        protected double estimatedVelocity = 0.;
+
+        // current estimate of our position in pulses.
+        protected double estimatedPosition = 0;
         
         // NOTE(peter): This is in percent
+        // Externally used estimate of position.
+        // 0 == Open
+        // 1 == Closed (home)
         public double simulatedPosition = 0.;
         
         // "Pulses" are traditional stepper motor steps (Tied to "Input Resolution")
@@ -504,24 +509,30 @@ public static class Bloom extends LXModel {
         
         // Full range in pulses
         protected static final int absoluteMaxPulses = (absoluteMaxCounts) * pulsesPerRevolution / countsPerRevolution / (1 + overstep);
-        // Holdover...
-        protected static final int maxPulsesCalc = maxTravelInches * rotationsPerInch * pulsesPerRevolution / (1 + overstep);
         
+        protected static final int maxVelocityPPS = (defaultMaxRPM/60) * pulsesPerRevolution / (1 + overstep);
         protected static final int absoluteMaxPulsesPerSecond = (absoluteMaxRPM/60) * pulsesPerRevolution / (1 + overstep);
         
+        protected static final int accelerationPPSPS = defaultMaxAccelPPSPS / (1 + overstep);
         protected static final int absoluteMaxPulsesPerSecSec = absoluteMaxAccelPPSPS / (1 + overstep);
         
         // NOTE(peter): This is what to change if the travel distance changes
         public static final int MaxHexaPulses = (hexaOpenCounts - backoffCounts) * pulsesPerRevolution / countsPerRevolution / (1 + overstep);
         public static final int MaxPentaPulses = (pentaOpenCounts - backoffCounts) * pulsesPerRevolution / countsPerRevolution / (1 + overstep); 
-        
-        public static final int MaxStepsVel = 10000; // TODO: these match the code as it is, but that will change
-        public static final int MaxStepsAcc = 50000; // TODO: these match the code as it is, but that will change
-        
-        private static final double FULL_OPEN_TO_CLOSE_TIME = 4000; // 4 Seconds
-        private static final double UMBRELLA_MAX_VELOCITY = 1.0 / FULL_OPEN_TO_CLOSE_TIME;
-        
+
+        // Actual local count of max number of pulses for full range
         public int MaxPulses;
+
+        protected double _n = 0;
+        protected double _cn = 0;
+        protected double _c0 = 0;
+        protected double _direction;
+        protected double _stepInterval;
+
+        public static final double _cmin = 1;
+
+        public static final int DIRECTION_CCW = 0;
+        public static final int DIRECTION_CW = 1;
         
         public Umbrella(boolean _IsPentaNode) {
             this.IsPentaNode = _IsPentaNode;
@@ -536,42 +547,87 @@ public static class Bloom extends LXModel {
             
             addPoint(this.position = new LXPoint(0, 0, 0));
             
-            CurrentVelocity = 0.0;
-            LastFrameRequestedPosition = 0.0;
+            estimatedPosition = 1 * MaxPulses;
+            estimatedVelocity = 0;
         }
         
-        public double GetAccelerationLimitedPosition(
-            double _RequestedPosition,
-            double _DeltaMs
-            )
-        {
-            
-            // TODO(cameron): Fill out Accel Limiting 
-            return 0;
-        }
         
         public void update(double deltaMs, int[] colors) {
+
             
-            double RequestedPosition = 
-                (RadiaNodeSpecialDatagram.MOTOR_DATA_MASK & colors[this.position.index]);
+            int requestedPosition = (RadiaNodeSpecialDatagram.MOTOR_DATA_MASK & colors[this.position.index]);
             
-            // TODO(cameron): This doesn't work and needs to be fixed
-            // Maybe add a member variable to track current position in steps
-            //GetAccelerationLimitedPosition(RequestedPosition);
-            
-            double ValidPosition = RequestedPosition / MaxPulses;
-            ValidPosition = 1.0 - ValidPosition;
-            
-            // TODO(peter): Do we need this anymore since I'm doing the limiting calculation on steps?
-            
-            double dist = ValidPosition - this.simulatedPosition;
-            double maxMovement = UMBRELLA_MAX_VELOCITY * deltaMs;
-            
-            if (Math.abs(dist) > maxMovement) {
-                this.simulatedPosition += maxMovement * (dist > 0 ? 1 : -1);
-            } else {
-                this.simulatedPosition = ValidPosition;
+            estimatedVelocity += accelerationPPSPS;
+            estimatedPosition += estimatedVelocity;
+
+            double distanceTo = requestedPosition - estimatedPosition; // +ve is clockwise from curent location
+
+            double stepsToStop = (long)((estimatedVelocity * estimatedVelocity) / (2.0 * accelerationPPSPS)); // Equation 16
+
+            if (distanceTo == 0 && stepsToStop <= 1) {
+                estimatedVelocity = 0.0;
+                _n = 0;
+                return;
             }
+
+            if (distanceTo > 0)
+            {
+                // We are anticlockwise from the target
+                // Need to go clockwise from here, maybe decelerate now
+                if (_n > 0)
+                {
+                    // Currently accelerating, need to decel now? Or maybe going the wrong way?
+                    if ((stepsToStop >= distanceTo) || _direction == DIRECTION_CCW)
+                    _n = -stepsToStop; // Start deceleration
+                }
+                else if (_n < 0)
+                {
+                    // Currently decelerating, need to accel again?
+                    if ((stepsToStop < distanceTo) && _direction == DIRECTION_CW)
+                    _n = -_n; // Start accceleration
+                }
+            }
+            else if (distanceTo < 0)
+            {
+            // We are clockwise from the target
+            // Need to go anticlockwise from here, maybe decelerate
+            if (_n > 0)
+            {
+                // Currently accelerating, need to decel now? Or maybe going the wrong way?
+                if ((stepsToStop >= -distanceTo) || _direction == DIRECTION_CW)
+                _n = -stepsToStop; // Start deceleration
+            }
+            else if (_n < 0)
+            {
+                // Currently decelerating, need to accel again?
+                if ((stepsToStop < -distanceTo) && _direction == DIRECTION_CCW)
+                _n = -_n; // Start accceleration
+            }
+            }
+
+            // Need to accelerate or decelerate
+            if (_n == 0)
+            {
+                // First step from stopped
+                _cn = _c0;
+                _direction = (distanceTo > 0) ? DIRECTION_CW : DIRECTION_CCW;
+            }
+            else
+            {
+                // Subsequent step. Works for accel (n is +_ve) and decel (n is -ve).
+                _cn = _cn - ((2.0 * _cn) / ((4.0 * _n) + 1)); // Equation 13
+                _cn = max(_cn, _cmin);
+            }
+            _n++;
+            _stepInterval = _cn;
+            estimatedVelocity = 1000000.0 / _cn;
+            if (_direction == DIRECTION_CCW)
+                estimatedVelocity = -estimatedVelocity;
+
+            
+            // Let the rest of LX use our estimates
+            simulatedPosition = 1 - (estimatedPosition / MaxPulses);
+            simulatedPosition = 0;
         }
     }
 }
