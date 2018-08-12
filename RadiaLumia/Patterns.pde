@@ -1,14 +1,3 @@
-int PercentToPositionSteps (double position)
-{
-    return RadiaNodeSpecialDatagram.MOTOR_DATA_MASK & (int) (Bloom.Umbrella.MaxSteps * position);
-}
-
-double PositionStepsToPercent (int positionSteps)
-{
-    // TODO(peter): Fill this out
-    return 0;
-}
-
 public abstract class RadiaLumiaPattern extends LXModelPattern<Model> {
     public RadiaLumiaPattern(LX lx) {
         super(lx);
@@ -17,7 +6,7 @@ public abstract class RadiaLumiaPattern extends LXModelPattern<Model> {
     //NOTE(peter): umbrella position is in a range from (0, 1) inclusive
     public void setUmbrella(Bloom bloom, double position) {
         double ClampedPosition = clamp(position, 0, 1);
-        final int positionSteps = RadiaNodeSpecialDatagram.MOTOR_DATA_MASK & (int) (Bloom.Umbrella.MaxSteps * ClampedPosition);
+        final int positionSteps = RadiaNodeSpecialDatagram.MOTOR_DATA_MASK & (int) (bloom.umbrella.MaxPulses * ClampedPosition);
         this.colors[bloom.umbrella.position.index] = 0xff000000 | positionSteps;
     }
     

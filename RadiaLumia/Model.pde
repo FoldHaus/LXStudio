@@ -473,43 +473,43 @@ public static class Bloom extends LXModel {
         
         // NOTE(peter): This is in percent
         public double simulatedPosition = 0.;
-
+        
         // "Pulses" are traditional stepper motor steps (Tied to "Input Resolution")
         // "Counts" are clearpath internal encoder counts (fixed at 800)
-
-        protected final int defaultMaxRPM            = 2000;
-        protected final int defaultMaxAccelPPSPS     = 8000;
-
-        protected final int absoluteMaxRPM            = 2200;
-        protected final int absoluteMaxAccelPPSPS     = 20000;
-
-        protected final int maxTravelInches   = 28; // Old and possibly wrong
-        protected final int rotationsPerInch  = 4;  //must be set per lead screw pitch
-
-        protected final int pulsesPerRevolution = 200; //must be set to this in the Clearpath firmware
-        protected final int countsPerRevolution = 800; // Motor encoder resolution
-
+        
+        protected static final int defaultMaxRPM            = 2000;
+        protected static final int defaultMaxAccelPPSPS     = 8000;
+        
+        protected static final int absoluteMaxRPM            = 2200;
+        protected static final int absoluteMaxAccelPPSPS     = 20000;
+        
+        protected static final int maxTravelInches   = 28; // Old and possibly wrong
+        protected static final int rotationsPerInch  = 4;  //must be set per lead screw pitch
+        
+        protected static final int pulsesPerRevolution = 200; //must be set to this in the Clearpath firmware
+        protected static final int countsPerRevolution = 800; // Motor encoder resolution
+        
         // This relates to a hack inside of the local copy of AccelStepper
-        protected final int overstep = 7;
-
+        protected static final int overstep = 7;
+        
         // 108.3k counts ~ range for hexa-nodes
         // 86.5k counts ~ range for penta-nodes
         // 98k counts ~ range for test rig
-        protected final int hexaOpenCounts = 108300;
-        protected final int pentaOpenCounts = 86500;
-
-        protected final int absoluteMaxCounts = 120000;
-
-        protected final int backoffCounts = 1200;
-
+        protected static final int hexaOpenCounts = 108300;
+        protected static final int pentaOpenCounts = 86500;
+        
+        protected static final int absoluteMaxCounts = 120000;
+        
+        protected static final int backoffCounts = 1200;
+        
         // Full range in pulses
-        protected final int absoluteMaxPulses = (absoluteMaxCounts) * pulsesPerRevolution / countsPerRevolution / (1 + overstep);
+        protected static final int absoluteMaxPulses = (absoluteMaxCounts) * pulsesPerRevolution / countsPerRevolution / (1 + overstep);
         // Holdover...
-        protected final int maxPulsesCalc = maxTravelInches * rotationsPerInch * pulsesPerRevolution / (1 + overstep);
-
-        protected final int absoluteMaxPulsesPerSecond = (absoluteMaxRPM/60) * pulsesPerRevolution / (1 + overstep);
-
-        protected final int absoluteMaxPulsesPerSecSec = absoluteMaxAccelPPSPS / (1 + overstep);
+        protected static final int maxPulsesCalc = maxTravelInches * rotationsPerInch * pulsesPerRevolution / (1 + overstep);
+        
+        protected static final int absoluteMaxPulsesPerSecond = (absoluteMaxRPM/60) * pulsesPerRevolution / (1 + overstep);
+        
+        protected static final int absoluteMaxPulsesPerSecSec = absoluteMaxAccelPPSPS / (1 + overstep);
         
         // NOTE(peter): This is what to change if the travel distance changes
         public static final int MaxHexaPulses = (hexaOpenCounts - backoffCounts) * pulsesPerRevolution / countsPerRevolution / (1 + overstep);
@@ -521,8 +521,19 @@ public static class Bloom extends LXModel {
         private static final double FULL_OPEN_TO_CLOSE_TIME = 4000; // 4 Seconds
         private static final double UMBRELLA_MAX_VELOCITY = 1.0 / FULL_OPEN_TO_CLOSE_TIME;
         
+        public int MaxPulses;
+        
         public Umbrella(boolean _IsPentaNode) {
             this.IsPentaNode = _IsPentaNode;
+            if (this.IsPentaNode)
+            {
+                MaxPulses = MaxPentaPulses;
+            }
+            else
+            {
+                MaxPulses = MaxHexaPulses;
+            }
+            
             addPoint(this.position = new LXPoint(0, 0, 0));
             
             CurrentVelocity = 0.0;
@@ -548,17 +559,7 @@ public static class Bloom extends LXModel {
             // Maybe add a member variable to track current position in steps
             //GetAccelerationLimitedPosition(RequestedPosition);
             
-            double ValidPosition = RequestedPosition;
-            
-            if (this.IsPentaNode)
-            {
-                ValidPosition /= MaxPentaSteps;
-            }
-            else
-            {
-                ValidPosition /= MaxHexaSteps;
-            }
-            
+            double ValidPosition = RequestedPosition / MaxPulses;
             ValidPosition = 1.0 - ValidPosition;
             
             // TODO(peter): Do we need this anymore since I'm doing the limiting calculation on steps?

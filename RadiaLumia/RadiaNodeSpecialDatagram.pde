@@ -5,7 +5,7 @@ public class RadiaNodeSpecialDatagram extends StreamingACNDatagram {
     private final static int DMX_DATA_POSITION = 126;
     private final static int SEQUENCE_NUMBER_POSITION = 111;
     private byte sequenceNumber = 0;
-
+    
     protected final static int COMMAND_POSITION = 0;
     protected final static int COMMAND_LENGTH = 1;
     
@@ -30,8 +30,7 @@ public class RadiaNodeSpecialDatagram extends StreamingACNDatagram {
     
     // Special Messages
     public boolean SendDoHomingMessage = false;
-    public boolean SendInitHexa = false;
-    public boolean SendInitPenta = false;
+    public boolean SendMaxPulses = false;
     
     public RadiaNodeSpecialDatagram(int universe, Bloom bloom) {
         super(universe, PACKET_SIZE);
@@ -46,35 +45,29 @@ public class RadiaNodeSpecialDatagram extends StreamingACNDatagram {
         if (SendDoHomingMessage)
         {
             SendDoHomingMessage = false;
-
+            
             writeLENumberToBuffer(0xff, COMMAND_POSITION, COMMAND_LENGTH);
         }
-        else if (SendInitHexa)
+        else if (SendMaxPulses)
         {
-            SendInitHexa = false;
+            SendMaxPulses= false;
+            
+            Bloom.Umbrella CurrentUmbrella = model.blooms.get(BloomId).umbrella;
             
             writeLENumberToBuffer(1, COMMAND_POSITION, COMMAND_LENGTH);
-            writeLENumberToBuffer(Umbrella.MaxHexaPulses, MOTOR_DATA_POSITION, MOTOR_DATA_LENGTH);
-        }
-        else if (SendInitPenta)
-        {
-            SendInitPenta = false;
-            
-            writeLENumberToBuffer(1, COMMAND_POSITION, COMMAND_LENGTH);
-            writeLENumberToBuffer(Umbrella.MaxPentaPulses, MOTOR_DATA_POSITION, MOTOR_DATA_LENGTH);
-
+            writeLENumberToBuffer(CurrentUmbrella.MaxPulses, MOTOR_DATA_POSITION, MOTOR_DATA_LENGTH);
         }
         else
         {
             writeLENumberToBuffer(0, COMMAND_POSITION, COMMAND_LENGTH);
             writeLENumberToBuffer(colors[motorPositionIndex], MOTOR_DATA_POSITION, MOTOR_DATA_LENGTH);
         }
-
+        
         // Do this manually for now since `super.onSend(colors)` doesn't work for some reason
         this.buffer[SEQUENCE_NUMBER_POSITION] = ++this.sequenceNumber;
-
+        
         writeLENumberToBuffer(colors[pinspotIndex], PINSPOT_DATA_POSITION, PINSPOT_DATA_LENGTH);
-
+        
         writePayloadCRC();
     }
     
@@ -96,13 +89,9 @@ public class RadiaNodeSpecialDatagram extends StreamingACNDatagram {
         SendDoHomingMessage = true;
     }
     
-    public void setHex() {
-        println("setting to Hex node");
-        SendInitHexa = true;
-    }
-    
-    public void setPenta() {
-        println("setting to Penta node");
-        SendInitPenta = true;
+    public void setSendMaxPulses()
+    {
+        println("Sending Pulses");
+        SendMaxPulses = true;
     }
 }

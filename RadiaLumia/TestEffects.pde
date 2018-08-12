@@ -187,31 +187,26 @@ public class InitializeNode extends RadiaLumiaPattern
     public final BooleanParameter P_DoHoming = 
         new BooleanParameter("Home");
     
-    public final BooleanParameter P_SetPenta = 
+    public final BooleanParameter P_SendPulses = 
         new BooleanParameter("Penta");
-    
-    public final BooleanParameter P_SetHexa =
-        new BooleanParameter("Hexa");
     
     public InitializeNode(LX lx)
     {
         super(lx);
         addParameter(P_Index);
         addParameter(P_DoHoming);
-        addParameter(P_SetPenta);
-        addParameter(P_SetHexa);
+        addParameter(P_SendPulses);
     }
     
     public void run(double deltaMs)
     {
         boolean DoHoming = P_DoHoming.getValueb();
-        boolean SetPenta = P_SetPenta.getValueb();
-        boolean SetHexa = P_SetHexa.getValueb();
+        boolean SendPulses = P_SendPulses.getValueb();
         
         int Index = -1;
         RadiaNodeSpecialDatagram DGram = null;
         
-        if(DoHoming)
+        if(DoHoming || SendPulses)
         {
             Index = P_Index.getValuei();
             for (int i = 0; i < RadiaNodeDatagramCount; i++)
@@ -231,18 +226,11 @@ public class InitializeNode extends RadiaLumiaPattern
             DGram.doHome();
         }
         
-        if (SetPenta)
+        if (SendPulses)
         {
-            P_SetPenta.setValue(false);
-            println("Setting " + Index + " to Penta");
-            DGram.setPenta();
-        }
-        
-        if (SetHexa)
-        {
-            P_SetHexa.setValue(false);
-            println("Setting " + Index + " to Hexa");
-            DGram.setHexa();
+            P_SendPulses.setValue(false);
+            println("Setting " + Index + " Pulses");
+            DGram.setSendMaxPulses();
         }
     }
 }

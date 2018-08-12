@@ -5,7 +5,7 @@ public abstract class UmbrellaEffect extends LXModelEffect<Model> {
     
     public void setUmbrella(Bloom bloom, double position) {
         final int positionSteps = 
-            RadiaNodeSpecialDatagram.MOTOR_DATA_MASK & (int)(Bloom.Umbrella.MaxSteps * position);
+            RadiaNodeSpecialDatagram.MOTOR_DATA_MASK & (int)(bloom.umbrella.MaxPulses * position);
         
         this.colors[bloom.umbrella.position.index] = 0xff000000 | positionSteps;
     }
