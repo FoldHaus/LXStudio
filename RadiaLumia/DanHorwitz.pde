@@ -1,3 +1,5 @@
+import org.apache.commons.math3.util.FastMath;
+
 //----------------------------------------------------------------------------------------------------------------------------------
 boolean btwn  	(int 		a,int 	 b,int 		c)		{ return a >= b && a <= c; 	}
 boolean btwn  	(double 	a,double b,double 	c)		{ return a >= b && a <= c; 	}
@@ -31,8 +33,33 @@ public class DBool {
 		def = _def; b = _def; tag = _tag; row = _row; col = _col;
 	}
 }
+
+static public float angleBetween(PVector v1, PVector v2) {
+
+  // We get NaN if we pass in a zero vector which can cause problems
+  // Zero seems like a reasonable angle between a (0,0,0) vector and something else
+  if (v1.x == 0 && v1.y == 0 && v1.z == 0 ) return 0.0f;
+  if (v2.x == 0 && v2.y == 0 && v2.z == 0 ) return 0.0f;
+
+  double dot = v1.x * v2.x + v1.y * v2.y + v1.z * v2.z;
+  double v1mag = FastMath.sqrt(v1.x * v1.x + v1.y * v1.y + v1.z * v1.z);
+  double v2mag = FastMath.sqrt(v2.x * v2.x + v2.y * v2.y + v2.z * v2.z);
+  // This should be a number between -1 and 1, since it's "normalized"
+  double amt = dot / (v1mag * v2mag);
+  // But if it's not due to rounding error, then we need to fix it
+  // http://code.google.com/p/processing/issues/detail?id=340
+  // Otherwise if outside the range, acos() will return NaN
+  // http://www.cppreference.com/wiki/c/math/acos
+  if (amt <= -1) {
+    return PConstants.PI;
+  } else if (amt >= 1) {
+    // http://code.google.com/p/processing/issues/detail?id=435
+    return 0;
+  }
+  return (float) FastMath.acos(amt);
+}
 //----------------------------------------------------------------------------------------------------------------------------------
-public class DPat extends RadiaLumiaPattern
+public abstract class DPat extends RadiaLumiaPattern
 {
 	ArrayList<DBool>  bools  = new ArrayList<DBool> ();
     PVector pTrans= new PVector(); 
@@ -44,10 +71,10 @@ public class DPat extends RadiaLumiaPattern
 	PVector		xyzJog = new PVector(), modmin;
 
 	float			NoiseMove	= random(10000);
-	BasicParameter	pSpark, pWave, pRotX, pRotY, pRotZ, pSpin, pTransX, pTransY;
+	CompoundParameter	pSpark, pWave, pRotX, pRotY, pRotZ, pSpin, pTransX, pTransY;
 	BooleanParameter			pXsym, pYsym, pRsym, pXdup, pXtrip, pJog, pGrey;
 
-	float		lxh		() 									{ return lx.getBaseHuef(); 											}
+	float		lxh		() 									{ return 360.0;  											} // Add parameter here
 	int			c1c		 (float a) 							{ return round(100*constrain(a,0,1));								}
 	float 		interpWv(float i, float[] vals) 			{ return interp(i-floor(i), vals[floor(i)], vals[ceil(i)]); 		}
 	void 		setNorm (PVector vec)						{ vec.set(vec.x/mMax.x, vec.y/mMax.y, vec.z/mMax.z); 				}
@@ -55,7 +82,7 @@ public class DPat extends RadiaLumiaPattern
 	void		setVec 	(PVector vec, LXPoint p)				{ vec.set(p.x, p.y, p.z);  											}
 	void		interpolate(float i, PVector a, PVector b)	{ a.set(interp(i,a.x,b.x), interp(i,a.y,b.y), interp(i,a.z,b.z)); 	}
 	void  		StartRun(double deltaMs) 					{ }
-	float 		val		(BasicParameter p) 					{ return p.getValuef();												}
+	float 		val		(CompoundParameter p) 					{ return p.getValuef();												}
 	color		CalcPoint(PVector p) 						{ return lx.hsb(0,0,0); 											}
 	color		blend3(color c1, color c2, color c3)		{ return PImage.blendColor(c1,PImage.blendColor(c2,c3,ADD),ADD); 					}
 
@@ -63,23 +90,24 @@ public class DPat extends RadiaLumiaPattern
 	void	rotateX (PVector p, PVector o, float nSin, float nCos) { p.set(p.x,nCos*(p.y-o.y) - nSin*(p.z-o.z) + o.y    , nSin*(p.y-o.y) + nCos*(p.z-o.z) + o.z    ); }
 	void	rotateY (PVector p, PVector o, float nSin, float nCos) { p.set(    nSin*(p.z-o.z) + nCos*(p.x-o.x) + o.x,p.y, nCos*(p.z-o.z) - nSin*(p.x-o.x) + o.z    ); }
 
-	BasicParameter	addParam(String label, double value) 	{ BasicParameter p = new BasicParameter(label, value); addParameter(p); return p; }
-    BasicParameter  addParam(String label, double value, double min, double max)  { BasicParameter p2 = new BasicParameter(label, value, min, max); addParameter(p2); return p2; }
+	CompoundParameter	addParam(String label, double value) 	{ CompoundParameter p = new CompoundParameter(label, value); addParameter(p); return p; }
+    CompoundParameter  addParam(String label, double value, double min, double max)  { CompoundParameter p2 = new CompoundParameter(label, value, min, max); addParameter(p2); return p2; }
 	PVector 	vT1 = new PVector(), vT2 = new PVector();
 	float 		calcCone (PVector v1, PVector v2, PVector c) 	{	vT1.set(v1); vT2.set(v2); vT1.sub(c); vT2.sub(c);
 																	return degrees(angleBetween(vT1,vT2)); }
 
 
-	void    onInactive()      {}
+	// void    onInactive()      {}
 
-	void 		onReset() 				{
-		for (int i=0; i<bools .size(); i++) bools.get(i).reset();
-		presetManager.dirty(this); 
-	//	updateLights(); now handled by patternControl UI
-	}
+	// void 		onReset() 				{
+	// 	for (int i=0; i<bools .size(); i++) bools.get(i).reset();
+	// 	// presetManager.dirty(this); // How did presetManager change? 
+	// //	updateLights(); now handled by patternControl UI
+	// }
 
 	DPat(LX lx) {
 		super(lx);
+		println("DPat created");
 
 		pSpark		=	addParam("Sprk",  0);
 		pWave		=	addParam("Wave",  0);
@@ -98,16 +126,16 @@ public class DPat extends RadiaLumiaPattern
     	pJog = new BooleanParameter("JOG");
     	pGrey = new BooleanParameter("GREY");
 
-    	addNonKnobParameter(pXsym);
-    	addNonKnobParameter(pYsym);
-    	addNonKnobParameter(pRsym);
-    	addNonKnobParameter(pXdup);
-    	addNonKnobParameter(pJog);
-    	addNonKnobParameter(pGrey);
+    	addParameter(pXsym);
+    	addParameter(pYsym);
+    	addParameter(pRsym);
+    	addParameter(pXdup);
+    	addParameter(pJog);
+    	addParameter(pGrey);
 
-		nPoints 	=	model.points.size();
+		nPoints 	=	model.size;
 		
-		addMultipleParameterUIRow("Bools",pXsym,pYsym,pRsym,pXdup,pJog,pGrey);
+		// addMultipleParameterUIRow("Bools",pXsym,pYsym,pRsym,pXdup,pJog,pGrey);
 
 		modmin		=	new PVector(model.xMin, model.yMin, model.zMin);
 		mMax		= 	new PVector(model.xMax, model.yMax, model.zMax); mMax.sub(modmin);
@@ -127,10 +155,11 @@ public class DPat extends RadiaLumiaPattern
     return 0.5;
 	}
 
-	void updateLights() {}
+	// void updateLights() {}
 
 	void run(double deltaMs)
 	{
+		println("Noise run");
 		if (deltaMs > 100) return;
 
 		NoiseMove   	+= deltaMs; NoiseMove = NoiseMove % 1e7;
@@ -199,24 +228,25 @@ public class Noise extends DPat
 	int				CurAnim, iSymm;
 	int 			XSym=1,YSym=2,RadSym=3;
 	float 			zTime , zTheta=0, zSin, zCos, rtime, ttime;
-	BasicParameter	pSpeed , pDensity, pSharp;
+	CompoundParameter	pSpeed , pDensity, pSharp;
 	DiscreteParameter 		pChoose, pSymm;
 	int				_ND = 4;
 	NDat			N[] = new NDat[_ND];
 
 	Noise(LX lx) {
 		super(lx);
-		pSpeed = new BasicParameter("Fast", .55, -2, 2); 
+		println("Noise created");
+		pSpeed = new CompoundParameter("Speed", .55, -2, 2); 
 		addParameter(pSpeed);
 		pDensity	= addParam("Dens" 	 , .3);
 		pSharp		= addParam("Shrp" 	 ,  0);
 		pSymm 		= new DiscreteParameter("Symm" , new String[] {"None", "X", "Y", "Rad"}	);
 		pChoose 	= new DiscreteParameter("Anim", new String[] {"Drip", "Cloud", "Rain", "Fire", "Mach", "Spark","VWav", "Wave"}	);
 		pChoose.setValue(6);
-		addNonKnobParameter(pSymm);
-		addNonKnobParameter(pChoose);
-    	addSingleParameterUIRow(pChoose);
-    	addSingleParameterUIRow(pSymm);
+		addParameter(pSymm);
+		addParameter(pChoose);
+    	// addSingleParameterUIRow(pChoose);
+    	// addSingleParameterUIRow(pSymm);
 		for (int i=0; i<_ND; i++) N[i] = new NDat();
 	}
 
