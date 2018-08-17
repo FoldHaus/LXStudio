@@ -77,6 +77,7 @@ public class Static extends RadiaLumiaPattern
     }
 }
 
+
 public class BlossomOscillation extends RadiaLumiaPattern {
     
     // half the distance away from the current position that is considered 'on'
@@ -148,4 +149,276 @@ public class BlossomOscillation extends RadiaLumiaPattern {
             }
         }
     }
+}
+
+public class PatternStarlight extends RadiaLumiaPattern {
+  public String getAuthor() {
+    return "Mark C. Slee";
+  }
+  
+  final static int MAX_STARS = 100;
+  final static int BLOOMS_PER_STAR = 3;
+  
+  final LXUtils.LookupTable flicker = new LXUtils.LookupTable(360, new LXUtils.LookupTable.Function() {
+    public float compute(int i, int tableSize) {
+      return .5 - .5 * cos(i * TWO_PI / tableSize);
+    }
+  });
+  
+  public final CompoundParameter speed =
+    new CompoundParameter("Speed", 3000, 9000, 300)
+    .setDescription("Speed of the twinkling");
+    
+  public final CompoundParameter variance =
+    new CompoundParameter("Variance", .5, 0, .9)
+    .setDescription("Variance of the twinkling");    
+  
+  public final CompoundParameter numStars = (CompoundParameter)
+    new CompoundParameter("Num", 75, 50, MAX_STARS)
+    .setExponent(2)
+    .setDescription("Number of stars");
+  
+  private final Star[] stars = new Star[MAX_STARS];
+    
+  private final ArrayList<Bloom> shuffledBlooms;
+    
+  public PatternStarlight(LX lx) {
+    super(lx);
+    addParameter("speed", this.speed);
+    addParameter("numStars", this.numStars);
+    addParameter("variance", this.variance);
+    // Trip - Wish there was a single data structure to access spokes...
+    this.shuffledBlooms = new ArrayList<Bloom>(model.blooms); 
+    Collections.shuffle(this.shuffledBlooms);
+    for (int i = 0; i < MAX_STARS; ++i) {
+      this.stars[i] = new Star(i);
+    }
+  }
+  
+  public void run(double deltaMs) {
+    setColors(#000000);
+    float numStars = this.numStars.getValuef();
+    float speed = this.speed.getValuef();
+    float variance = this.variance.getValuef();
+    for (Star star : this.stars) {
+      if (star.active) {
+        star.run(deltaMs);
+      } else if (star.num < numStars) {
+        star.activate(speed, variance);
+      }
+    }
+  }
+  
+  class Star {
+    
+    final int num;
+    
+    double period;
+    float amplitude = 50;
+    double accum = 0;
+    boolean active = false;
+    
+    Star(int num) {
+      this.num = num;
+    }
+    
+    void activate(float speed, float variance) {
+      this.period = max(400, speed * (1 + random(-variance, variance)));
+      this.accum = 0;
+      this.amplitude = random(20, 100);
+      this.active = true;
+    }
+    
+    void run(double deltaMs) {
+      int c = LXColor.gray(this.amplitude * flicker.get(this.accum / this.period));
+      int maxBlooms = shuffledBlooms.size();
+      for (int i = 0; i < BLOOMS_PER_STAR; ++i) {
+        int bloomIndex = num * BLOOMS_PER_STAR + i;
+        if (bloomIndex < maxBlooms) {
+          for (LXPoint light : shuffledBlooms.get(bloomIndex).leds) {
+            colors[light.index] = c;
+          }
+        }
+      }
+
+      // for (LXPoint light : model.leds) {
+      //       colors[light.index] = LXColor.hsb(100,100,100);
+      //   }
+
+      this.accum += deltaMs;
+      if (this.accum > this.period) {
+        this.active = false;
+      }
+    }
+  }
+
+}
+
+
+// public class PatternSwarm extends RadiaLumiaPattern {
+//   public String getAuthor() {
+//     return "Mark C. Slee";
+//   }
+  
+//   private static final int NUM_GROUPS = 5;
+
+//   public final CompoundParameter speed = (CompoundParameter)
+//     new CompoundParameter("Speed", 2000, 10000, 500)
+//     .setDescription("Speed of swarm motion")
+//     .setExponent(.25);
+    
+//   public final CompoundParameter base =
+//     new CompoundParameter("Base", 10, 60, 1)
+//     .setDescription("Base size of swarm");
+    
+//   public final CompoundParameter floor =
+//     new CompoundParameter("Floor", 20, 0, 100)
+//     .setDescription("Base level of swarm brightness");
+
+//   public final LXModulator pos = startModulator(new SawLFO(0, LeafAssemblage.NUM_LEAVES - start, new FunctionalParameter() {
+//         public double getValue() {
+//           return speed.getValue() + ii*500;
+//         }
+//       }).randomBasis());
+
+//   public final LXModulator swarmX = startModulator(new SinLFO(
+//     startModulator(new SinLFO(0, .2, startModulator(new SinLFO(3000, 9000, 17000).randomBasis()))), 
+//     startModulator(new SinLFO(.8, 1, startModulator(new SinLFO(4000, 7000, 15000).randomBasis()))), 
+//     startModulator(new SinLFO(9000, 17000, 33000).randomBasis())
+//     ).randomBasis());
+
+//   public final LXModulator swarmY = startModulator(new SinLFO(
+//     startModulator(new SinLFO(0, .2, startModulator(new SinLFO(3000, 9000, 19000).randomBasis()))), 
+//     startModulator(new SinLFO(.8, 1, startModulator(new SinLFO(4000, 7000, 13000).randomBasis()))), 
+//     startModulator(new SinLFO(9000, 17000, 33000).randomBasis())
+//     ).randomBasis());
+
+//   public final LXModulator swarmZ = startModulator(new SinLFO(
+//     startModulator(new SinLFO(0, .2, startModulator(new SinLFO(3000, 9000, 19000).randomBasis()))), 
+//     startModulator(new SinLFO(.8, 1, startModulator(new SinLFO(4000, 7000, 13000).randomBasis()))), 
+//     startModulator(new SinLFO(9000, 17000, 33000).randomBasis())
+//     ).randomBasis());
+
+//   public PatternSwarm(LX lx) {
+//     super(lx);
+//     addParameter("speed", this.speed);
+//     addParameter("base", this.base);
+//     addParameter("floor", this.floor);
+//     for (int i = 0; i < pos.length; ++i) {
+//       final int ii = i;
+//       float start = (i % 2 == 0) ? 0 : LeafAssemblage.NUM_LEAVES;
+//       pos[i] = new SawLFO(start, LeafAssemblage.NUM_LEAVES - start, new FunctionalParameter() {
+//         public double getValue() {
+//           return speed.getValue() + ii*500;
+//         }
+//       }).randomBasis();
+//       startModulator(pos[i]);
+//     }
+//   }
+
+//   public void run(double deltaMs) {
+//     float base = this.base.getValuef();
+//     float swarmX = this.swarmX.getValuef();
+//     float swarmY = this.swarmY.getValuef();
+//     float swarmZ = this.swarmZ.getValuef();
+//     float floor = this.floor.getValuef();
+
+//     int i = 0;
+//     // for (LeafAssemblage assemblage : tree.assemblages) {
+//     //   float pos = this.pos[i++ % NUM_GROUPS].getValuef();
+//     //   for (Leaf leaf : assemblage.leaves) {
+//     //     float falloff = min(100, base + 40 * dist(leaf.point.xn, leaf.point.yn, leaf.point.zn, swarmX, swarmY, swarmZ));
+//     //     float b = max(floor, 100 - falloff * LXUtils.wrapdistf(leaf.orientation.index, pos, LeafAssemblage.LEAVES.length));
+//     //     setColor(leaf, LXColor.gray(b));
+//     //   }
+//     // }
+//     for ( LXPoint led : model.leds ) {
+
+//     }
+//     for (LeafAssemblage assemblage : tree.assemblages) {
+//       float pos = this.pos[i++ % NUM_GROUPS].getValuef();
+//       for (Leaf leaf : assemblage.leaves) {
+//         float falloff = min(100, base + 40 * dist(leaf.point.xn, leaf.point.yn, leaf.point.zn, swarmX, swarmY, swarmZ));
+//         float b = max(floor, 100 - falloff * LXUtils.wrapdistf(leaf.orientation.index, pos, LeafAssemblage.LEAVES.length));
+//         setColor(leaf, LXColor.gray(b));
+//       }
+//     }
+//   }
+// }
+
+public class PatternClouds extends RadiaLumiaPattern {
+  public String getAuthor() {
+    return "Mark C. Slee";
+  }
+  
+  public final CompoundParameter thickness =
+    new CompoundParameter("Thickness", 50, 100, 0)
+    .setDescription("Thickness of the cloud formation");
+  
+  public final CompoundParameter xSpeed = (CompoundParameter)
+    new CompoundParameter("XSpd", 0.2, -1, 1)
+    .setPolarity(LXParameter.Polarity.BIPOLAR)
+    .setDescription("Motion along the X axis");
+
+  public final CompoundParameter ySpeed = (CompoundParameter)
+    new CompoundParameter("YSpd", 0.2, -1, 1)
+    .setPolarity(LXParameter.Polarity.BIPOLAR)
+    .setDescription("Motion along the Y axis");
+    
+  public final CompoundParameter zSpeed = (CompoundParameter)
+    new CompoundParameter("ZSpd", 0.2, -1, 1)
+    .setPolarity(LXParameter.Polarity.BIPOLAR)
+    .setDescription("Motion along the Z axis");
+    
+  public final CompoundParameter scale = (CompoundParameter)
+    new CompoundParameter("Scale", 2.5, .25, 10)
+    .setDescription("Scale of the clouds")
+    .setExponent(2);
+
+  public final CompoundParameter xScale =
+    new CompoundParameter("XScale", 0, 0, 10)
+    .setDescription("Scale along the X axis");
+
+  public final CompoundParameter yScale =
+    new CompoundParameter("YScale", 0, 0, 10)
+    .setDescription("Scale along the Y axis");
+    
+  public final CompoundParameter zScale =
+    new CompoundParameter("ZScale", 0, 0, 10)
+    .setDescription("Scale along the Z axis");
+    
+  private float xBasis = 0, yBasis = 0, zBasis = 0;
+    
+  public PatternClouds(LX lx) {
+    super(lx);
+    addParameter("thickness", this.thickness);
+    addParameter("xSpeed", this.xSpeed);
+    addParameter("ySpeed", this.ySpeed);
+    addParameter("zSpeed", this.zSpeed);
+    addParameter("scale", this.scale);
+    addParameter("xScale", this.xScale);
+    addParameter("yScale", this.yScale);
+    addParameter("zScale", this.zScale);
+  }
+
+  private static final double MOTION = .0005;
+
+  public void run(double deltaMs) {
+    this.xBasis -= deltaMs * MOTION * this.xSpeed.getValuef();
+    this.yBasis -= deltaMs * MOTION * this.ySpeed.getValuef();
+    this.zBasis -= deltaMs * MOTION * this.zSpeed.getValuef();
+    float thickness = this.thickness.getValuef();
+    float scale = this.scale.getValuef();
+    float xScale = this.xScale.getValuef();
+    float yScale = this.yScale.getValuef();
+    float zScale = this.zScale.getValuef();
+    for (LXPoint p : model.leds) {
+      float nv = noise(
+        (scale + p.xn * xScale) * p.xn + this.xBasis,
+        (scale + p.yn * yScale) * p.yn + this.yBasis, 
+        (scale + p.zn * zScale) * p.zn + this.zBasis
+      );
+      colors[p.index] = LXColor.gray(constrain(-thickness + (150 + thickness) * nv, 0, 100));
+    }
+  }  
 }
