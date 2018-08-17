@@ -90,8 +90,8 @@ public abstract class DPat extends RadiaLumiaPattern
 	void	rotateX (PVector p, PVector o, float nSin, float nCos) { p.set(p.x,nCos*(p.y-o.y) - nSin*(p.z-o.z) + o.y    , nSin*(p.y-o.y) + nCos*(p.z-o.z) + o.z    ); }
 	void	rotateY (PVector p, PVector o, float nSin, float nCos) { p.set(    nSin*(p.z-o.z) + nCos*(p.x-o.x) + o.x,p.y, nCos*(p.z-o.z) - nSin*(p.x-o.x) + o.z    ); }
 
-	CompoundParameter	addParam(String label, double value) 	{ CompoundParameter p = new CompoundParameter(label, value); addParameter(p); return p; }
-    CompoundParameter  addParam(String label, double value, double min, double max)  { CompoundParameter p2 = new CompoundParameter(label, value, min, max); addParameter(p2); return p2; }
+	// CompoundParameter	addParam(String label, double value) 	{ CompoundParameter p = new CompoundParameter(label, value); addParameter(p); return p; }
+    // CompoundParameter  addParam(String label, double value, double min, double max)  { CompoundParameter p2 = new CompoundParameter(label, value, min, max); addParameter(p2); return p2; }
 	PVector 	vT1 = new PVector(), vT2 = new PVector();
 	float 		calcCone (PVector v1, PVector v2, PVector c) 	{	vT1.set(v1); vT2.set(v2); vT1.sub(c); vT2.sub(c);
 																	return degrees(angleBetween(vT1,vT2)); }
@@ -109,14 +109,55 @@ public abstract class DPat extends RadiaLumiaPattern
 		super(lx);
 		println("DPat created");
 
-		pSpark		=	addParam("Sprk",  0);
-		pWave		=	addParam("Wave",  0);
-		pTransX		=	addParam("TrnX", .5);
-		pTransY		=	addParam("TrnY", .5);
-		pRotX 		= 	addParam("RotX", .5);
-		pRotY 		= 	addParam("RotY", .5);
-		pRotZ 		= 	addParam("RotZ", .5);
-		pSpin		= 	addParam("Spin", .5);
+		// pSpark		=	addParam("Sprk",  0);
+		// pWave		=	addParam("Wave",  0);
+		// pTransX		=	addParam("TrnX", .5);
+		// pTransY		=	addParam("TrnY", .5);
+		// pRotX 		= 	addParam("RotX", .5);
+		// pRotY 		= 	addParam("RotY", .5);
+		// pRotZ 		= 	addParam("RotZ", .5);
+		// pSpin		= 	addParam("Spin", .5);
+
+		pSpark		=	(CompoundParameter)
+			new CompoundParameter("Sprk", 0);
+			// .setDescription("Slope on the X-axis");
+
+		pWave		=	(CompoundParameter)
+			new CompoundParameter("Wave", 0);
+			// .setDescription("Slope on the X-axis");
+
+		pTransX		=	(CompoundParameter)
+			new CompoundParameter("TrnX", 0.5);
+			// .setDescription("Slope on the X-axis");
+
+		pTransY		=	(CompoundParameter)
+			new CompoundParameter("TrnY", 0.5);
+			// .setDescription("Slope on the X-axis");
+
+		pRotX 		= 	(CompoundParameter)
+			new CompoundParameter("RotX", 0.5);
+			// .setDescription("Slope on the X-axis");
+
+		pRotY 		= 	(CompoundParameter)
+			new CompoundParameter("RotY", 0.5);
+			// .setDescription("Slope on the X-axis");
+
+		pRotZ 		= 	(CompoundParameter)
+			new CompoundParameter("RotZ", 0.5);
+			// .setDescription("Slope on the X-axis");
+
+		pSpin		= 	(CompoundParameter)
+			new CompoundParameter("Spin", 0.5);
+			// .setDescription("Slope on the X-axis");
+
+		addParameter(this.pSpark);
+		addParameter(this.pWave);
+		addParameter(this.pTransX);
+		addParameter(this.pTransY);
+		addParameter(this.pRotX);
+		addParameter(this.pRotY);
+		addParameter(this.pRotZ);
+		addParameter(this.pSpin);
 
 
     	pXsym = new BooleanParameter("X-SYM");
@@ -126,12 +167,12 @@ public abstract class DPat extends RadiaLumiaPattern
     	pJog = new BooleanParameter("JOG");
     	pGrey = new BooleanParameter("GREY");
 
-    	addParameter(pXsym);
-    	addParameter(pYsym);
-    	addParameter(pRsym);
-    	addParameter(pXdup);
-    	addParameter(pJog);
-    	addParameter(pGrey);
+    	addParameter(this.pXsym);
+    	addParameter(this.pYsym);
+    	addParameter(this.pRsym);
+    	addParameter(this.pXdup);
+    	addParameter(this.pJog);
+    	addParameter(this.pGrey);
 
 		nPoints 	=	model.size;
 		
@@ -223,6 +264,8 @@ public class NDat {
 	}
 }
 
+
+
 public class Noise extends DPat
 {
 	int				CurAnim, iSymm;
@@ -237,16 +280,19 @@ public class Noise extends DPat
 		super(lx);
 		println("Noise created");
 		pSpeed = new CompoundParameter("Speed", .55, -2, 2); 
-		addParameter(pSpeed);
-		pDensity	= addParam("Dens" 	 , .3);
-		pSharp		= addParam("Shrp" 	 ,  0);
+		addParameter(this.pSpeed);
+
+		pDensity	= new CompoundParameter("Dens", 0.3);
+		pSharp		= new CompoundParameter("Shrp", 0);
+		addParameter(this.pDensity);
+		addParameter(this.pSharp);
+
+
 		pSymm 		= new DiscreteParameter("Symm" , new String[] {"None", "X", "Y", "Rad"}	);
 		pChoose 	= new DiscreteParameter("Anim", new String[] {"Drip", "Cloud", "Rain", "Fire", "Mach", "Spark","VWav", "Wave"}	);
 		pChoose.setValue(6);
-		addParameter(pSymm);
-		addParameter(pChoose);
-    	// addSingleParameterUIRow(pChoose);
-    	// addSingleParameterUIRow(pSymm);
+		addParameter(this.pSymm);
+		addParameter(this.pChoose);
 		for (int i=0; i<_ND; i++) N[i] = new NDat();
 	}
 
