@@ -281,7 +281,7 @@ public class ColorWipe extends RadiaLumiaPattern
 public class ColorLighthouse extends RadiaLumiaPattern
 {
     public final CompoundParameter P_RotationSpeed = 
-        new CompoundParameter("Spd", 1000, 30000, 1)
+        new CompoundParameter("Spd", 28000, 30000, 1)
         .setDescription("How fast the colors revolve");
     
     public final CompoundParameter P_BeamWidth =
