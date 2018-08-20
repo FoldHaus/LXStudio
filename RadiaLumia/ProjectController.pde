@@ -242,36 +242,28 @@ class RadiaProjectListener implements LX.ProjectListener
         LX.ProjectListener.Change change
         )
     {
-        println(change);
-        if (change != LX.ProjectListener.Change.NEW)
-            return;
-        println("Passed");
-        ConditionallyAddRequiredEffects();
+        // println(change);
+        if (change == LX.ProjectListener.Change.NEW) {
+            ConditionallyAddRequiredEffects();
+        }
     }
     
     public void ConditionallyAddRequiredEffects ()
     {
         ColorBalance cb = ColorBalance_Singleton;
-        RadiaEntranceEffect ree = null;
-        if (cb == null)
-        {
-            cb = new ColorBalance(lx);
-            
-            ree = new RadiaEntranceEffect(lx);
-        }
+        RadiaEntranceEffect ree = EntranceEffect_Singleton;
+        RadiaWindProtect rwp = WindProtect_Singleton;
+
+        if (cb == null) { cb = new ColorBalance(lx); }
+        if (ree == null) { ree = new RadiaEntranceEffect(lx); }
+        if (rwp == null) { rwp = new RadiaWindProtect(lx); }
         
         lx.engine.masterChannel.addEffect(cb);
         lx.engine.masterChannel.addEffect(ree);
+        lx.engine.masterChannel.addEffect(rwp);
         
         cb.enabled.setValue(true);
         ree.enabled.setValue(true);
-        
-        RadiaWindProtect rwp = WindProtect_Singleton;
-        if (rwp == null)
-        {
-            rwp = new RadiaWindProtect(lx);
-            lx.engine.masterChannel.addEffect(rwp);
-        }
         rwp.enabled.setValue(true);
         
     }
