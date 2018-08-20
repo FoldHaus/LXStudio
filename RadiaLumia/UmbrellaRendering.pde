@@ -95,10 +95,12 @@ public class UIRadiaLumia extends UI3dComponent {
 		int neighborCount = b.neighbors.size();
 
 		// Trip DEBUG for umbrella state
-		if (numberDrawn == 10) {
-			print("Umbrella 10 simulatedPosition = ");
-			println(b.umbrella.simulatedPosition);
-		}
+		// Simulated position is able to go negative...place a clamp on it
+		// Why does Noise Mach do this?
+		// if (numberDrawn == 10) {
+		// 	print("Umbrella 10 simulatedPosition = ");
+		// 	println(b.umbrella.simulatedPosition);
+		// }
   	  if (neighborCount == 5) {
   		  this.pentUmbrella.onDraw(ui, pg, (float) b.umbrella.simulatedPosition);
   	  } else if (neighborCount == 6) {

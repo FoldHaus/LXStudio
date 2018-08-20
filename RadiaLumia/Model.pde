@@ -568,9 +568,9 @@ public static class Bloom extends LXModel {
             double maxMovement = UMBRELLA_MAX_VELOCITY * deltaMs;
             
             if (Math.abs(dist) > maxMovement) {
-                this.simulatedPosition += maxMovement * (dist > 0 ? 1 : -1);
+                this.simulatedPosition = clamp(this.simulatedPosition + maxMovement * (dist > 0 ? 1 : -1), 0.0, 1.0);
             } else {
-                this.simulatedPosition = ValidPosition;
+                this.simulatedPosition = clamp(ValidPosition, 0.0, 1.0);
             }
         }
     }
