@@ -20,7 +20,7 @@ public static class Sensors implements LXOscListener {
     
     public Sensors()
     {
-        println("[Sensors] | Constructor");
+        // println("[Sensors] | Constructor");
         this.DebugOSC = true;
         
         SensorValueCache = new HashMap<String, CompoundParameter>();
