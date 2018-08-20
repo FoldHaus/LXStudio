@@ -1,6 +1,6 @@
 {
   "version": "0.1",
-  "timestamp": 1529194117656,
+  "timestamp": 1534797757546,
   "engine": {
     "id": 1,
     "class": "heronarts.lx.LXEngine",
@@ -15,7 +15,7 @@
       "crossfader": 0.5,
       "crossfaderBlendMode": 0,
       "speed": 1.0,
-      "focusedChannel": 2,
+      "focusedChannel": 3,
       "cueA": false,
       "cueB": false,
       "multithreaded": true,
@@ -39,7 +39,7 @@
     },
     "channels": [
       {
-        "id": 34,
+        "id": 395,
         "class": "heronarts.lx.LXChannel",
         "modulationColor": -65439,
         "parameters": {
@@ -205,9 +205,7 @@
             "parameters": {
               "label": "Ripple",
               "per": 9.309999794699253,
-              "epi": 15,
-              "amp": 1.0,
-              "off": 0.0
+              "spe": 500.0
             },
             "modulation": {
               "modulators": [
@@ -232,29 +230,10 @@
                     "phase": 0.0,
                     "exp": 0.0
                   },
-                  "basis": 0.7813734822898819
+                  "basis": 0.48781828766897073
                 }
               ],
-              "modulations": [
-                {
-                  "source": {
-                    "id": 304
-                  },
-                  "target": {
-                    "componentId": 268,
-                    "parameterPath": "off"
-                  },
-                  "id": 305,
-                  "class": "heronarts.lx.parameter.LXCompoundModulation",
-                  "modulationColor": -9568512,
-                  "parameters": {
-                    "label": "",
-                    "enabled": true,
-                    "Polarity": 0,
-                    "Range": 1.0
-                  }
-                }
-              ],
+              "modulations": [],
               "triggers": []
             },
             "autoCycleEnabled": true
@@ -263,7 +242,7 @@
       }
     ],
     "master": {
-      "id": 18,
+      "id": 14,
       "class": "heronarts.lx.LXMasterChannel",
       "modulationColor": -9216,
       "parameters": {
@@ -273,14 +252,16 @@
       },
       "effects": [
         {
-          "id": 213,
-          "class": "RadiaLumia$UmbrellaMask",
-          "modulationColor": -6357248,
+          "id": 453,
+          "class": "RadiaLumia$ColorBalance",
+          "modulationColor": -65467,
           "parameters": {
-            "label": "UmbrellaMask",
+            "label": "ColorBalance",
             "enabled": true,
             "umbB": 100.0,
-            "oaB": 0.0
+            "oaB": 0.0,
+            "heart": 0.0,
+            "pin": 0.0
           },
           "modulation": {
             "modulators": [],
@@ -289,14 +270,27 @@
           }
         },
         {
-          "id": 240,
+          "id": 456,
           "class": "RadiaLumia$RadiaWindProtect",
-          "modulationColor": -16723457,
+          "modulationColor": -9240832,
           "parameters": {
             "label": "RadiaWindProtect",
+            "enabled": true
+          },
+          "modulation": {
+            "modulators": [],
+            "modulations": [],
+            "triggers": []
+          }
+        },
+        {
+          "id": 462,
+          "class": "RadiaLumia$RadiaEntranceEffect",
+          "modulationColor": -14287104,
+          "parameters": {
+            "label": "RadiaEntrance",
             "enabled": true,
-            "wind": 0.21000001765787601,
-            "speed": 5000.0
+            "ovr": false
           },
           "modulation": {
             "modulators": [],
@@ -374,7 +368,7 @@
         }
       },
       "output": {
-        "id": 22,
+        "id": 18,
         "class": "heronarts.lx.audio.LXAudioOutput",
         "modulationColor": -6357248,
         "parameters": {
