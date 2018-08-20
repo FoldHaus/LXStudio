@@ -124,7 +124,7 @@ LX _lx,
 Project _project
 )
 {
-    String AbsoluteProjectPath = dataPath("") + "\\projects\\" + _project.Path;
+    String AbsoluteProjectPath = dataPath("") + "/projects/" + _project.Path;
     
     File ProjectFile = new File(AbsoluteProjectPath);
     
