@@ -95,6 +95,7 @@ ParseMoods (JSONArray moods)
 void 
 InitProjects () 
 {
+    println("InitProjects");
     JSONObject ProjectRepo = loadJSONObject("data/projects.json");
     JSONArray ProjectsConfig = ProjectRepo.getJSONArray("projects");
     int NumProjects = ProjectsConfig.size();
@@ -242,30 +243,38 @@ class RadiaProjectListener implements LX.ProjectListener
         LX.ProjectListener.Change change
         )
     {
-        // println(change);
+        // print("Change event..."); println(change);
         if (change == LX.ProjectListener.Change.NEW) {
             ConditionallyAddRequiredEffects();
         }
+
+        // List <LXEffect> masterEffects = lx.engine.masterChannel.getEffects();
+        // for (int i=0; i < masterEffects.size(); i++) {
+        //     print("Effect "); print(i); print(" = "); println(masterEffects.get(i).getLabel());
+        // }
     }
     
     public void ConditionallyAddRequiredEffects ()
     {
-        ColorBalance cb = ColorBalance_Singleton;
-        RadiaEntranceEffect ree = EntranceEffect_Singleton;
-        RadiaWindProtect rwp = WindProtect_Singleton;
+        // println("ConditionallyAddRequiredEffects()");
 
-        if (cb == null) { cb = new ColorBalance(lx); }
-        if (ree == null) { ree = new RadiaEntranceEffect(lx); }
-        if (rwp == null) { rwp = new RadiaWindProtect(lx); }
-        
-        lx.engine.masterChannel.addEffect(cb);
-        lx.engine.masterChannel.addEffect(ree);
-        lx.engine.masterChannel.addEffect(rwp);
-        
-        cb.enabled.setValue(true);
-        ree.enabled.setValue(true);
-        rwp.enabled.setValue(true);
-        
+        if (lx.engine.masterChannel.getEffect(ColorBalance_Singleton.getLabel()) == null) {
+            // println("Adding ColorBalance_Singleton to masterChannel");
+            lx.engine.masterChannel.addEffect(ColorBalance_Singleton);
+            ColorBalance_Singleton.enabled.setValue(true);
+        }
+
+        if (lx.engine.masterChannel.getEffect(EntranceEffect_Singleton.getLabel()) == null) {
+            // println("Adding EntranceEffect_Singleton to masterChannel");
+            lx.engine.masterChannel.addEffect(EntranceEffect_Singleton);
+            EntranceEffect_Singleton.enabled.setValue(true);
+        }
+
+        if (lx.engine.masterChannel.getEffect(WindProtect_Singleton.getLabel()) == null) {
+            // println("Adding WindProtect_Singleton to masterChannel");
+            lx.engine.masterChannel.addEffect(WindProtect_Singleton);
+            WindProtect_Singleton.enabled.setValue(true);
+        }
     }
 }
 
