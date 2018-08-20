@@ -38,6 +38,7 @@ public class Static extends RadiaLumiaPattern
         addParameter(this.brightness); 
         addParameter(this.numPoints);
         addParameter(this.maxDistance);
+        
     }
     
     public void run(double deltaMs) 
