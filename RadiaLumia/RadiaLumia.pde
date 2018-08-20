@@ -46,8 +46,16 @@ void setup() {
     size(800, 720, P3D);
     config = new Config();
     model = new Model(config);
-    
+    sensors = new Sensors();
+
     lx = new heronarts.lx.studio.LXStudio(this, model, MULTITHREADED);
+
+    sensors.config(lx);
+
+    uiSensors = (UISensors)new UISensors(
+        lx.ui,
+        sensors,
+        lx.ui.leftPane.global.getContentWidth()).addToContainer((UIContainer)lx.ui.leftPane.global);
     
     ProjController = new ProjectController(lx);
     ProjListener = new RadiaProjectListener();
@@ -60,11 +68,6 @@ void setup() {
         ).addToContainer((UIContainer)lx.ui.leftPane.global);
     lx.addProjectListener(UIProjectControls);
     
-    sensors = new Sensors(lx);
-    uiSensors = (UISensors)new UISensors(
-        lx.ui,
-        sensors,
-        lx.ui.leftPane.global.getContentWidth()).addToContainer((UIContainer)lx.ui.leftPane.global);
     
     // Arthaus
     // TEMPORARY
