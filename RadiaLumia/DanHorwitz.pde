@@ -73,10 +73,10 @@ public abstract class DPat extends RadiaLumiaPattern
 	PVector		xyzJog = new PVector(), modmin;
 
 	float			NoiseMove	= random(10000);
-	CompoundParameter	pSpark, pWave, pRotX, pRotY, pRotZ, pSpin, pTransX, pTransY;
+	CompoundParameter	pSpark, pWave, pRotX, pRotY, pRotZ, pSpin, pTransX, pTransY, pHue;
 	BooleanParameter			pXsym, pYsym, pRsym, pXdup, pXtrip, pJog, pGrey;
 
-	float		lxh		() 									{ return 360.0;  											} // Add parameter here
+	float		lxh		() 									{ return val(pHue);  											} // Add parameter here
 	int			c1c		 (float a) 							{ return round(100*constrain(a,0,1));								}
 	float 		interpWv(float i, float[] vals) 			{ return interp(i-floor(i), vals[floor(i)], vals[ceil(i)]); 		}
 	void 		setNorm (PVector vec)						{ vec.set(vec.x/mMax.x, vec.y/mMax.y, vec.z/mMax.z); 				}
@@ -110,6 +110,7 @@ public abstract class DPat extends RadiaLumiaPattern
 		pRotY 		= 	addParam("RotY", .5);
 		pRotZ 		= 	addParam("RotZ", .5);
 		pSpin		= 	addParam("Spin", .5);
+		pHue		= 	addParam("Hue", 100.0, 0.0, 360.0);
 
     	pXsym = new BooleanParameter("X-SYM");
     	pYsym = new BooleanParameter("Y-SYM");
