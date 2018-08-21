@@ -21,9 +21,6 @@
 // 
 // ---------------------------------------------------------------------------
 
-// TODO: Convert to UI button in Globals
-static final boolean OUTPUT_ENABLE_FLAG = false;
-
 // Reference to top-level LX instance
 heronarts.lx.studio.LXStudio lx;
 
@@ -40,7 +37,9 @@ RadiaProjectListener ProjListener;
 UIProjectControllerPanel UIProjectControls;
 
 Sensors sensors;
+// Global UI Objects
 UISensors uiSensors;
+// UIOutputControls uiOutputControls;
 
 ArtHausPerformance artHaus;
 
@@ -84,7 +83,6 @@ void setup() {
 void initialize(final heronarts.lx.studio.LXStudio lx, heronarts.lx.studio.LXStudio.UI ui) {
     RadiaNodeDatagrams = new RadiaNodeSpecialDatagram[42];
     buildOutput(lx);
-    lx.engine.output.enabled.setValue(OUTPUT_ENABLE_FLAG);
     
     // Add a loop task to rate-limit and simulate umbrella position
     lx.engine.addLoopTask(new LXLoopTask() {
@@ -100,12 +98,17 @@ void initialize(final heronarts.lx.studio.LXStudio lx, heronarts.lx.studio.LXStu
 }
 
 void onUIReady(heronarts.lx.studio.LXStudio lx, heronarts.lx.studio.LXStudio.UI ui) {
-    // Add custom UI components here
     /* TODO(peter): model.leds doesn't and shouldn't include the pin spots. Create a
     new ArrayList called displayedInPointCloud, and use it here. Grrrr
     */
     ui.preview.pointCloud.setModel(new LXModel(model.displayPoints));
     ui.preview.addComponent(new UISimulation());
+    // Add custom UI components here
+
+    // uiOutputControls = (UIOutputControls) new UIOutputControls(
+    // lx.ui,
+    // lx.ui.leftPane.global.getContentWidth()
+    // ).addToContainer((UIContainer)lx.ui.leftPane.global);
 }
 
 void draw() {
