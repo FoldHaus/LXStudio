@@ -95,7 +95,7 @@ ParseMoods (JSONArray moods)
 void 
 InitProjects () 
 {
-    println("InitProjects");
+    // println("InitProjects");
     JSONObject ProjectRepo = loadJSONObject("data/projects.json");
     JSONArray ProjectsConfig = ProjectRepo.getJSONArray("projects");
     int NumProjects = ProjectsConfig.size();
