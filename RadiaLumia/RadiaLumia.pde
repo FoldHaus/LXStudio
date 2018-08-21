@@ -45,7 +45,7 @@ ArtHausPerformance artHaus;
 
 void setup() {
     // Processing setup, constructs the window and the LX instance
-    size(800, 720, P3D);
+    size(1200, 960, P3D);
     config = new Config();
     model = new Model(config);
     sensors = new Sensors();
@@ -53,11 +53,6 @@ void setup() {
     lx = new heronarts.lx.studio.LXStudio(this, model, MULTITHREADED);
 
     sensors.config(lx);
-
-    uiSensors = (UISensors)new UISensors(
-        lx.ui,
-        sensors,
-        lx.ui.leftPane.global.getContentWidth()).addToContainer((UIContainer)lx.ui.leftPane.global);
     
     ProjController = new ProjectController(lx);
     ProjListener = new RadiaProjectListener();
@@ -74,10 +69,6 @@ void setup() {
     // Arthaus
     // TEMPORARY
     //artHaus = new ArtHausPerformance(lx);
-    
-    lx.ui.setResizable(RESIZABLE);
-    
-    ProjListener.ConditionallyAddRequiredEffects();
 }
 
 void initialize(final heronarts.lx.studio.LXStudio lx, heronarts.lx.studio.LXStudio.UI ui) {
@@ -101,9 +92,22 @@ void onUIReady(heronarts.lx.studio.LXStudio lx, heronarts.lx.studio.LXStudio.UI 
     /* TODO(peter): model.leds doesn't and shouldn't include the pin spots. Create a
     new ArrayList called displayedInPointCloud, and use it here. Grrrr
     */
+    // TODO: Modify position of simulation in the screen
+    // ui.preview.setRadius(80*FEET).setPhi(-PI/18).setTheta(PI/12);
+    // ui.preview.setCenter(0, model.cy - 2*FEET, 0);
+    lx.ui.setResizable(RESIZABLE);
     ui.preview.pointCloud.setModel(new LXModel(model.displayPoints));
     ui.preview.addComponent(new UISimulation());
+
+    // Narrow angle lens, for a fuller visualization
+    ui.preview.perspective.setValue(30);
+
+
     // Add custom UI components here
+    uiSensors = (UISensors)new UISensors(
+    lx.ui,
+    sensors,
+    lx.ui.leftPane.global.getContentWidth()).addToContainer((UIContainer)lx.ui.leftPane.global);
 
     // uiOutputControls = (UIOutputControls) new UIOutputControls(
     // lx.ui,
