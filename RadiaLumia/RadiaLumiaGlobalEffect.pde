@@ -24,6 +24,7 @@ public class ColorBalance extends UmbrellaEffect {
     
     public ColorBalance (LX lx) {
         super(lx);
+        // println("[ ColorBalance ] | Constructor");
         ColorBalance_Singleton = this;
         
         addParameter(underUmbrella_Brightness);
@@ -95,6 +96,7 @@ public class RadiaEntranceEffect extends UmbrellaEffect {
     
     public RadiaEntranceEffect (LX lx) {
         super(lx);
+        // println("[ RadiaEntranceEffect ] | Constructor");
         EntranceEffect_Singleton = this;
         
         addParameter(overrideEntrance);

@@ -34,45 +34,41 @@ RadiaNodeSpecialDatagram[] RadiaNodeDatagrams;
 ProjectController ProjController;
 RadiaProjectListener ProjListener;
 
-UIProjectControllerPanel UIProjectControls;
-
 Sensors sensors;
+
+// Global UI Objects
+UIProjectControls uiProjectControls;
 UISensors uiSensors;
+// UIOutputControls uiOutputControls;
 
 ArtHausPerformance artHaus;
 
 void setup() {
     // Processing setup, constructs the window and the LX instance
-    size(800, 720, P3D);
+    size(1200, 960, P3D);
     config = new Config();
     model = new Model(config);
-    
+    sensors = new Sensors();
+
     lx = new heronarts.lx.studio.LXStudio(this, model, MULTITHREADED);
+
+    sensors.config(lx);
     
     ProjController = new ProjectController(lx);
     ProjListener = new RadiaProjectListener();
     lx.addProjectListener((LX.ProjectListener)ProjListener);
     
-    UIProjectControls = (UIProjectControllerPanel)new UIProjectControllerPanel(
-        lx.ui,
-        lx.ui.leftPane.global.getContentWidth(),
-        ProjController
-        ).addToContainer((UIContainer)lx.ui.leftPane.global);
-    lx.addProjectListener(UIProjectControls);
-    
-    sensors = new Sensors(lx);
-    uiSensors = (UISensors)new UISensors(
-        lx.ui,
-        sensors,
-        lx.ui.leftPane.global.getContentWidth()).addToContainer((UIContainer)lx.ui.leftPane.global);
-    
+    // NOTE (Trip) - Can't put in onUIReady...ProjController returning nullPointerException...
+    uiProjectControls = (UIProjectControls)new UIProjectControls(
+    lx.ui,
+    lx.ui.leftPane.global.getContentWidth(),
+    ProjController
+    ).addToContainer((UIContainer)lx.ui.leftPane.global);
+    lx.addProjectListener(uiProjectControls);
+
     // Arthaus
     // TEMPORARY
     //artHaus = new ArtHausPerformance(lx);
-    
-    lx.ui.setResizable(RESIZABLE);
-    
-    ProjListener.ConditionallyAddRequiredEffects();
 }
 
 void initialize(final heronarts.lx.studio.LXStudio lx, heronarts.lx.studio.LXStudio.UI ui) {
@@ -93,12 +89,30 @@ void initialize(final heronarts.lx.studio.LXStudio lx, heronarts.lx.studio.LXStu
 }
 
 void onUIReady(heronarts.lx.studio.LXStudio lx, heronarts.lx.studio.LXStudio.UI ui) {
-    // Add custom UI components here
     /* TODO(peter): model.leds doesn't and shouldn't include the pin spots. Create a
     new ArrayList called displayedInPointCloud, and use it here. Grrrr
     */
+    // TODO: Modify position of simulation in the screen
+    // ui.preview.setRadius(80*FEET).setPhi(-PI/18).setTheta(PI/12);
+    // ui.preview.setCenter(0, model.cy - 2*FEET, 0);
+    lx.ui.setResizable(RESIZABLE);
     ui.preview.pointCloud.setModel(new LXModel(model.displayPoints));
     ui.preview.addComponent(new UISimulation());
+
+    // Narrow angle lens, for a fuller visualization
+    ui.preview.perspective.setValue(30);
+
+
+    // Add custom UI components here
+    uiSensors = (UISensors)new UISensors(
+    lx.ui,
+    sensors,
+    lx.ui.leftPane.global.getContentWidth()).addToContainer((UIContainer)lx.ui.leftPane.global);
+
+    // uiOutputControls = (UIOutputControls) new UIOutputControls(
+    // lx.ui,
+    // lx.ui.leftPane.global.getContentWidth()
+    // ).addToContainer((UIContainer)lx.ui.leftPane.global);
 }
 
 void draw() {

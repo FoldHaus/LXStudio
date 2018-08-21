@@ -95,6 +95,7 @@ ParseMoods (JSONArray moods)
 void 
 InitProjects () 
 {
+    // println("InitProjects");
     JSONObject ProjectRepo = loadJSONObject("data/projects.json");
     JSONArray ProjectsConfig = ProjectRepo.getJSONArray("projects");
     int NumProjects = ProjectsConfig.size();
@@ -124,7 +125,7 @@ LX _lx,
 Project _project
 )
 {
-    String AbsoluteProjectPath = dataPath("") + "\\projects\\" + _project.Path;
+    String AbsoluteProjectPath = dataPath("") + "/projects/" + _project.Path;
     
     File ProjectFile = new File(AbsoluteProjectPath);
     
@@ -181,8 +182,10 @@ class ProjectController implements LXLoopTask
     public ProjectController(LX lx)
     {
         InitProjects();
-        OpenProject(lx, RegisteredProjects.get(0));
         CurrentProject = RegisteredProjects.get(0);
+        if ( lx.getProject().equals(RegisteredProjects.get(0)) ) { // Check to see if first project already loaded
+            OpenProject(lx, RegisteredProjects.get(0));
+        }
         
         if (CurrentProject == null)
             println("ERROR: No project set");
@@ -242,109 +245,37 @@ class RadiaProjectListener implements LX.ProjectListener
         LX.ProjectListener.Change change
         )
     {
-        println(change);
-        if (change != LX.ProjectListener.Change.NEW)
-            return;
-        println("Passed");
-        ConditionallyAddRequiredEffects();
+        // print("Change event..."); println(change);
+        if (change == LX.ProjectListener.Change.NEW) {
+            ConditionallyAddRequiredEffects();
+        }
+
+        // List <LXEffect> masterEffects = lx.engine.masterChannel.getEffects();
+        // for (int i=0; i < masterEffects.size(); i++) {
+        //     print("Effect "); print(i); print(" = "); println(masterEffects.get(i).getLabel());
+        // }
     }
     
     public void ConditionallyAddRequiredEffects ()
     {
-        ColorBalance cb = ColorBalance_Singleton;
-        RadiaEntranceEffect ree = null;
-        if (cb == null)
-        {
-            cb = new ColorBalance(lx);
-            
-            ree = new RadiaEntranceEffect(lx);
-        }
-        
-        lx.engine.masterChannel.addEffect(cb);
-        lx.engine.masterChannel.addEffect(ree);
-        
-        cb.enabled.setValue(true);
-        ree.enabled.setValue(true);
-        
-        RadiaWindProtect rwp = WindProtect_Singleton;
-        if (rwp == null)
-        {
-            rwp = new RadiaWindProtect(lx);
-            lx.engine.masterChannel.addEffect(rwp);
-        }
-        rwp.enabled.setValue(true);
-        
-    }
-}
+        // println("ConditionallyAddRequiredEffects()");
 
-// Displays information about the ProjectController Object
-class UIProjectControllerPanel extends UICollapsibleSection implements LXParameterListener, LX.ProjectListener
-{
-    ProjectController Controller;
-    
-    private final BooleanParameter Enabled = (BooleanParameter) 
-        new BooleanParameter("Enabled", false)
-        .addListener((LXParameterListener)this);
-    
-    private UILabel NextSceneTime;
-    
-    public UIProjectControllerPanel(
-        UI _UI, 
-        float _PanelWidth,
-        ProjectController _Controller)
-    {
-        super(_UI, 0, 0, _PanelWidth, 0);
-        Controller = _Controller;
-        
-        setLayout(UI2dContainer.Layout.VERTICAL);
-        setChildMargin(2,0);
-        
-        setTitle("PROJECT MODULATOR");
-        
-        new UILabel(UI_PADDING, UI_PADDING, 64, 16)
-            .setLabel("Enabled")
-            .addToContainer(this);
-        
-        new UIButton(12, UI_PADDING, 16, 16)
-            .setParameter(Enabled)
-            .addToContainer(this);
-        
-        new UILabel(UI_PADDING, UI_PADDING, 64, 16)
-            .setLabel("Change At")
-            .addToContainer(this);
-        
-        NextSceneTime = (UILabel)
-            new UILabel(UI_PADDING, UI_PADDING, 64, 16)
-            .setLabel("00:00p")
-            .addToContainer(this);
-        
-    }
-    
-    void onParameterChanged(LXParameter parameter)
-    {
-        if (parameter == Enabled)
-        {
-            println("Enabled: " + Enabled.getValueb());
-            if (Enabled.getValueb())
-            {
-                Controller.Reset();
-                lx.engine.addLoopTask((LXLoopTask)Controller);
-            }
-            else
-            {
-                lx.engine.removeLoopTask((LXLoopTask)Controller);
-            }
+        if (lx.engine.masterChannel.getEffect(ColorBalance_Singleton.getLabel()) == null) {
+            // println("Adding ColorBalance_Singleton to masterChannel");
+            lx.engine.masterChannel.addEffect(ColorBalance_Singleton);
+            ColorBalance_Singleton.enabled.setValue(true);
         }
-    }
-    
-    void projectChanged(
-        File project, 
-        LX.ProjectListener.Change change
-        )
-    {
-        if (change == LX.ProjectListener.Change.OPEN)
-        {
-            NextSceneTime.setLabel(Controller.GetNextSceneTimeString());
+
+        if (lx.engine.masterChannel.getEffect(EntranceEffect_Singleton.getLabel()) == null) {
+            // println("Adding EntranceEffect_Singleton to masterChannel");
+            lx.engine.masterChannel.addEffect(EntranceEffect_Singleton);
+            EntranceEffect_Singleton.enabled.setValue(true);
+        }
+
+        if (lx.engine.masterChannel.getEffect(WindProtect_Singleton.getLabel()) == null) {
+            // println("Adding WindProtect_Singleton to masterChannel");
+            lx.engine.masterChannel.addEffect(WindProtect_Singleton);
+            WindProtect_Singleton.enabled.setValue(true);
         }
     }
 }

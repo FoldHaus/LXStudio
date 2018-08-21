@@ -11,10 +11,11 @@ public class RadiaWindProtect extends UmbrellaEffect {
     private final static float CLOSE_THRESHOLD = 0.5; 	
 	
     // input from the anemometer sent to us in the range of 0 (no wind) to 1 (time to freak out)
-    public CompoundParameter SensorRef_WindState;
+    public final CompoundParameter SensorRef_WindState;
     
 	public RadiaWindProtect(LX lx) {
         super(lx);
+        // println("[ RadiaWindProtect ] | Constructor");
         WindProtect_Singleton = this;
         
         SensorRef_WindState = sensors.SensorValueCache.get(Sensors.SENSOR_ADDRESS_ANEMOMETER);

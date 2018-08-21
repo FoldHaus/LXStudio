@@ -1,4 +1,4 @@
-public class Sensors implements LXOscListener {
+public static class Sensors implements LXOscListener {
     
     public static final int OSC_PORT = 7878;
     
@@ -16,12 +16,11 @@ public class Sensors implements LXOscListener {
     // Cached Values
     public HashMap<String, CompoundParameter> SensorValueCache;
     
-    private final LX lx;
     public Boolean DebugOSC;
     
-    public Sensors(LX lx)
+    public Sensors()
     {
-        this.lx = lx;
+        // println("[Sensors] | Constructor");
         this.DebugOSC = true;
         
         SensorValueCache = new HashMap<String, CompoundParameter>();
@@ -59,7 +58,9 @@ public class Sensors implements LXOscListener {
             0, 0, 1
             ).setDescription("The value received from the 3rd umbrella pulley")
             );
-        
+    }
+
+    public void config (LX lx) {
         try {
             lx.engine.osc.receiver(OSC_PORT).addListener(this);
         }
