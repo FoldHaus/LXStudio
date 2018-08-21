@@ -34,10 +34,10 @@ RadiaNodeSpecialDatagram[] RadiaNodeDatagrams;
 ProjectController ProjController;
 RadiaProjectListener ProjListener;
 
-UIProjectControllerPanel UIProjectControls;
-
 Sensors sensors;
+
 // Global UI Objects
+UIProjectControls uiProjectControls;
 UISensors uiSensors;
 // UIOutputControls uiOutputControls;
 
@@ -63,14 +63,14 @@ void setup() {
     ProjListener = new RadiaProjectListener();
     lx.addProjectListener((LX.ProjectListener)ProjListener);
     
-    UIProjectControls = (UIProjectControllerPanel)new UIProjectControllerPanel(
-        lx.ui,
-        lx.ui.leftPane.global.getContentWidth(),
-        ProjController
-        ).addToContainer((UIContainer)lx.ui.leftPane.global);
-    lx.addProjectListener(UIProjectControls);
-    
-    
+    // NOTE (Trip) - Can't put in onUIReady...ProjController returning nullPointerException...
+    uiProjectControls = (UIProjectControls)new UIProjectControls(
+    lx.ui,
+    lx.ui.leftPane.global.getContentWidth(),
+    ProjController
+    ).addToContainer((UIContainer)lx.ui.leftPane.global);
+    lx.addProjectListener(uiProjectControls);
+
     // Arthaus
     // TEMPORARY
     //artHaus = new ArtHausPerformance(lx);
