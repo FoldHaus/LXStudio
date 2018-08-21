@@ -76,7 +76,8 @@ public abstract class DPat extends RadiaLumiaPattern
 	CompoundParameter	pSpark, pWave, pRotX, pRotY, pRotZ, pSpin, pTransX, pTransY, pHue;
 	BooleanParameter			pXsym, pYsym, pRsym, pXdup, pXtrip, pJog, pGrey;
 
-	float		lxh		() 									{ return val(pHue);  											} // Add parameter here
+	// float		lxh		() 									{return val(pHue);  											} // Decoupled from LX Palette
+	float		lxh		() 									{return lx.palette.getHuef();  											}
 	int			c1c		 (float a) 							{ return round(100*constrain(a,0,1));								}
 	float 		interpWv(float i, float[] vals) 			{ return interp(i-floor(i), vals[floor(i)], vals[ceil(i)]); 		}
 	void 		setNorm (PVector vec)						{ vec.set(vec.x/mMax.x, vec.y/mMax.y, vec.z/mMax.z); 				}
@@ -106,11 +107,12 @@ public abstract class DPat extends RadiaLumiaPattern
 		pWave		=	addParam("Wave",  0);
 		pTransX		=	addParam("TrnX", .5);
 		pTransY		=	addParam("TrnY", .5);
-		pRotX 		= 	addParam("RotX", .5);
-		pRotY 		= 	addParam("RotY", .5);
-		pRotZ 		= 	addParam("RotZ", .5);
+		// Unnecessary for RadiaLumia, only used in Play Pattern
+		// pRotX 		= 	addParam("RotX", .5);
+		// pRotY 		= 	addParam("RotY", .5);
+		// pRotZ 		= 	addParam("RotZ", .5);
 		pSpin		= 	addParam("Spin", .5);
-		pHue		= 	addParam("Hue", 100.0, 0.0, 360.0);
+		// pHue		= 	addParam("Hue", 100.0, 0.0, 360.0); // Linked hue to LXPalette
 
     	pXsym = new BooleanParameter("X-SYM");
     	pYsym = new BooleanParameter("Y-SYM");
@@ -119,11 +121,12 @@ public abstract class DPat extends RadiaLumiaPattern
     	pJog = new BooleanParameter("JOG");
     	pGrey = new BooleanParameter("GREY");
 
-    	addParameter(pXsym);
-    	addParameter(pYsym);
-    	addParameter(pRsym);
-    	addParameter(pXdup);
-    	addParameter(pJog);
+    	// NOTE (Trip) - Not valuable on this structure
+    	// addParameter(pXsym);
+    	// addParameter(pYsym);
+    	// addParameter(pRsym);
+    	// addParameter(pXdup);
+    	// addParameter(pJog);
     	addParameter(pGrey);
 
 		nPoints 	=	model.size;
@@ -155,7 +158,7 @@ public abstract class DPat extends RadiaLumiaPattern
 		NoiseMove   	+= deltaMs; NoiseMove = NoiseMove % 1e7;
 		StartRun		(deltaMs);
 		PVector P 		= new PVector(), tP = new PVector(), pSave = new PVector();
-		pTrans.set(val(pTransX)*200-100, val(pTransY)*100-50,0);
+		pTrans.set(val(pTransX)*200-100, val(pTransY)*200-100,0);
 		nPoint 	= 0;
 
 		if (pJog.getValueb()) {
@@ -232,15 +235,15 @@ public class Noise extends DPat
 	public Noise(LX lx) {
 		super(lx);
 		println("Noise created");
-		pSpeed = addParam("Speed", .55, -2, 2); 
-		pDensity	= addParam("Dens", 0.6);
-		pSharp		= addParam("Shrp", 0);
+		pSpeed = addParam("Speed", .60, -2, 2); 
+		pDensity	= addParam("Dens", 0.90);
+		// pSharp		= addParam("Shrp", 0); // Unused in RadiaLumia
 
 
 		pSymm 		= new DiscreteParameter("Symm" , new String[] {"None", "X", "Y", "Rad"}	);
 		pChoose 	= new DiscreteParameter("Anim", new String[] {"Drip", "Cloud", "Rain", "Fire", "Mach", "Spark","VWav", "Wave"}	);
-		pChoose.setValue(6);
-		addParameter(pSymm);
+		pChoose.setValue(2); // Rain by default
+		// addParameter(pSymm); // Unnecessary for Radialumia
 		addParameter(pChoose);
 		for (int i=0; i<_ND; i++) N[i] = new NDat();
 	}
@@ -263,22 +266,39 @@ public class Noise extends DPat
 			
 			switch(CurAnim) {
 			//               hue xz  yz  zz den mph angle
+			// drip
 			case 0: N[0].set(0  ,75 ,75 ,150,45 ,3  ,0  ); 
 			        N[1].set(20, 25, 50, 50, 25, 1, 0 ); 
                     N[2].set(80, 25, 50, 50, 15, 2, 0 );  
-                    pSharp.setValue(1 );   break;  // drip
-			case 1: N[0].set(0  ,100,100,200,45 ,3  ,180); pSharp.setValue(0 ); break;	// clouds
-			case 2: N[0].set(0  ,2  ,400,2  ,20 ,3  ,0  ); pSharp.setValue(.5); break;	// rain
+                    // pSharp.setValue(1 );
+                    break;
+            // clouds
+			case 1: N[0].set(0  ,100,100,200,45 ,3  ,180);
+					// pSharp.setValue(0 );
+					break;
+			// rain
+			case 2: N[0].set(0  ,2  ,400,2  ,20 ,3  ,0  );
+					// pSharp.setValue(.5);
+					break;
+			// fire
 			case 3: N[0].set(40 ,100,100,200,10 ,1  ,180); 
-					N[1].set(0  ,100,100,200,10 ,5  ,180); pSharp.setValue(0 ); break;	// fire 1
+					N[1].set(0  ,100,100,200,10 ,5  ,180);
+					// pSharp.setValue(0 );
+					break;
+			// machine
 			case 4: N[0].set(0  ,40 ,40 ,40 ,15 ,2.5,180);
 					N[1].set(20 ,40 ,40 ,40 ,15 ,4  ,0  );
 					N[2].set(40 ,40 ,40 ,40 ,15 ,2  ,90 );
-                    N[3].set(60 ,40 ,40 ,40 ,15 ,3  ,-90); pSharp.setValue(.5); break; // machine				
+                    N[3].set(60 ,40 ,40 ,40 ,15 ,3  ,-90);
+                    // pSharp.setValue(.5);
+                    break;
+            // spark			
 			case 5: N[0].set(0  ,400,100,2  ,15 ,3  ,90 );
 					N[1].set(20 ,400,100,2  ,15 ,2.5,0  );
 					N[2].set(40 ,100,100,2  ,15 ,2  ,180);
-					N[3].set(60 ,100,100,2  ,15 ,1.5,270); pSharp.setValue(.5); break; // spark
+					N[3].set(60 ,100,100,2  ,15 ,1.5,270);
+					// pSharp.setValue(.5);
+					break;
 			}
 		}
 		
