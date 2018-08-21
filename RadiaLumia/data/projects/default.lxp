@@ -1,6 +1,6 @@
 {
   "version": "0.1",
-  "timestamp": 1534797757546,
+  "timestamp": 1534871010809,
   "engine": {
     "id": 1,
     "class": "heronarts.lx.LXEngine",
@@ -15,7 +15,7 @@
       "crossfader": 0.5,
       "crossfaderBlendMode": 0,
       "speed": 1.0,
-      "focusedChannel": 3,
+      "focusedChannel": 2,
       "cueA": false,
       "cueB": false,
       "multithreaded": true,
@@ -33,7 +33,7 @@
         "color/brightness": 100.0,
         "color/saturation": 100.0,
         "color/hue": 203.19599574298215,
-        "period": 3000.0,
+        "period": 60000.0,
         "range": 186.27907371520996
       }
     },
@@ -106,7 +106,7 @@
           "label": "Umbrellas",
           "arm": false,
           "selected": false,
-          "enabled": false,
+          "enabled": true,
           "cue": false,
           "fader": 1.0,
           "crossfadeGroup": 0,
@@ -122,7 +122,7 @@
         },
         "effects": [],
         "clips": [],
-        "patternIndex": 0,
+        "patternIndex": 1,
         "patterns": [
           {
             "id": 46,
@@ -179,7 +179,7 @@
         "parameters": {
           "label": "Channel-3",
           "arm": false,
-          "selected": false,
+          "selected": true,
           "enabled": true,
           "cue": false,
           "fader": 1.0,
@@ -196,7 +196,7 @@
         },
         "effects": [],
         "clips": [],
-        "patternIndex": 0,
+        "patternIndex": 1,
         "patterns": [
           {
             "id": 268,
@@ -230,9 +230,33 @@
                     "phase": 0.0,
                     "exp": 0.0
                   },
-                  "basis": 0.48781828766897073
+                  "basis": 0.3107049737249946
                 }
               ],
+              "modulations": [],
+              "triggers": []
+            },
+            "autoCycleEnabled": true
+          },
+          {
+            "id": 533,
+            "class": "RadiaLumia$Noise",
+            "modulationColor": -22784,
+            "parameters": {
+              "label": "Noise",
+              "Sprk": 0.0,
+              "Wave": 0.0,
+              "TrnX": 0.5,
+              "TrnY": 0.5,
+              "Spin": 0.5,
+              "Hue": 100.0,
+              "GREY": false,
+              "Speed": 0.4000000059604645,
+              "Dens": 0.8999999761581421,
+              "Anim": 2
+            },
+            "modulation": {
+              "modulators": [],
               "modulations": [],
               "triggers": []
             },
@@ -248,7 +272,7 @@
       "parameters": {
         "label": "Master",
         "arm": false,
-        "selected": true
+        "selected": false
       },
       "effects": [
         {
@@ -319,7 +343,7 @@
       }
     },
     "audio": {
-      "id": 20,
+      "id": 16,
       "class": "heronarts.lx.audio.LXAudioEngine",
       "modulationColor": -56576,
       "parameters": {
