@@ -21,6 +21,9 @@
 // 
 // ---------------------------------------------------------------------------
 
+// TODO: Convert to UI button in Globals
+static final boolean OUTPUT_ENABLE_FLAG = false;
+
 // Reference to top-level LX instance
 heronarts.lx.studio.LXStudio lx;
 
@@ -81,6 +84,7 @@ void setup() {
 void initialize(final heronarts.lx.studio.LXStudio lx, heronarts.lx.studio.LXStudio.UI ui) {
     RadiaNodeDatagrams = new RadiaNodeSpecialDatagram[42];
     buildOutput(lx);
+    lx.engine.output.enabled.setValue(OUTPUT_ENABLE_FLAG);
     
     // Add a loop task to rate-limit and simulate umbrella position
     lx.engine.addLoopTask(new LXLoopTask() {
