@@ -6,7 +6,11 @@ public class RadiaNodeSpecialDatagram extends StreamingACNDatagram {
     private final static int SEQUENCE_NUMBER_POSITION = 111;
     private byte sequenceNumber = 0;
     
-    protected final static int COMMAND_POSITION = 0;
+    protected final static int MARKER = 0xAA;
+    protected final static int MARKER_POSITION = 0;
+    protected final static int MARKER_LENGTH = 1;
+
+    protected final static int COMMAND_POSITION = MARKER_POSITION + MARKER_LENGTH;
     protected final static int COMMAND_LENGTH = 1;
     
     protected final static int MOTOR_DATA_POSITION = COMMAND_POSITION + COMMAND_LENGTH;
@@ -16,8 +20,9 @@ public class RadiaNodeSpecialDatagram extends StreamingACNDatagram {
     protected final static int PINSPOT_DATA_POSITION = MOTOR_DATA_POSITION + MOTOR_DATA_LENGTH;
     protected final static int PINSPOT_DATA_LENGTH = 1;
     
-    protected final static int PAYLOAD_SIZE = PINSPOT_DATA_POSITION + PINSPOT_DATA_LENGTH;
+    protected final static int PAYLOAD_SIZE = MARKER_LENGTH + COMMAND_LENGTH + MOTOR_DATA_LENGTH + PINSPOT_DATA_LENGTH;
     
+    protected final static int CRC_POSITION = MARKER_POSITION + PAYLOAD_SIZE;
     protected final static int CRC_SIZE = 1;
     
     protected final static int PACKET_SIZE = PAYLOAD_SIZE + CRC_SIZE;
@@ -27,6 +32,8 @@ public class RadiaNodeSpecialDatagram extends StreamingACNDatagram {
     protected int pinspotIndex;
     
     public int BloomId;
+
+    protected CRC8 crc = new CRC8(0);
     
     // Special Messages
     public boolean SendDoHomingMessage = false;
@@ -38,6 +45,8 @@ public class RadiaNodeSpecialDatagram extends StreamingACNDatagram {
         
         pinspotIndex = bloom.spike.pinSpot.index;
         BloomId = bloom.id;
+
+        writeLENumberToBuffer(MARKER, MARKER_POSITION, MARKER_LENGTH);
     }
     
     @Override
@@ -79,9 +88,9 @@ public class RadiaNodeSpecialDatagram extends StreamingACNDatagram {
     }
     
     protected void writePayloadCRC() {
-        // TODO: calculate CRC from stuff in `this.buffer`
-        int crc = 0xAA;
-        writeLENumberToBuffer(crc, PAYLOAD_SIZE, CRC_SIZE);
+        crc.reset();
+        crc.update(this.buffer, DMX_DATA_POSITION, PAYLOAD_SIZE);
+        writeLENumberToBuffer((int)crc.getValue(), CRC_POSITION, CRC_SIZE);
     }
     
     public void doHome() {
