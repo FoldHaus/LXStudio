@@ -234,7 +234,7 @@ public class Noise extends DPat
 
 	public Noise(LX lx) {
 		super(lx);
-		println("Noise created");
+		// println("Noise created");
 		pSpeed = addParam("Speed", .60, -2, 2); 
 		pDensity	= addParam("Dens", 0.90);
 		// pSharp		= addParam("Shrp", 0); // Unused in RadiaLumia
