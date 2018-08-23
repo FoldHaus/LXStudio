@@ -177,7 +177,8 @@ public abstract class DPat extends RadiaLumiaPattern
 				xWaveNz[i] = wvAmp * (noise(i/(mMax.y*.3)-(1e3+NoiseMove)/1500.) - .5) * (mMax.x/2.);
 		}
 
-		for (LXPoint p : model.points) { nPoint++;
+		for (LXPoint p : model.displayPoints) {
+			nPoint++;
 			setVec(P,p);
 			P.sub(modmin);
 			P.sub(pTrans);
