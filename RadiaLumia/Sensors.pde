@@ -13,6 +13,9 @@ public static class Sensors implements LXOscListener {
     public static final String SENSOR_ADDRESS_PULLEY_TWO = SENSOR_ADDRESS_PULLEY_ROOT + "/2/pull";
     public static final String SENSOR_ADDRESS_PULLEY_THREE = SENSOR_ADDRESS_PULLEY_ROOT + "/3/pull";
     
+    public static final float MIN_PULLEY_VALUE = 0.0f;
+    public static final float MAX_PULLEY_VALUE = 20.0f;
+    
     // Cached Values
     public HashMap<String, CompoundParameter> SensorValueCache;
     
@@ -21,7 +24,7 @@ public static class Sensors implements LXOscListener {
     public Sensors()
     {
         // println("[Sensors] | Constructor");
-        this.DebugOSC = true;
+        this.DebugOSC = false;
         
         SensorValueCache = new HashMap<String, CompoundParameter>();
         SensorValueCache.put(
@@ -42,20 +45,20 @@ public static class Sensors implements LXOscListener {
             SENSOR_ADDRESS_PULLEY_ONE, 
             new CompoundParameter(
             "pulley1",
-            0, 0, 1
+            0, MIN_PULLEY_VALUE, MAX_PULLEY_VALUE
             ).setDescription("The value received from the 1st  umbrella pulley"));
         SensorValueCache.put(
             SENSOR_ADDRESS_PULLEY_TWO,
             new CompoundParameter(
             "pulley2",
-            0, 0, 1
+            0, MIN_PULLEY_VALUE, MAX_PULLEY_VALUE
             ).setDescription("The value received from the 2nd umbrella pulley")
             );
         SensorValueCache.put(
             SENSOR_ADDRESS_PULLEY_THREE,
             new CompoundParameter(
             "pulley2",
-            0, 0, 1
+            0, MIN_PULLEY_VALUE, MAX_PULLEY_VALUE
             ).setDescription("The value received from the 3rd umbrella pulley")
             );
     }
@@ -87,7 +90,7 @@ public static class Sensors implements LXOscListener {
         CompoundParameter _Para
         )
     {
-        if (this.DebugOSC)
+        if (this.DebugOSC && _Path.equals(SENSOR_ADDRESS_PULLEY_ONE))
         {
             println("OSC Message Received");
             println("Path: " + _Path);
@@ -97,6 +100,9 @@ public static class Sensors implements LXOscListener {
         }
     }
 }
+
+//sensor/mshell/1/pull
+
 
 public class UISensors extends UICollapsibleSection
 {

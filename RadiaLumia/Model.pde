@@ -495,8 +495,8 @@ public static class Bloom extends LXModel {
         // 108.3k counts ~ range for hexa-nodes
         // 86.5k counts ~ range for penta-nodes
         // 98k counts ~ range for test rig
-        protected static final int hexaOpenCounts = 108300;
-        protected static final int pentaOpenCounts = 86500;
+        protected static final int hexaOpenCounts = 106300; // Was 108300
+        protected static final int pentaOpenCounts = 85500; // Was 86500
         
         protected static final int absoluteMaxCounts = 120000;
         
@@ -578,9 +578,13 @@ public static class Bloom extends LXModel {
 
 public static class Heart extends LXModel {
     
+    public List<Spine> spines;
     
     public Heart (List<Bloom> _blooms) {
         super(new Fixture(_blooms));
+        
+        Fixture f = (Fixture)this.fixtures.get(0);
+        this.spines = f.spines;
     }
     
     public static class Fixture extends LXAbstractFixture {
@@ -602,7 +606,7 @@ public static class Heart extends LXModel {
     
     public static class Spine extends LXModel {
         
-        public final static int LEDS_PER_SPINE = 123;
+        public final static int LEDS_PER_SPINE = 346;
         public final static float LED_PITCH = METER / 120;
         
         public Spine(Bloom bloom) {

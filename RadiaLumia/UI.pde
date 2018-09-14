@@ -1,3 +1,87 @@
+class UIDMXControls extends UICollapsibleSection implements LXParameterListener
+{
+   private final DiscreteParameter P_CurrentBloomIndex = (DiscreteParameter)
+     new DiscreteParameter("Index", 0, 0, 42)
+     .addListener(this);
+   
+   private final BooleanParameter P_SendDoHome = (BooleanParameter)
+     new BooleanParameter("Do Home", false)
+     .addListener(this);
+   
+   private final BooleanParameter P_SendSetMaxPulses = (BooleanParameter)
+     new BooleanParameter("Set Max Pulses", false)
+     .addListener(this);
+     
+   public UIDMXControls (
+     UI _UI,
+     float _PanelWidth
+     )
+   {
+       super(_UI, 0, 0, _PanelWidth, 0); 
+       
+       setLayout(UI2dContainer.Layout.VERTICAL);
+       setChildMargin(2, 0);
+       
+       setTitle("DMX Commands");
+       
+       new UIIntegerBox(UI_PADDING, UI_PADDING, 32, 32)
+         .setParameter(P_CurrentBloomIndex)
+         .addToContainer(this);
+         
+       new UILabel(UI_PADDING, UI_PADDING, 64, 16)
+            .setLabel("Set Max Pulses")
+            .addToContainer(this);
+        
+        new UIButton(12, UI_PADDING, 16, 16)
+            .setParameter(P_SendSetMaxPulses)
+            .addToContainer(this);
+        
+        new UILabel(UI_PADDING, UI_PADDING, 64, 16)
+            .setLabel("Go Home")
+            .addToContainer(this);
+        
+        new UIButton(12, UI_PADDING, 16, 16)
+            .setParameter(P_SendDoHome)
+            .addToContainer(this);
+       
+   }
+   
+   void onParameterChanged(LXParameter parameter)
+    {
+        if (parameter == P_CurrentBloomIndex)
+        {
+            
+        }
+        else if (parameter == P_SendSetMaxPulses && P_SendSetMaxPulses.getValueb())
+        {
+           for (int i = 0; i < RadiaNodeDatagrams.length; i++)
+           {
+               if (RadiaNodeDatagrams[i] != null && RadiaNodeDatagrams[i].BloomId == P_CurrentBloomIndex.getValuei())
+               {
+                   println("Sending Max Pulses For Node " + P_CurrentBloomIndex.getValuei());
+                   RadiaNodeDatagrams[i].setSendMaxPulses();
+                   P_SendSetMaxPulses.setValue(false);
+               }
+           }
+        }
+        else if (parameter == P_SendDoHome && P_SendDoHome.getValueb())
+        {
+           
+           for (int i = 0; i < RadiaNodeDatagrams.length; i++)
+           {
+               if (RadiaNodeDatagrams[i] != null && RadiaNodeDatagrams[i].BloomId == P_CurrentBloomIndex.getValuei())
+               {
+                 println("Homing " + P_CurrentBloomIndex.getValuei());
+                   RadiaNodeDatagrams[i].doHome();
+                   P_SendDoHome.setValue(false);
+                   break;
+               }
+           
+           }
+        }
+    }
+}
+
 // Displays information about the ProjectController Object
 class UIProjectControls extends UICollapsibleSection implements LXParameterListener, LX.ProjectListener
 {

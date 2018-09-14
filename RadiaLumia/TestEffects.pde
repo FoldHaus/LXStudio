@@ -153,6 +153,11 @@ public class IdentifyBloom extends RadiaLumiaPattern {
                         }
                         curr_spokeNumber++;
                     }
+                    
+                    for (LXPoint p : bloom.spike.leds)
+                    {
+                       colors[p.index] = LXColor.hsb(0, 100, 100); 
+                    }
                 }
                 else
                 {
@@ -173,7 +178,15 @@ public class IdentifyBloom extends RadiaLumiaPattern {
                 }
             }
             
-            setUmbrella(bloom, curr_pos);
+            if (useUmbrellas.getValueb())
+            {
+              setUmbrella(bloom, curr_pos);
+            }
+            else
+            {
+               setUmbrella(bloom, 0); 
+            }
+            
         }
     }
 }

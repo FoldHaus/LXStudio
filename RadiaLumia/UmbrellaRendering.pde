@@ -57,7 +57,7 @@ public class UIRadiaLumia extends UI3dComponent {
   
   public void onDraw(UI ui, PGraphics pg) {
     
-	  int numberDrawn = 0;
+    int numberDrawn = 0;
     for (Bloom b : model.blooms) {
       // TODO: what is this? seems to just be skipping the last bloom? why?
 		  numberDrawn += 1;

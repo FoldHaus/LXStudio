@@ -524,3 +524,48 @@ public class ShadeStructure extends RadiaLumiaPattern
         }
     }
 }
+
+@LXCategory("Umbrella")
+public class UmbrellaOneAtATime extends RadiaLumiaPattern
+{
+  
+   public final CompoundParameter P_BloomIndex =
+     new CompoundParameter("Index", 0, 0, 42);
+     
+   public int LastFrameIndex;
+   
+   public UmbrellaOneAtATime (LX lx)
+   {
+     super(lx);
+     addParameter(P_BloomIndex);
+     LastFrameIndex = 0;
+   }
+   
+   public void run(double deltaMs)
+   {
+       int Index = (int)P_BloomIndex.getValue();
+       setUmbrella(model.blooms.get(Index), 1f);
+       
+       if (Index != LastFrameIndex)
+       {
+          setUmbrella(model.blooms.get(LastFrameIndex), 0f);
+       }
+       
+       LastFrameIndex = Index;
+   }
+  
+}
+
+// Pattern left empty on purpose, use for timing
+@LXCategory("Umbrella")
+public class UmbrellaNone extends RadiaLumiaPattern
+{
+  public UmbrellaNone(LX lx)
+  {
+      super(lx);
+  }
+  
+  public void run (double detlaMs)
+  {
+  }
+}

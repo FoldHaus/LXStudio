@@ -183,7 +183,9 @@ class ProjectController implements LXLoopTask
     {
         InitProjects();
         CurrentProject = RegisteredProjects.get(0);
-        if ( lx.getProject().equals(RegisteredProjects.get(0)) ) { // Check to see if first project already loaded
+        
+        if (lx.getProject() == null ||
+          lx.getProject().equals(RegisteredProjects.get(0)) ) { // Check to see if first project already loaded
             OpenProject(lx, RegisteredProjects.get(0));
         }
         

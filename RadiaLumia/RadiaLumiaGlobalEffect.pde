@@ -71,6 +71,7 @@ public class ColorBalance extends UmbrellaEffect {
             }
         }
         
+        
         UmbrellaMaskEndFrame();
     }  
 }

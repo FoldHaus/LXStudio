@@ -8,6 +8,9 @@ public class PinspotTwinkle extends RadiaLumiaPattern {
     
     public final BooleanParameter sinOscillation =
         new BooleanParameter("sin");
+        
+    public final CompoundParameter P_MaxBrightness =
+        new CompoundParameter("brightness", 0, 0, 255);
     
     public float[] bloomPinspotOnTime;
     
@@ -15,6 +18,7 @@ public class PinspotTwinkle extends RadiaLumiaPattern {
         super(lx);
         addParameter(speed);
         addParameter(sinOscillation);
+        addParameter(P_MaxBrightness);
         
         bloomPinspotOnTime = new float[42];
         
@@ -27,6 +31,7 @@ public class PinspotTwinkle extends RadiaLumiaPattern {
         boolean _useSin = sinOscillation.getValueb();
         double _speed = speed.getValue();
         double _brightness = 0;
+        double _maxBrightness = P_MaxBrightness.getValue();
         
         for (Bloom b : model.blooms) {
             
@@ -42,7 +47,7 @@ public class PinspotTwinkle extends RadiaLumiaPattern {
             if (_useSin)
                 _brightness = .5 + .5 * (double)sin(3.14f * (float)_brightness);
             
-            setPinSpot(b, (int)(_brightness * 255.)); 
+            setPinSpot(b, (int)(_brightness * _maxBrightness)); 
         }
     }
 }

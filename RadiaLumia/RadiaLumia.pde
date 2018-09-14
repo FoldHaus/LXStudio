@@ -31,6 +31,7 @@ UIRadiaLumia umbrellaModel;
 int RadiaNodeDatagramCount = 0;
 RadiaNodeSpecialDatagram[] RadiaNodeDatagrams;
 
+boolean USE_PROJECT_CONTROLLER = false;
 ProjectController ProjController;
 RadiaProjectListener ProjListener;
 
@@ -39,6 +40,7 @@ Sensors sensors;
 // Global UI Objects
 UIProjectControls uiProjectControls;
 UISensors uiSensors;
+UIDMXControls uiDMXControls;
 // UIOutputControls uiOutputControls;
 
 ArtHausPerformance artHaus;
@@ -54,18 +56,20 @@ void setup() {
 
     sensors.config(lx);
     
-    ProjController = new ProjectController(lx);
-    ProjListener = new RadiaProjectListener();
-    lx.addProjectListener((LX.ProjectListener)ProjListener);
-    
-    // NOTE (Trip) - Can't put in onUIReady...ProjController returning nullPointerException...
-    uiProjectControls = (UIProjectControls)new UIProjectControls(
-    lx.ui,
-    lx.ui.leftPane.global.getContentWidth(),
-    ProjController
-    ).addToContainer((UIContainer)lx.ui.leftPane.global);
-    lx.addProjectListener(uiProjectControls);
-
+    if (USE_PROJECT_CONTROLLER)
+    {
+        ProjController = new ProjectController(lx);
+        ProjListener = new RadiaProjectListener();
+        lx.addProjectListener((LX.ProjectListener)ProjListener);
+        
+        // NOTE (Trip) - Can't put in onUIReady...ProjController returning nullPointerException...
+        uiProjectControls = (UIProjectControls)new UIProjectControls(
+        lx.ui,
+        lx.ui.leftPane.global.getContentWidth(),
+        ProjController
+        ).addToContainer((UIContainer)lx.ui.leftPane.global);
+        lx.addProjectListener(uiProjectControls);
+    }
     // Arthaus
     // TEMPORARY
     //artHaus = new ArtHausPerformance(lx);
@@ -109,6 +113,7 @@ void onUIReady(heronarts.lx.studio.LXStudio lx, heronarts.lx.studio.LXStudio.UI 
     sensors,
     lx.ui.leftPane.global.getContentWidth()).addToContainer((UIContainer)lx.ui.leftPane.global);
 
+    uiDMXControls = (UIDMXControls) new UIDMXControls(lx.ui, lx.ui.leftPane.global.getContentWidth()).addToContainer((UIContainer)lx.ui.leftPane.global);
     // uiOutputControls = (UIOutputControls) new UIOutputControls(
     // lx.ui,
     // lx.ui.leftPane.global.getContentWidth()
@@ -136,5 +141,7 @@ final static float METER = M;
 
 final static float PI = 3.1415;
 final static float TWO_PI = PI * 2;
+
+final static float SECONDS = 1000;
 
 final static float UI_PADDING = 4;

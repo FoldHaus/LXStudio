@@ -35,9 +35,14 @@ public class RadiaNodeSpecialDatagram extends StreamingACNDatagram {
 
     protected CRC8 crc = new CRC8(0);
     
+    protected static final int pulsesPerRevolution = 200; //must be set to this in the Clearpath firmware
+    protected static final int overstep = 7;
+    
     // Special Messages
     public boolean SendDoHomingMessage = false;
     public boolean SendMaxPulses = false;
+    public boolean SendRPMChange = false;
+    public int rpm = 0;
     
     public RadiaNodeSpecialDatagram(int universe, Bloom bloom) {
         super(universe, PACKET_SIZE);
@@ -51,11 +56,21 @@ public class RadiaNodeSpecialDatagram extends StreamingACNDatagram {
     
     @Override
         public void onSend(int[] colors) {
+        
         if (SendDoHomingMessage)
         {
             SendDoHomingMessage = false;
             
             writeLENumberToBuffer(0xff, COMMAND_POSITION, COMMAND_LENGTH);
+        }
+        else if (SendRPMChange)
+        {
+          SendRPMChange = false;
+          
+          int pulsesPerSecond = (rpm/60) * pulsesPerRevolution / (1 + overstep);
+          
+          writeLENumberToBuffer(2, COMMAND_POSITION, COMMAND_LENGTH);
+          writeLENumberToBuffer(pulsesPerSecond, MOTOR_DATA_POSITION, MOTOR_DATA_LENGTH);
         }
         else if (SendMaxPulses)
         {
@@ -75,9 +90,12 @@ public class RadiaNodeSpecialDatagram extends StreamingACNDatagram {
         // Do this manually for now since `super.onSend(colors)` doesn't work for some reason
         this.buffer[SEQUENCE_NUMBER_POSITION] = ++this.sequenceNumber;
         
+        //println(colors[pinspotIndex] & 0xff);
+        
         writeLENumberToBuffer(colors[pinspotIndex], PINSPOT_DATA_POSITION, PINSPOT_DATA_LENGTH);
         
         writePayloadCRC();
+        
     }
     
     protected void writeLENumberToBuffer(int number, int pos, int length) {
@@ -91,6 +109,12 @@ public class RadiaNodeSpecialDatagram extends StreamingACNDatagram {
         crc.reset();
         crc.update(this.buffer, DMX_DATA_POSITION, PAYLOAD_SIZE);
         writeLENumberToBuffer((int)crc.getValue(), CRC_POSITION, CRC_SIZE);
+    }
+    
+    public void setRPM(int v) {
+      println("set RPM");
+      SendRPMChange = true;
+      rpm = v;
     }
     
     public void doHome() {

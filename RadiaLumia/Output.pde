@@ -24,17 +24,62 @@ void buildOutput(LX lx) {
         // Debug three blooms, with the ips in the array
         boolean BLOOM_DEBUG_THREE = true;
         String[] DEBUG_MULTIPLE_IPS = {
-            "192.168.1.240",
-            "192.168.1.234",
-            "192.168.1.218",
-            "192.168.1.216",
-            "192.168.1.215",
-            "192.168.1.214",
-            "192.168.1.213",
-            "192.168.1.212",
-            "192.168.1.209",
-            "192.168.1.205",
-            "192.168.1.200"
+            // Top Triangle
+            "192.168.1.226",
+            "192.168.1.229",
+            "192.168.1.236",
+            
+            // Ring 1
+            "192.168.1.209", // Connects 36 and 29 (Betelgeuse)
+            "192.168.1.206", // Connects 26 and 36 (Hale Bop)
+            "192.168.1.203", // Connects 26 and 29 (Mercury)
+            
+            // Ring 2
+            "192.168.1.234", // Connects 9 and 36 (Apophis)
+            "192.168.1.240", // Connects 9 and 29 (Darik)
+            "192.168.1.233", // Connects 6 and 36 (Oort)
+            "192.168.1.222", // Connects 6 and 26 (Curiosity)
+            "192.168.1.228", // Connects 3 and 29 (Atlantis)  
+            "192.168.1.221", // Connects 3 and 26 (Earth)
+            
+            // Ring 3
+            "192.168.1.237", // Connects 6, 22, 33 (ISS)
+            "192.168.1.202", // Penta, Connects 22 and 21 (Discovery)
+            "192.168.1.227", // Connects 3, 21, 28(Challenger)
+            "192.168.1.208", // Penta, Connects 40 and 28 (Venus)
+            "192.168.1.216", // Connects 40, 9, 34 (Gemini)
+            "192.168.1.205", // Penta, Connects 33 and 34 (Pluto)
+            
+            "192.168.1.238",
+            "192.168.1.224",
+            "192.168.1.223",
+            "192.168.1.214", // (Luna)
+            "192.168.1.215", // (Phobos)
+            "192.168.1.225", // (Rama)
+            "192.168.1.218", // (Rocinante)
+            "192.168.1.219", // (Galactica)
+            "192.168.1.235", // (Uranus)
+            "192.168.1.210", // (Philae)
+            "192.168.1.200", // (Endeavor)
+            "192.168.1.241", // (Icarus)
+            "192.168.1.231", // (Uranus) aligned
+            "192.168.1.207", // (James Webb)
+            
+            "192.168.1.212", // Connects 17 and 1 (Big Dipper)
+            "192.168.1.213", // Connects 17 and 4 (Tycho) NOTE: We should probably replace this board
+            "192.168.1.230", // Connects 32 and 4 (Serenity)
+            "192.168.1.239", // Connects 32 and 11 (Apollo XIII)
+            //"192.168.1.241", // Connects 11 and 20
+            
+            // Bottom Triangles
+            "192.168.1.217", // alignedSDA
+            "192.168.1.220", // aligned
+            "192.168.1.232", // aligned
+            
+            // Manual Shells
+            "192.168.1.201", // Connects 17 and 20 aligned
+            "192.168.1.204", // Connects 17 and 32 aligned
+            "192.168.1.211", // Connects 20 and 32 aligned
         };
         
         int mappedBloomCount = 0;
@@ -73,6 +118,38 @@ void buildOutput(LX lx) {
             }
         }
         
+        // Heart
+        String[] HeartIPs = {
+          "192.168.1.150",
+          "192.168.1.151"
+        };
+        
+        boolean OutputHeart = true;
+        if (OutputHeart)
+        {
+          int HeartStartUniverse = 2000;
+          
+          int HeartUniverse = HeartStartUniverse;
+          int Accumulator = 0;
+          int HeartIPIndex = 0;
+          String HeartIP = HeartIPs[HeartIPIndex];
+          
+          for (Heart.Spine spine : model.heart.spines)
+          {
+              if (Accumulator++ >= 8)
+              {
+                 HeartIPIndex = 1;
+              }
+              HeartIP = HeartIPs[HeartIPIndex];
+              
+              println("Spine: " + Accumulator + " IP: " + HeartIP + " Universe: " + HeartUniverse);
+              output.addDatagram(new StreamingACNDatagram(HeartUniverse++, makeIndices(spine, 170, 0)).setAddress(HeartIP));
+              println("Spine: " + Accumulator + " IP: " + HeartIP + " Universe: " + HeartUniverse);
+              output.addDatagram(new StreamingACNDatagram(HeartUniverse++, makeIndices(spine, 170, 170)).setAddress(HeartIP));
+              println("Spine: " + Accumulator + " IP: " + HeartIP + " Universe: " + HeartUniverse);
+              output.addDatagram(new StreamingACNDatagram(HeartUniverse++, makeIndices(spine, 6, 340)).setAddress(HeartIP));
+          }
+        }
         lx.engine.addOutput(output);
         
     } catch (Exception x) {
@@ -103,7 +180,7 @@ void buildPentaBloomOutput (LX lx,
     if(universe == 0)
         universe++;
     
-    println("Start Universe: " + start_universe + " DMX: " + (start_universe + DMX_UNIVERSE_OFFSET));
+    println("IP: " + ip + " Start Universe: " + start_universe + " DMX: " + (start_universe + DMX_UNIVERSE_OFFSET));
     
     int OrderedSpikeIndex = 0;
     int[] SpikeIndexOrder = PENTA_BASE_SPOKE_ORDER;
@@ -179,6 +256,8 @@ void buildPentaBloomOutput (LX lx,
         OrderedSpikeIndex++;
         
         // Set up DMX output
+        if (RadiaNodeDatagramCount == 9)
+          println("CREATING #9");
         RadiaNodeDatagrams[RadiaNodeDatagramCount] = new RadiaNodeSpecialDatagram(start_universe + DMX_UNIVERSE_OFFSET, bloom);
         RadiaNodeDatagrams[RadiaNodeDatagramCount].setAddress(ip);
         output.addDatagram((LXDatagram)RadiaNodeDatagrams[RadiaNodeDatagramCount]);

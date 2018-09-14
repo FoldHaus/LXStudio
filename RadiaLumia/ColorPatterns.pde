@@ -73,9 +73,23 @@ public class RadialGradient extends RadiaLumiaPattern
     public final CompoundParameter P_ColorPeriod = 
         new CompoundParameter("cpd", 1, 0, 5)
         .setDescription("The period of color oscillation");
+        
+    public final BooleanParameter P_ColorTakeover =
+        new BooleanParameter("Takeover", false);
+        
+    public final CompoundParameter P_TakeoverSpeed =
+        new CompoundParameter("TSpd", 3000, 0, 60000);
+    
+    public final CompoundParameter P_TakeoverFrequency =
+        new CompoundParameter("TFreq", 3000, 0, 60000);
     
     public final SawLFO Progress =
         new SawLFO(0, 360, P_MotionSpeed);
+    
+    public final SawLFO P_TakeoverProgress =
+        new SawLFO(0, 1, P_TakeoverFrequency);
+        
+    int TakeoverCenter;
     
     public RadialGradient (LX lx)
     {
@@ -84,7 +98,12 @@ public class RadialGradient extends RadiaLumiaPattern
         addParameter(P_MotionSpeed);
         addParameter(P_ColorPeriod);
         
+        addParameter(P_ColorTakeover);
+        addParameter(P_TakeoverSpeed);
+        addParameter(P_TakeoverFrequency);
+        
         startModulator(Progress);
+        startModulator(P_TakeoverProgress);
     }
     
     public void run (double deltaMs)
@@ -118,6 +137,28 @@ public class RadialGradient extends RadiaLumiaPattern
                 float Hue = (BaseHue + (float)(360 * (LedPctDistance * ColorPeriod) + ColorOffset)) % 360;
                 colors[spokePoint.index] = LXColor.hsb(Hue, 100, 100);
             }
+        }
+        
+        if (P_ColorTakeover.getValueb())
+        {
+          float TakeoverProgress = P_TakeoverProgress.getValuef();
+          
+          if (abs(TakeoverProgress - .001f) < .01)
+          {
+             TakeoverCenter = (int)random(0, 42);
+          }
+          
+          float TakeoverRadius = TakeoverProgress * 300;
+          LXVector CenterVector = model.blooms.get(TakeoverCenter).center;
+          
+          for (LXPoint p : model.leds)
+          {
+             LXVector pVector = LXPointToVector(p);
+             if (pVector.dist(CenterVector) < TakeoverRadius)
+             {
+                colors[p.index] = LXColor.hsb(palette.getHuef(), 100, 100);
+             }
+          }
         }
     }
 }
@@ -487,4 +528,217 @@ public class ColorTakeover extends RadiaLumiaPattern
             colors[p.index] = LXColor.hsb(0, 0, PointDotNormal * 100);
         }
     }
+}
+
+@LXCategory("Color")
+public class ContrastNoise extends RadiaLumiaPattern 
+{
+    public final CompoundParameter P_ContrastAngle =
+      new CompoundParameter("HueAngle", 90, 0, 360);
+    
+    public final CompoundParameter P_ColorRange =
+      new CompoundParameter("Range", 30, 0, 360);
+    
+    public final CompoundParameter P_BaseScale = 
+      new CompoundParameter("Base Scale", 2.5, 1, 10);
+    
+    public final CompoundParameter P_BaseSpeed = (CompoundParameter)
+      new CompoundParameter("Base Speed", .5, -1, 1)
+      .setPolarity(LXParameter.Polarity.BIPOLAR);
+    
+    public final CompoundParameter P_ContrastPresence =
+      new CompoundParameter("Contrast", 0, 0, 1);
+      
+    public final CompoundParameter P_ContrastScale =
+      new CompoundParameter("ConScale", 2.5, 1, 10);
+    
+    public final CompoundParameter P_ContrastSpeed = (CompoundParameter)
+      new CompoundParameter("ConSpeed", .5, -1, 1)
+      .setPolarity(LXParameter.Polarity.BIPOLAR);
+      
+    float Base_NoiseBasis = 0f;
+    float Contrast_NoiseBasis = 0f;
+    
+    public ContrastNoise (LX lx)
+    {
+        super(lx);
+        addParameter(P_ContrastAngle);
+        addParameter(P_ColorRange);
+        
+        addParameter(P_BaseScale);
+        addParameter(P_BaseSpeed);
+        
+        addParameter(P_ContrastPresence);
+        addParameter(P_ContrastScale);
+        addParameter(P_ContrastSpeed);
+    }
+    
+    final float MOTION_MOD = .001;
+    
+    public void run (double deltaMs)
+    {
+        Base_NoiseBasis += deltaMs * MOTION_MOD * P_BaseSpeed.getValuef();
+        Contrast_NoiseBasis += deltaMs * MOTION_MOD * P_ContrastSpeed.getValuef();
+        
+        float BaseHue_Center = palette.getHuef();
+        float ContrastHue_Center = BaseHue_Center + P_ContrastAngle.getValuef();
+        
+        float Adjusted_BaseHue_StartRange = BaseHue_Center - P_ColorRange.getValuef();
+        float Adjusted_BaseHue_EndRange = BaseHue_Center + P_ColorRange.getValuef();
+        if (Adjusted_BaseHue_StartRange > Adjusted_BaseHue_EndRange)
+            Adjusted_BaseHue_StartRange -= 360f;
+        
+        float Adjusted_ContrastHue_StartRange = ContrastHue_Center - P_ColorRange.getValuef();
+        float Adjusted_ContrastHue_EndRange = ContrastHue_Center + P_ColorRange.getValuef();
+        if (Adjusted_ContrastHue_StartRange > Adjusted_ContrastHue_EndRange)
+            Adjusted_ContrastHue_StartRange -= 360f;
+            
+        float BaseScale = P_BaseScale.getValuef();
+        float ContrastScale = P_ContrastScale.getValuef();
+        
+        float ContrastMinRange = 1f - P_ContrastPresence.getValuef();
+        float ContrastMaxRange = 1f;
+            
+        for (LXPoint p : model.leds)
+        {
+            float presence = 0f;
+            float xBase = (p.xn * ContrastScale) + p.zn + Contrast_NoiseBasis;
+            float yBase = (p.yn * ContrastScale) + p.xn + Contrast_NoiseBasis;
+            float zBase = (p.zn * ContrastScale) + p.zn + Contrast_NoiseBasis;
+
+            presence = noise(xBase + 1f * ContrastScale, yBase + 1f * ContrastScale, zBase + 1f * ContrastScale);
+            presence = sin(presence);
+            
+            if (presence < ContrastMinRange || presence > ContrastMaxRange)
+            {
+                float nv = noise(
+                  (p.xn * BaseScale) + p.xn + Base_NoiseBasis,
+                  (p.yn * BaseScale) + p.yn + Base_NoiseBasis, 
+                  (p.zn * BaseScale) + p.zn + Base_NoiseBasis
+                ); 
+                nv = sin(nv);
+                nv *= nv;
+                
+                float Hue = lerp(Adjusted_BaseHue_StartRange, Adjusted_BaseHue_EndRange, nv);
+                colors[p.index] = LXColor.lerp(colors[p.index], LXColor.hsb(Hue, 100, 100), presence);
+            }
+            else
+            {
+                float nv = noise(
+                  (p.xn * ContrastScale) + p.xn + Contrast_NoiseBasis,
+                  (p.yn * ContrastScale) + p.yn + Contrast_NoiseBasis, 
+                  (p.zn * ContrastScale) + p.zn + Contrast_NoiseBasis
+                ); 
+                nv = sin(nv);
+                nv *= nv;
+                
+                float Hue = lerp(Adjusted_ContrastHue_StartRange, Adjusted_ContrastHue_EndRange, nv);
+                colors[p.index] = LXColor.lerp(colors[p.index], LXColor.hsb(Hue, 100, 100), presence);
+            }
+        }
+    }
+}
+
+@LXCategory("Color")
+public class UmbrellaHighlights extends RadiaLumiaPattern
+{
+    public final CompoundParameter P_ContrastAmt =
+      new CompoundParameter("Contrast", 90, 0, 360);
+    
+    public final BooleanParameter P_WhiteAround =
+      new BooleanParameter("White", false);
+    
+    public UmbrellaHighlights (LX lx)
+    {
+      super(lx);
+      addParameter(P_ContrastAmt);
+      addParameter(P_WhiteAround);
+    }
+    
+    public void run (double deltaMs)
+    {
+       UpdateUmbrellaMask();
+       
+       float ContrastOffsetAngle = P_ContrastAmt.getValuef();
+       
+       float ContrastHue = palette.getHuef() + ContrastOffsetAngle;
+       int ContrastColor = LXColor.hsb(ContrastHue, 100, 100);
+       if (P_WhiteAround.getValueb())
+         ContrastColor = LXColor.WHITE;
+       
+       for (LXPoint p : model.leds)
+       {
+          if (POINT_COVEREDBYUMBRELLA[p.index])
+          {
+             colors[p.index] = LXColor.hsb(palette.getHuef(), 100, 100);
+          }
+          else
+          {
+             colors[p.index] = ContrastColor;
+          }
+       }
+    }
+}
+
+
+@LXCategory("Color")
+public class BattlingColors extends RadiaLumiaPattern
+{
+  
+   public final CompoundParameter P_ContrastAngle =
+       new CompoundParameter("Contrast", 90, 0, 360);
+       
+   public final CompoundParameter P_WaveWidth =
+       new CompoundParameter("Width", .25, 0, 2);
+   
+   public final CompoundParameter P_WavePeriod =
+       new CompoundParameter("Per", 4, 0, 7);
+       
+   public final CompoundParameter P_WaveXShift = 
+       new CompoundParameter("XShft", .5, 0, 2);
+       
+   public final CompoundParameter P_WaveSpeed = 
+       new CompoundParameter("Speed", 5 * SECONDS, 0, 30 * SECONDS);
+       
+   public final SawLFO P_WaveOffset =
+       new SawLFO(0, TWO_PI, P_WaveSpeed);
+       
+   public BattlingColors(LX lx)
+   {
+       super(lx);
+       addParameter(P_ContrastAngle);
+       addParameter(P_WaveWidth);
+       addParameter(P_WavePeriod);
+       addParameter(P_WaveXShift);
+       addParameter(P_WaveSpeed);
+       
+       startModulator(P_WaveOffset);
+   }
+   
+   public void run (double deltaMs)
+   {
+       float WaveOffset = P_WaveOffset.getValuef();
+       float WaveWidth = P_WaveWidth.getValuef();
+       float WavePeriod = P_WavePeriod.getValuef();
+       float WaveXShift = P_WaveXShift.getValuef();
+       
+       float HueA = palette.getHuef();
+       float HueB = P_ContrastAngle.getValuef() + HueA;
+       
+       int ColorA = LXColor.hsb(HueA, 100, 100);
+       int ColorB = LXColor.hsb(HueB, 100, 100);
+       
+       for (LXPoint p : model.leds)
+       {
+           float SinAtY = sin((p.yn + WaveOffset) * WavePeriod) * WaveWidth;
+           if (p.xn - WaveXShift < SinAtY)
+           {
+              colors[p.index] = ColorA;
+           }
+           else
+           {
+              colors[p.index] = ColorB;
+           }
+       }
+   }
 }
