@@ -247,3 +247,27 @@ public class InitializeNode extends RadiaLumiaPattern
         }
     }
 }
+<<<<<<< HEAD
+=======
+
+@LXCategory("Test")
+public class Orientation extends RadiaLumiaPattern {
+
+    public final CompoundParameter px = new CompoundParameter("X", 0, model.xMin, model.xMax); // , (model.xMin+model.xMax)/2
+    public final CompoundParameter py = new CompoundParameter("Y", 0, model.yMin, model.yMax); // , (model.yMin+model.yMax)/2
+    public final CompoundParameter pz = new CompoundParameter("Z", 0, model.zMin, model.zMax); // , (model.zMin+model.zMax)/2
+
+    public Orientation(LX lx) {
+        super(lx);
+        addParameter(px);
+        addParameter(py);
+        addParameter(pz);
+    }
+
+    public void run(double deltaMs) {
+        for (LXPoint p : model.displayPoints) {
+            colors[p.index] = (p.x > px.getValue() && p.y > py.getValue() && p.z > pz.getValue()) ? LXColor.hsb(200,100,100) : LXColor.hsb(200,100,0);
+        }
+    }
+}
+>>>>>>> 838e0fc1c7264c765788ad0b63032d7865e13f88

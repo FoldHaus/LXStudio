@@ -504,8 +504,8 @@ public class ShadeStructure extends RadiaLumiaPattern
         float Radius = P_Radius.getValuef();
         
         LXVector Center = new LXVector(sin(Heading) * cos(Elevation),
-                                       cos(Heading) * sin(Elevation),
-                                       sin(Elevation));
+                                       sin(Elevation),
+                                       cos(Heading) * sin(Elevation));
         
         LXVector NewCenter = Center.copy().normalize().mult(P_Distance.getValuef());
         
@@ -526,6 +526,7 @@ public class ShadeStructure extends RadiaLumiaPattern
 }
 
 @LXCategory("Umbrella")
+<<<<<<< HEAD
 public class UmbrellaOneAtATime extends RadiaLumiaPattern
 {
   
@@ -568,4 +569,63 @@ public class UmbrellaNone extends RadiaLumiaPattern
   public void run (double detlaMs)
   {
   }
+=======
+// Pretend like your holding an umbrella while standing in the middle of the sphere
+// pointing it in the direction you want and opening it the amount you want.
+public class Canopy extends RadiaLumiaPattern
+{
+    
+    public final CompoundParameter P_Heading =
+        new CompoundParameter("Head", 0, 0, TWO_PI)
+        .setDescription("The compass-direction of the canopy top");
+    
+    public final CompoundParameter P_Elevation = 
+        new CompoundParameter("Ele", PI/2, -PI/2, PI/2)
+        .setDescription("The elevation of the canopy top");
+    
+    public final CompoundParameter P_Amt =
+        new CompoundParameter("Amt", 0.5, 0, 1)
+        .setDescription("Percent of canopy deployed");
+
+    public final BooleanParameter P_Flip = new BooleanParameter("Flip",false)
+        .setDescription("Flip to negative space");
+
+    
+    public Canopy (LX lx)
+    {
+        super(lx);
+        
+        addParameter(P_Heading);
+        addParameter(P_Elevation);
+        addParameter(P_Amt);
+        addParameter(P_Flip);
+    }
+    
+    public void run (double deltaMs)
+    {
+        float Heading = P_Heading.getValuef();
+        float Elevation = P_Elevation.getValuef();
+        
+        // The orientation vector for the canopy
+        LXVector Center = new LXVector(cos(Heading) * cos(Elevation),
+                                        sin(Elevation),
+                                        sin(Heading) * cos(Elevation)
+                                       );
+
+        LXVector NewCenter = Center.copy().normalize();
+
+        for (Bloom b : model.blooms)
+        {
+            // Parallel distance away from the orientation vector
+            LXVector bRef = b.center.copy().normalize();
+            float dist = -NewCenter.dot(bRef)+1; // Ranges from 0 to 2 (unit sphere)
+            if (!P_Flip.getValueb()) {
+                setUmbrella( b, (dist < P_Amt.getValue()*2) ? 1 : 0 );
+            }
+            else {
+                setUmbrella( b, (dist < P_Amt.getValue()*2) ? 0 : 1 );
+            }
+        }
+    }
+>>>>>>> 838e0fc1c7264c765788ad0b63032d7865e13f88
 }

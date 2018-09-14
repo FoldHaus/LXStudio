@@ -53,6 +53,7 @@ void setup() {
     sensors = new Sensors();
 
     lx = new heronarts.lx.studio.LXStudio(this, model, MULTITHREADED);
+    lx.ui.setResizable(RESIZABLE);
 
     sensors.config(lx);
     
@@ -99,7 +100,6 @@ void onUIReady(heronarts.lx.studio.LXStudio lx, heronarts.lx.studio.LXStudio.UI 
     // TODO: Modify position of simulation in the screen
     // ui.preview.setRadius(80*FEET).setPhi(-PI/18).setTheta(PI/12);
     // ui.preview.setCenter(0, model.cy - 2*FEET, 0);
-    lx.ui.setResizable(RESIZABLE);
     ui.preview.pointCloud.setModel(new LXModel(model.displayPoints));
     ui.preview.addComponent(new UISimulation());
 

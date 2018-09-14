@@ -25,23 +25,23 @@ public static float UMBRELLA_CLOSED_INNER_DISTANCE_FROM_CENTER = 3 * INCHES;
 
 // Houses the actual simulated elements of the Preview interface
 // at present, this is just the Umbrellas.
-public class UISimulation extends UI3dComponent {
+// public class UISimulation extends UI3dComponent {
   
-  public UISimulation () {
-    addChild(umbrellaModel = new UIRadiaLumia());
-  }
+//   public UISimulation () {
+//     addChild(umbrellaModel = new UIRadiaLumia());
+//   }
   
-   protected void beginDraw(UI ui, PGraphics pg) {
-    float level = 255;
-    pg.pointLight(level, level, level, -50*FEET, 50*FEET, -50*FEET);
-    pg.pointLight(level, level, level, 50*FEET, 50*FEET, -50*FEET);
-    pg.pointLight(level, level, level, 0, 50 * FEET, 30*FEET);
-  }
+//    protected void beginDraw(UI ui, PGraphics pg) {
+//     float level = 255;
+//     pg.pointLight(level, level, level, -50*FEET, 50*FEET, -50*FEET);
+//     pg.pointLight(level, level, level, 50*FEET, 50*FEET, -50*FEET);
+//     pg.pointLight(level, level, level, 0, 50 * FEET, 30*FEET);
+//   }
   
-  protected void endDraw(UI ui, PGraphics pg) {
-    pg.noLights();
-  }
-}
+//   protected void endDraw(UI ui, PGraphics pg) {
+//     pg.noLights();
+//   }
+// }
 
 // Holds references to, and positions each of the Umbrellas around the structure.
 public class UIRadiaLumia extends UI3dComponent {

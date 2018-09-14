@@ -201,3 +201,65 @@ class UIOutputControls extends UICollapsibleSection implements LXParameterListen
     }
 }
 */
+<<<<<<< HEAD
+=======
+
+private static final int DUST_FILL = #A7784C;
+
+public class UISimulation extends UI3dComponent {
+
+    private final PImage dust;
+    private final PImage person;
+
+  UISimulation() {
+    addChild(umbrellaModel = new UIRadiaLumia());
+    this.dust = loadImage("dust.png");
+    this.person = loadImage("person.png");
+  }
+  
+  protected void beginDraw(UI ui, PGraphics pg) {
+    float level = 255;
+    pg.pointLight(level, level, level, -10*FEET, 30*FEET, -30*FEET);
+    pg.pointLight(level, level, level, 30*FEET, 20*FEET, -20*FEET);
+    pg.pointLight(level, level, level, 0, 0, 30*FEET);
+  }
+  
+  @Override
+  protected void onDraw(heronarts.p3lx.ui.UI ui, PGraphics pg) {
+    pg.tint(DUST_FILL);
+    pg.textureMode(NORMAL);
+    pg.beginShape();
+    pg.texture(this.dust);
+    float HEIGHT_REF = 20*FEET;
+    pg.vertex(-100*FEET, -HEIGHT_REF - 1*FEET, -100*FEET, 0, 0);
+    pg.vertex(100*FEET, -HEIGHT_REF - 1*FEET, -100*FEET, 0, 1);
+    pg.vertex(100*FEET, -HEIGHT_REF - 1*FEET, 100*FEET, 1, 1);
+    pg.vertex(-100*FEET, -HEIGHT_REF - 1*FEET, 100*FEET, 1, 0);
+    pg.endShape(CLOSE);
+    
+    float personY = -HEIGHT_REF - 1*FEET;
+    drawPerson(pg, -10*FEET, personY, 10*FEET, 1.5*FEET, 1.5*FEET);
+    drawPerson(pg, 8*FEET, personY, 12*FEET, -1.5*FEET, 1.5*FEET);
+    drawPerson(pg, 2*FEET, personY, 8*FEET, -2*FEET, 1*FEET);
+    
+    // pg.fill(WOOD_FILL);
+    // pg.noStroke();
+  }
+  
+  void drawPerson(PGraphics pg, float personX, float personY, float personZ, float personXW, float personZW) {
+    pg.tint(#393939);
+    pg.beginShape();
+    pg.texture(this.person);
+    pg.vertex(personX, personY, personZ, 0, 1);
+    pg.vertex(personX + personXW, personY, personZ + personZW, 1, 1);
+    pg.vertex(personX + personXW, personY + 5*FEET, personZ + personZW, 1, 0);
+    pg.vertex(personX, personY + 5*FEET, personZ, 0, 0);
+    pg.endShape(CLOSE);
+  }
+
+  protected void endDraw(UI ui, PGraphics pg) {
+    pg.noLights();
+  }
+
+}
+>>>>>>> 838e0fc1c7264c765788ad0b63032d7865e13f88
